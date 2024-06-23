@@ -6,8 +6,13 @@ use App\Http\Controllers\TermsConditionsController;
 use App\Http\Controllers\Sections;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\CompanyDetailController;
+use App\Http\Controllers\QueAndAnsController;
+use App\Http\Controllers\ClientInfoController;
 use App\Models\About;
 use App\Models\Banner;
+use App\Models\ClientInfo;
+use App\Models\QueAndAns;
 use Ramsey\Collection\Map\AbstractMap;
 
 /*
@@ -34,6 +39,15 @@ Route::get('/Show-Section',[Sections::class,'showSection']);
 Route::post('/Add-About',[AboutController::class,'addAbout']);
 Route::get('/Show-About',[AboutController::class,'showAbout']);
 
+
+Route::post('/Add-Details', [CompanyDetailController::class, 'addDetail']);
+Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
+
+Route::post('/Add-QueAndAns', [QueAndAnsController::class, 'addQueAndAns']);
+Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
+
+Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);
+Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
 
 Route::post('/Add-Banner',[BannerController::class,'upload']);
 Route::get('/Show-Banner',[BannerController::class,'showUpload']);

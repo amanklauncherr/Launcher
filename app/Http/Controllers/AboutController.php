@@ -14,22 +14,39 @@ class AboutController extends Controller
     //
     public function addAbout(Request $request)
     {
-        $request->validate(([
+       
+        $validator=Validator::make($request->all(),[
             'heading' => 'required|string',
             'content' => 'required|string',        
             'url' => 'required|string'
-        ]));
+        ]);
 
-        $data=$request->only(['heading','content','url']);
-        $about = About::first();
-
-        if($about){
-            $about->update($data);
-            return response()->json(['message' => 'About updated'], 200);
-        }else{
-            About::create($data);
-            return response()->json(['message' => 'About Created'], 201);
+        if($validator->fails())
+        {
+            return response()->json([
+                'errors' => $validator->errors()
+                ], 422);
         }
+
+        try {
+            $data=$validator -> validated();
+            $about = About::first();
+    
+            if($about){
+                $about->update($data);
+                return response()->json(['message' => 'About updated'], 200);
+            }else{
+                About::create($data);
+                return response()->json(['message' => 'About Created'], 201);
+            }
+        } catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'message' => 'An error occurred while creating the question',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
     }
 
     public function showAbout()

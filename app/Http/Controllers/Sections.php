@@ -13,24 +13,42 @@ class Sections extends Controller
     //
     public function addSection(Request $request){
 
-        $request->validate(([
-            'section' => 'required|string',
-            'heading' => 'required|string',
-            'sub-heading' => 'required|string',
-        ]));
+       
+        $validator = Validator::make(
+            $request->all(),[
+                'section' => 'required|string',
+                'heading' => 'required|string',
+                'sub-heading' => 'required|string',
+            ]);
 
-        $data=$request->only(['section', 'heading', 'sub-heading']);
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
-        $sections= Section::where('section',$request->section)->first();
-        // return response()->json(['message' => $sections], 200);
-        if($sections)
-        {
-            $sections->update($data);
-            return response()->json(['message' => 'Section updated'], 200);
-        }else{
-            Section::create($data);
-            return response()->json(['message' => 'Section created'], 201);
-        }
+            try {
+                //code...
+                $data=$validator->validated();
+
+                $sections= Section::where('section',$request->section)->first();
+
+                if($sections)
+                {
+                    $sections->update($data);
+                    return response()->json(['message' => 'Section updated'], 200);
+                }else{
+                    Section::create($data);
+                    return response()->json(['message' => 'Section created'], 201);
+                }
+            }catch (\Exception $e) {
+                // Return a custom error response in case of an exception
+                return response()->json([
+                    'message' => 'An error occurred while creating the question',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+
     }
 
     public function showSection()

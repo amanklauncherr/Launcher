@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class BannerController extends Controller
@@ -12,38 +13,57 @@ class BannerController extends Controller
     //
     public function upload(Request $request)
     {
-        $request->validate([
-           '*.banner_name'=> 'string|unique', 
-           '*.banner_heading'=> 'string',
-           '*.banner_url'=> 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        $validator = Validator::make($request->all(), [
+            'banners.*.banner_heading' => 'required|string',
+            'banners.*.banner_url' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
-        $banners=$request->all();
-
-        foreach($banners as $banner){
-            $uploadedFileUrl = Cloudinary::upload($request->file('banner_url')->getRealPath())->getSecurePath();
-
-            
-        Banner::create([
-            'banner_name' => $banner['banner_name'],
-            'banner_heading' => $banner['banner_heading'],
-            'banner_url' => $uploadedFileUrl
-        ]);
-
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
         }
-  
-        return response()->json(['message' => 'images uploaded'], 201);
+    
+        // Process each banner
+        try {
+            $banners = $request->banners;
+    
+            foreach ($banners as $banner) {
+                // Upload image to Cloudinary
+                $uploadedFileUrl = Cloudinary::upload($banner['banner_url']->getRealPath())->getSecurePath();
+    
+                // Create banner record
+                Banner::create([
+                    'banner_heading' => $banner['banner_heading'],
+                    'banner_url' => $uploadedFileUrl
+                ]);
+            }
+    
+            return response()->json(['message' => 'Images uploaded successfully'], 201);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json([
+                'message' => 'Error uploading banners',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function showUpload()
     {
-        $terms =Banner::first();
-        if($terms)
+        $terms =Banner::all();
+        if($terms->isEmpty())
         {
-            return response()->json($terms,200);
+            return response()->json(['message' => 'No Banner found'], 404);
         }
         else {
-            return response()->json(['message' => 'No Banner found'], 404);
+
+            return response()->json($terms,200);
         }
     }
 }
+
+
+
+ 
