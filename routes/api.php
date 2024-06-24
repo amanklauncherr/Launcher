@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Controllers
 use App\Http\Controllers\TermsConditionsController;
 use App\Http\Controllers\Sections;
 use App\Http\Controllers\AboutController;
@@ -9,6 +11,9 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
+use App\Http\Controllers\AdminController;
+
+// 
 use App\Models\About;
 use App\Models\Banner;
 use App\Models\ClientInfo;
@@ -52,3 +57,13 @@ Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
 Route::post('/Add-Banner',[BannerController::class,'upload']);
 Route::get('/Show-Banner',[BannerController::class,'showUpload']);
 
+Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
+    Route::post('/register',[AdminController::class,'register']);
+    Route::post('/login',[AdminController::class,'login']);
+    Route::get('/profile',[AdminController::class,'profile']);
+    Route::post('/logout',[AdminController::class,'logout']);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::put('/profile/update', [AdminController::class, 'updateProfile']);
+});
