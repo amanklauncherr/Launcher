@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EmployerGigController;
 
 // 
 use App\Models\About;
@@ -50,11 +51,16 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
 
 Route::post('/Add-QueAndAns', [QueAndAnsController::class, 'addQueAndAns']);
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
+Route::put('/Update/QueAndAns/{id}',[QueAndAnsController::class,'updateQueAndAns']);
+Route::delete('/Delete/QueAndAns/{id}',[QueAndAnsController::class,'deleteQueAndAns']);
 
 Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);
 Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
+Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
+Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
 
-Route::post('/Add-Banner',[BannerController::class,'upload']);
+
+Route::post('/Add-Banner',[BannerController::class,'Upload']);
 Route::get('/Show-Banner',[BannerController::class,'showUpload']);
 
 Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
@@ -67,3 +73,8 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
 Route::middleware('auth:api')->group(function () {
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
 });
+
+Route::post('/Add-Employer', [EmployerGigController::class, 'addEmployer']);
+Route::get('/Show-Employer',[EmployerGigController::class,'showEmployer']);
+Route::put('/Update/Employer/{id}', [EmployerGigController::class, 'updateEmployer']);
+Route::delete('/Delete/Employer/{id}', [EmployerGigController::class, 'deleteEmployer']);

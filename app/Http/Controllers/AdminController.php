@@ -39,7 +39,7 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
-                'message' => 'Error uploading banners',
+                'message' => 'Error while Register',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -78,7 +78,7 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
-                'message' => 'Error uploading banners',
+                'message' => 'Error while Login',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -136,7 +136,7 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
-                'message' => 'Error uploading banners',
+                'message' => 'Error while Updating Admin Profile',
                 'error' => $e->getMessage()
             ], 500);
         }

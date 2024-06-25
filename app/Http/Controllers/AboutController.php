@@ -42,7 +42,7 @@ class AboutController extends Controller
         } catch (\Exception $e) {
             //throw $th;
             return response()->json([
-                'message' => 'An error occurred while creating the question',
+                'message' => 'An error occurred while Adding or Updating About info',
                 'error' => $e->getMessage()
             ], 500);
         }

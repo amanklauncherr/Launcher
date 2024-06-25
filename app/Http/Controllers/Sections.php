@@ -44,7 +44,7 @@ class Sections extends Controller
             }catch (\Exception $e) {
                 // Return a custom error response in case of an exception
                 return response()->json([
-                    'message' => 'An error occurred while creating the question',
+                    'message' => 'An error occurred while Adding or Updating Section',
                     'error' => $e->getMessage()
                 ], 500);
             }
