@@ -13,6 +13,7 @@ use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployerGigController;
+use App\Http\Controllers\CouponController;
 
 // 
 use App\Models\About;
@@ -78,3 +79,9 @@ Route::post('/Add-Employer', [EmployerGigController::class, 'addEmployer']);
 Route::get('/Show-Employer',[EmployerGigController::class,'showEmployer']);
 Route::put('/Update/Employer/{id}', [EmployerGigController::class, 'updateEmployer']);
 Route::delete('/Delete/Employer/{id}', [EmployerGigController::class, 'deleteEmployer']);
+
+Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);
+Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);
+Route::get('/Apply-Coupon',[CouponController::class,'applyCoupon']);
+Route::put('/Update-Coupon/{coupon_code}',[CouponController::class,'updateCoupon']);
+Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);

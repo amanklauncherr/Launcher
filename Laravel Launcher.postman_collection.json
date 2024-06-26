@@ -282,6 +282,65 @@
 			"response": []
 		},
 		{
+			"name": "Update/QueAndAns",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"Answer\": \"Launcher\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Update/QueAndAns/9",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Update",
+						"QueAndAns",
+						"9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete/QueAndAns",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Delete/QueAndAns/9",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Delete",
+						"QueAndAns",
+						"9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Add-Client",
 			"request": {
 				"method": "POST",
@@ -343,6 +402,126 @@
 			"response": []
 		},
 		{
+			"name": "Update/Client",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "url",
+							"value": "www.some.co",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/Jagdish/OneDrive/Pictures/v.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Update/Client/3",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Update",
+						"Client",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete/Client",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Delete/Client/3",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Delete",
+						"Client",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add-Banner",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Banner_No",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "Banner_heading",
+							"value": "Heading Two",
+							"type": "text"
+						},
+						{
+							"key": "Banner_image",
+							"type": "file",
+							"src": "/C:/Users/Jagdish/OneDrive/Pictures/zoro.jpg"
+						},
+						{
+							"key": "banners[1][banner_heading]",
+							"value": "headin4",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "banners[1][banner_url]",
+							"type": "file",
+							"src": "/C:/Users/Jagdish/OneDrive/Pictures/WhatsApp Image 2023-10-15 at 08.57.38.jpeg",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Add-Banner",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Add-Banner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Show-Banner",
 			"request": {
 				"method": "GET",
@@ -360,54 +539,6 @@
 					"path": [
 						"api",
 						"Show-Banner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Banner",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "banners[0][banner_heading]",
-							"value": "Heading3",
-							"type": "text"
-						},
-						{
-							"key": "banners[0][banner_url]",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/zoro.jpg"
-						},
-						{
-							"key": "banners[1][banner_heading]",
-							"value": "headin4",
-							"type": "text"
-						},
-						{
-							"key": "banners[1][banner_url]",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/WhatsApp Image 2023-10-15 at 08.57.38.jpeg"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Banner",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Banner"
 					]
 				}
 			},
@@ -517,6 +648,285 @@
 						"api",
 						"profile",
 						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update-QueAndAns/",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Answer\":\"ji\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Update-QueAndAns/5",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Update-QueAndAns",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add-Employer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Title\":\"Manager\",\r\n    \"Description\":\"This Person Manages our products\",\r\n    \"Employer\":\"Launcher Employer\",\r\n    \"Validity\":\"2 Months\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Add-Employer",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Add-Employer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Employer",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Show-Employer",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Show-Employer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update/Employer",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Title\":\"Manager 1\",\r\n    \"Description\":\"This Person Manages our products and Company\",\r\n    \"Employer\":\"Launcher Employer\",\r\n    \"Validity\":\"3 Months\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Update/Employer/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Update",
+						"Employer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete/Employer",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Delete/Employer/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Delete",
+						"Employer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Coupon",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add-Coupon",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"coupon_code\":\"n0in4fon0idwnc2\",\r\n    \"coupon_places\":[\"Travel\",\"Shoping\",\"Food\"],\r\n    \"discount\":50\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Add-Coupon",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Add-Coupon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Apply-Coupon",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"coupon_code\":\"n0in4fon0idwnc2\",\r\n    \"place\":\"Travel\"\r\n \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Apply-Coupon",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Apply-Coupon"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update-Coupon",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"coupon_places\":[\"Travel\",\"Shoping\"],\r\n    \"discount\":40\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Update-Coupon/n0in4fon0idw1212",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Update-Coupon",
+						"n0in4fon0idw1212"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete-Coupon",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Delete-Coupon/n0in4fon0idw1212",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"Delete-Coupon",
+						"n0in4fon0idw1212"
 					]
 				}
 			},

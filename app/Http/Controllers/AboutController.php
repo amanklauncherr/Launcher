@@ -34,10 +34,16 @@ class AboutController extends Controller
     
             if($about){
                 $about->update($data);
-                return response()->json(['message' => 'About updated'], 200);
+                // $about->created_at = $about->created_at->format('Y-m-d');
+                // $about->updated_at = $about->updated_at->format('Y-m-d');
+                return response()->json(['message' => 'About updated','About'=>$about], 200);
             }else{
-                About::create($data);
-                return response()->json(['message' => 'About Created'], 201);
+                $aboutCreated=About::create($data);
+        
+                // $aboutCreated->created_at = $aboutCreated->created_at->format('Y-m-d');
+                // $aboutCreated->updated_at = $aboutCreated->updated_at->format('Y-m-d');
+        
+                return response()->json(['message' => 'About Created','About'=>$aboutCreated], 201);
             }
         } catch (\Exception $e) {
             //throw $th;

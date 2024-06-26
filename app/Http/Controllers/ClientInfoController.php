@@ -34,10 +34,13 @@ class ClientInfoController extends Controller
             // Create a new question and answer entry
             $data['image'] = $uploadedFileUrl;
 
-            ClientInfo::create($data);
+            $client=ClientInfo::create($data);
 
+            // $client->created_at = $client->created_at->format('Y-m-d');
+            // $client->updated_at = $client->updated_at->format('Y-m-d');
+    
             // Return a success response
-            return response()->json(['message' => 'Client Added'], 201);
+            return response()->json(['message' => 'Client Added','Client'=>$client], 201);
         } catch (\Exception $e) {
             // Return a custom error response in case of an exception
             return response()->json([
@@ -49,8 +52,8 @@ class ClientInfoController extends Controller
 
      public function updateClient(Request $request,$id){
         $validator=Validator::make($request->all(),[
-            'url' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'url' => 'sometimes|required|string',
+            'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -64,7 +67,6 @@ class ClientInfoController extends Controller
             $client = ClientInfo::findorFail($id);
 
             $data = $validator->validated();
-
          
             if($request->hasFile('image'))
             {
@@ -74,6 +76,9 @@ class ClientInfoController extends Controller
             }
 
             $client->update($data);
+            // $client->created_at = $client->created_at->format('Y-m-d');
+            // $client->updated_at = $client->updated_at->format('Y-m-d');
+    
 
             // Return a success response
             return response()->json(['message' => 'Client Updated', 'client' => $client], 200);

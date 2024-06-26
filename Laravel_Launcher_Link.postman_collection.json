@@ -1,0 +1,160 @@
+{
+	"info": {
+		"_postman_id": "de4cd557-04d5-4683-9df5-fe1e5984aff4",
+		"name": "Laravel_Launcher_Link",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29611540"
+	},
+	"item": [
+		{
+			"name": "Terms-condition",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://launcherr.co/api/term-conditions",
+					"protocol": "http",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"term-conditions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Client",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "url",
+							"value": "www.google.com",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/Jagdish/OneDrive/Pictures/zoro.jpg"
+						},
+						{
+							"key": "ba",
+							"value": "Banner 2",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "banners[1][banner_url]",
+							"type": "file",
+							"src": "/C:/Users/Jagdish/OneDrive/Pictures/v.jpg",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://launcherr.co/api/Show-Client",
+					"protocol": "http",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-Client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Section",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://launcherr.co/api/Show-Section",
+					"protocol": "http",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-Section"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-About",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://launcherr.co/api/Show-About",
+					"protocol": "http",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-About"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Banner",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://launcherr.co/api/Show-Banner",
+					"protocol": "https",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-Banner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-QueAndAns",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://launcherr.co/api/Show-QueAndAns",
+					"protocol": "http",
+					"host": [
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-QueAndAns"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

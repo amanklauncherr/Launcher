@@ -33,10 +33,22 @@ class TermsConditionsController extends Controller
             // return response()->json(['message' => $terms], 200);
             if ($terms) {
                 $terms->update($data);
-                return response()->json(['message' => 'Terms and conditions updated'], 200);
+                // $terms->created_at = $terms->created_at->format('Y-m-d');
+                // $terms->updated_at = $terms->updated_at->format('Y-m-d');
+                return response()->json(['message' => 'Terms and conditions updated','Terms'=>$terms], 200);
             } else {
-                TermsCondition::create($data);
-                return response()->json(['message' => 'Terms and conditions created'], 201);
+
+                $termsCondition = TermsCondition::create($data);
+
+                // Format the timestamps
+                // $termsCondition->created_at = $termsCondition->created_at->format('Y-m-d');
+                // $termsCondition->updated_at = $termsCondition->updated_at->format('Y-m-d');
+        
+                // Return a success response with the formatted data
+                return response()->json([
+                    'message' => 'Terms and conditions created',
+                    'termsCondition' => $termsCondition
+                ], 201);
             }
         } catch (\Exception $e) {
             // Return a custom error response in case of an exception
@@ -59,6 +71,4 @@ class TermsConditionsController extends Controller
             return response()->json(['message' => 'No terms and conditions found'], 404);
         }
     }
-
-    
 }
