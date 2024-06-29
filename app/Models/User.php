@@ -24,6 +24,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -33,6 +35,16 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
     ];
+
+    public function jobPostings()
+    {
+        return $this->hasMany(JobPosting::class);
+    }
+
+    public function employer()
+    {
+        return $this->hasOne(EmployerProfile::class);
+    }
 
     /**
      * The attributes that should be cast.

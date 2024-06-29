@@ -8,13 +8,17 @@
 	"item": [
 		{
 			"name": "Terms-condition",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://launcherr.co/api/term-conditions",
-					"protocol": "http",
+					"raw": "https://api.launcherr.co/api/term-conditions",
+					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
@@ -34,37 +38,12 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "url",
-							"value": "www.google.com",
-							"type": "text"
-						},
-						{
-							"key": "image",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/zoro.jpg"
-						},
-						{
-							"key": "ba",
-							"value": "Banner 2",
-							"type": "text",
-							"disabled": true
-						},
-						{
-							"key": "banners[1][banner_url]",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/v.jpg",
-							"disabled": true
-						}
-					]
-				},
+				
 				"url": {
-					"raw": "http://launcherr.co/api/Show-Client",
-					"protocol": "http",
+					"raw": "https://api.launcherr.co/api/Show-Client",
+					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
@@ -78,13 +57,18 @@
 		},
 		{
 			"name": "Show-Section",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				
 				"url": {
-					"raw": "http://launcherr.co/api/Show-Section",
-					"protocol": "http",
+					"raw": "https://api.launcherr.co/api/Show-Section",
+					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
@@ -98,13 +82,18 @@
 		},
 		{
 			"name": "Show-About",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				
 				"url": {
-					"raw": "http://launcherr.co/api/Show-About",
-					"protocol": "http",
+					"raw": "https://api.launcherr.co/api/Show-About",
+					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
@@ -118,13 +107,18 @@
 		},
 		{
 			"name": "Show-Banner",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+			
 				"url": {
-					"raw": "https://launcherr.co/api/Show-Banner",
+					"raw": "https://api.launcherr.co/api/Show-Banner",
 					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
@@ -138,19 +132,74 @@
 		},
 		{
 			"name": "Show-QueAndAns",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+			
 				"url": {
-					"raw": "http://launcherr.co/api/Show-QueAndAns",
-					"protocol": "http",
+					"raw": "https://api.launcherr.co/api/Show-QueAndAns",
+					"protocol": "https",
 					"host": [
+						"api",
 						"launcherr",
 						"co"
 					],
 					"path": [
 						"api",
 						"Show-QueAndAns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				
+				"url": {
+					"raw": "https://api.launcherr.co/api/Show-Details",
+					"protocol": "https",
+					"host": [
+						"api",
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-Details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Coupon",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				
+				"url": {
+					"raw": "https://api.launcherr.co/api/Show-Coupon",
+					"protocol": "https",
+					"host": [
+						"api",
+						"launcherr",
+						"co"
+					],
+					"path": [
+						"api",
+						"Show-Coupon"
 					]
 				}
 			},

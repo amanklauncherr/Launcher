@@ -14,11 +14,12 @@ class AboutController extends Controller
     //
     public function addAbout(Request $request)
     {
-       
-        $validator=Validator::make($request->all(),[
-            'heading' => 'required|string',
-            'content' => 'required|string',        
-            'url' => 'required|string'
+       $about=About::first();
+    //    return response()->json(['about'=>$about]);
+       $validator=Validator::make($request->all(),[
+            'heading' => $about ? 'nullable|string' : 'required|string',
+            'content' => $about ? 'nullable|string' : 'required|string',        
+            'url' =>  $about ? 'nullable|string' : 'required|string'
         ]);
 
         if($validator->fails())

@@ -53,11 +53,13 @@ class BannerController extends Controller
 
     public function Upload(Request $request)
     {
+        $banner=BannerNew::where('Banner_No',$request->Banner_No)->first();
+        // return response()->json(['banner'=>$banner]);
         $validator = Validator::make(
             $request->all(),[
                 'Banner_No' => 'required|string',
-                'Banner_heading' => 'string',
-                'Banner_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'Banner_heading' => 'nullable|string',
+                'Banner_image' => $banner ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             ]);
 
             if ($validator->fails()) {
@@ -70,19 +72,26 @@ class BannerController extends Controller
                 //code...
                 $data=$validator->validated();
 
-                $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
 
-                $data['Banner_image']=$uploadedFileUrl;
-                // Create banner record
-                
+                // $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
 
-                $banner= BannerNew::where('Banner_No',$request->Banner_No)->first();
+                // $data['Banner_image']=$uploadedFileUrl;
+                // // Create banner record
+
+                if ($request->hasFile('Banner_image')) {
+                    $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
+                    $data['Banner_image'] = $uploadedFileUrl;
+                }
+
+                // $banner= BannerNew::where('Banner_No',$request->Banner_No)->first();
 
                 if($banner)
                 {
                     $banner->update($data);
                     return response()->json(['message' => 'Banner updated'], 200);
                 }else{
+                    $data['Banner_heading'] = $request->input('Banner_heading', 'null');
+
                     BannerNew::create($data);
                     return response()->json(['message' => 'Banner created'], 201);
                 }

@@ -1,557 +1,40 @@
 {
 	"info": {
-		"_postman_id": "5160ad98-13a8-41d7-b677-10db008d3f1c",
-		"name": "Laravel Launcher",
+		"_postman_id": "d714c6a3-c386-4552-9d9a-ef5e33fd4b51",
+		"name": "E-com",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "29611540"
 	},
 	"item": [
 		{
-			"name": "Term&Condtion",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"content\":\"hi, how are you\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/term-conditions",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"term-conditions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Term&Conditon",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/term-conditions",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"term-conditions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Section",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"section\":\"4\",\r\n    \"heading\":\"\",\r\n    \"sub-heading\":\"sub\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Section",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Section"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Section",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-Section",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-Section"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-About",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"heading\":\"Helloji\",\r\n    \"content\":\"Helloji\",\r\n    \"url\":\"https://www.youtube.com/watch?v=GRe-HQUjbZI\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-About",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-About"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-About",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-About",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-About"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Details-Company",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n           \"company_name\": \"Example Company\",\r\n           \"company_address\": \"1234 Main St\",\r\n           \"company_email\": \"contact@example.com\",\r\n           \"company_contact\": \"123-456-7890\",\r\n           \"company_timing\": \"9 AM - 5 PM\"\r\n }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Details",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Details"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Details-Company",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-Details",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-Details"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-QueAndAns",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"Question\":\"product?\",\r\n    \"Answer\":\"Launcher\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-QueAndAns",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-QueAndAns"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-QueAndAns",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-QueAndAns",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-QueAndAns"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update/QueAndAns",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n        \"Answer\": \"Launcher\"\r\n    }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Update/QueAndAns/9",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Update",
-						"QueAndAns",
-						"9"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete/QueAndAns",
+			"name": "Delete User",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Delete/QueAndAns/9",
-					"protocol": "http",
+					"raw": "https://localhost:3000/E-com/userDelete/6586cf16ed575563aad6e74b",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
-					"port": "8000",
+					"port": "3000",
 					"path": [
-						"api",
-						"Delete",
-						"QueAndAns",
-						"9"
+						"E-com",
+						"userDelete",
+						"6586cf16ed575563aad6e74b"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Add-Client",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "url",
-							"value": "www.google.com",
-							"type": "text"
-						},
-						{
-							"key": "image",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/v.jpg"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Client",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Client"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Client",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-Client",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-Client"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update/Client",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "url",
-							"value": "www.some.co",
-							"type": "text"
-						},
-						{
-							"key": "image",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/v.jpg"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Update/Client/3",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Update",
-						"Client",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete/Client",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Delete/Client/3",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Delete",
-						"Client",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Banner",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "Banner_No",
-							"value": "2",
-							"type": "text"
-						},
-						{
-							"key": "Banner_heading",
-							"value": "Heading Two",
-							"type": "text"
-						},
-						{
-							"key": "Banner_image",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/zoro.jpg"
-						},
-						{
-							"key": "banners[1][banner_heading]",
-							"value": "headin4",
-							"type": "text",
-							"disabled": true
-						},
-						{
-							"key": "banners[1][banner_url]",
-							"type": "file",
-							"src": "/C:/Users/Jagdish/OneDrive/Pictures/WhatsApp Image 2023-10-15 at 08.57.38.jpeg",
-							"disabled": true
-						}
-					]
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Banner",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Banner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Banner",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-Banner",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-Banner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "register",
+			"name": "User Registration",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Admin\",\r\n    \"email\":\"admin@gmail.com\",\r\n    \"password\":\"12345678\"\r\n}",
+					"raw": "{ \r\n    \"firstname\":\"Jagdish\",\r\n    \"lastname\":\"Adhikari\",\r\n    \"username\":\"adjagdish\",\r\n    \"email\":\"Jagdish3@gmail.com\",\r\n    \"password\":\"99101793\",\r\n    \"mobile_no\":\"9910179393\",\r\n    \"age\":23,\r\n    \"gender\":\"Male\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -559,289 +42,22 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/register",
-					"protocol": "http",
+					"raw": "https://localhost:3000/E-com/user",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
-					"port": "8000",
+					"port": "3000",
 					"path": [
-						"api",
-						"auth",
-						"register"
+						"E-com",
+						"user"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "login",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n       \"email\":\"admin1@gmail.com\",\r\n    \"password\":\"87654322\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/login",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "admin-profile/update",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MTkyMjYwODgsImV4cCI6MTcxOTIyOTY4OCwibmJmIjoxNzE5MjI2MDg4LCJqdGkiOiIwQld4MTM3cEdJT2JjaE90Iiwic3ViIjoiMSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.hRH-eHNJ889_91jDbMXkEo4V7oJtoDWeOYQu-rz3x1s",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"password\":\"87654321\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/profile/update",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"profile",
-						"update"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update-QueAndAns/",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"Answer\":\"ji\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Update-QueAndAns/5",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Update-QueAndAns",
-						"5"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Employer",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"Title\":\"Manager\",\r\n    \"Description\":\"This Person Manages our products\",\r\n    \"Employer\":\"Launcher Employer\",\r\n    \"Validity\":\"2 Months\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Employer",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Employer"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Employer",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Show-Employer",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Show-Employer"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update/Employer",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"Title\":\"Manager 1\",\r\n    \"Description\":\"This Person Manages our products and Company\",\r\n    \"Employer\":\"Launcher Employer\",\r\n    \"Validity\":\"3 Months\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Update/Employer/1",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Update",
-						"Employer",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete/Employer",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Delete/Employer/1",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Delete",
-						"Employer",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Show-Coupon",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Add-Coupon",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"coupon_code\":\"n0in4fon0idwnc2\",\r\n    \"coupon_places\":[\"Travel\",\"Shoping\",\"Food\"],\r\n    \"discount\":50\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/Add-Coupon",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"Add-Coupon"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Apply-Coupon",
+			"name": "User Login",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -850,7 +66,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"coupon_code\":\"n0in4fon0idwnc2\",\r\n    \"place\":\"Travel\"\r\n \r\n}",
+					"raw": "{\r\n    \"username\":\"adjagdish\",\r\n    \"password\":\"99101793\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -858,31 +74,48 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Apply-Coupon",
-					"protocol": "http",
+					"raw": "https://localhost:3000/E-com/userLog",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
-					"port": "8000",
+					"port": "3000",
 					"path": [
-						"api",
-						"Apply-Coupon"
+						"E-com",
+						"userLog"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Update-Coupon",
+			"name": "https://localhost:3000/E-com/user",
 			"request": {
-				"method": "PUT",
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/E-com/vendor",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"vendor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Vendor Registration",
+			"request": {
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"coupon_places\":[\"Travel\",\"Shoping\"],\r\n    \"discount\":40\r\n}",
+					"raw": "{\r\n \"firstname\":\"Raju\",\r\n \"lastname\": \"Lala\",\r\n \"username\":\"lalaji\",\r\n \"email\":\"rajulala@gmail.com\",\r\n \"password\":\"hashed\",\r\n \"mobile_no\":9911882277,\r\n \"age\":\"69\",\r\n \"gender\":\"male\"   \r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -890,43 +123,156 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Update-Coupon/n0in4fon0idw1212",
-					"protocol": "http",
+					"raw": "https://localhost:3000/E-com/vendor",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
-					"port": "8000",
+					"port": "3000",
 					"path": [
-						"api",
-						"Update-Coupon",
-						"n0in4fon0idw1212"
+						"E-com",
+						"vendor"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Delete-Coupon",
+			"name": "userData",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/E-com/vendor",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"vendor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "vendorData",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/E-com/vendor",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"vendor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Product",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Samasung\",\r\n    \"type\":\"Phone\",\r\n    \"price\":28000,\r\n    \"vendor\":\"659bd37e9273aa43fe6a0b1d\"    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:3000/E-com/product/add",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"product",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:3000/E-com/vendorlog",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"mobile_no\":9911882277,\r\n    \"password\":\"hashed\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:3000/E-com/vendorlog",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"vendorlog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete product",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Delete-Coupon/n0in4fon0idw1212",
-					"protocol": "http",
+					"raw": "https://localhost:3000/E-com/product/remove/659814e82d96f303d700aee5",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"localhost"
 					],
-					"port": "8000",
+					"port": "3000",
 					"path": [
-						"api",
-						"Delete-Coupon",
-						"n0in4fon0idw1212"
+						"E-com",
+						"product",
+						"remove",
+						"659814e82d96f303d700aee5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "product data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:3000/E-com/product",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"E-com",
+						"product"
 					]
 				}
 			},

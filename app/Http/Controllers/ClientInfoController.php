@@ -15,8 +15,8 @@ class ClientInfoController extends Controller
     //
     public function addClient(Request $request){
         $validator = Validator::make($request->all(), [
-            'url' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'url' => 'nullable|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         // If validation fails, return an error response
@@ -29,10 +29,14 @@ class ClientInfoController extends Controller
         try {
             // Extract the validated data
             $data = $validator->validated();
+            $data['url'] = $request->input('url', 'null');
+
             $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
 
             // Create a new question and answer entry
             $data['image'] = $uploadedFileUrl;
+
+           
 
             $client=ClientInfo::create($data);
 
@@ -52,8 +56,8 @@ class ClientInfoController extends Controller
 
      public function updateClient(Request $request,$id){
         $validator=Validator::make($request->all(),[
-            'url' => 'sometimes|required|string',
-            'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'url' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -71,7 +75,6 @@ class ClientInfoController extends Controller
             if($request->hasFile('image'))
             {
                 $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
-                
                 $data['image']=$uploadedFileUrl;
             }
 

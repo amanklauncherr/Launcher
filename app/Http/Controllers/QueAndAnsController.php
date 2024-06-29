@@ -84,6 +84,9 @@ class QueAndAnsController extends Controller
                 return response()->json(['message' => 'Q&A updated successfully', 'Q&A' => $QA], 200);
             
 
+        }catch (ModelNotFoundException $e) {
+            // Return a response if the record was not found
+            return response()->json(['message' => 'Record not found'], 404);
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([

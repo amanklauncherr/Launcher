@@ -13,12 +13,13 @@ class Sections extends Controller
     //
     public function addSection(Request $request){
 
+        $sectionExists = Section::where('section', $request->section)->exists();
        
         $validator = Validator::make(
             $request->all(),[
                 'section' => 'required|string',
-                'heading' => 'required|string',
-                'sub-heading' => 'required|string',
+                'heading' => $sectionExists ? 'nullable|string' : 'required|string',
+                'sub-heading' => 'sometimes|required|string',
             ]);
 
             if ($validator->fails()) {
@@ -38,6 +39,8 @@ class Sections extends Controller
                     $sections->update($data);
                     return response()->json(['message' => 'Section updated'], 200);
                 }else{
+                    $data['sub-heading'] = $request->input('sub-heading', 'null');
+
                     Section::create($data);
                     return response()->json(['message' => 'Section created'], 201);
                 }

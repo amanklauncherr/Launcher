@@ -18,7 +18,7 @@ class CouponController extends Controller
         $validator = Validator::make($request->all(),[
             'coupon_code' => 'required|string|unique:coupons,coupon_code',
             'coupon_places' => 'required|array',
-            'discount' => 'required|numeric|min:0'
+            'discount' => 'required|numeric|min:0|max:100'
         ]);
 
         if ($validator->fails()) {
@@ -46,6 +46,7 @@ class CouponController extends Controller
 
     public function showCoupon(){
         $coupon=Coupon::all();
+        // json_decode($coupon->coupon_places);
         if($coupon->isEmpty())
         {
             return response()->json(['Message'=>'No Coupon Found'],404);

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends Controller
 {
@@ -93,6 +94,17 @@ class AdminController extends Controller
         ]);
     }
 
+    public function allUser()
+    {
+        $users= User::all();      
+        if($users->isEmpty())
+        {
+            return response()->json(['error' => 'not found'], 404);
+        }
+        return response()->json(['message'=>$users]);
+    }
+    
+
     public function logout()
     {
         Auth::guard('api')->logout();
@@ -133,7 +145,10 @@ class AdminController extends Controller
             $user->save();
 
             return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            // Return a response if the record was not found
+            return response()->json(['message' => 'Record not found'], 404);
+        }catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
                 'message' => 'Error while Updating Admin Profile',

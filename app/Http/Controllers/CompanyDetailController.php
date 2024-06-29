@@ -13,13 +13,14 @@ class CompanyDetailController extends Controller
     //
     public function addDetail(Request $request)
     {
-
+        $companyDetails=CompanyDetails::first();
+        // return response()->json(['cd'=>$companyDetails]);
         $validator = Validator::make($request->all(), [
-            'company_name' => 'required|string',
-            'company_address' => 'required|string',
-            'company_email' => 'required|email',
-            'company_contact' => 'required|string',
-            'company_timing' => 'required|string',
+            'company_name' => $companyDetails ? 'nullable:string':'required|string',
+            'company_address' => $companyDetails ? 'nullable:string':'required|string',
+            'company_email' => $companyDetails ? 'nullable:string':'required|string',
+            'company_contact' => $companyDetails ? 'nullable:string':'required|string',
+            'company_timing' => $companyDetails ? 'nullable:string':'required|string',
         ]);
 
         if ($validator->fails()) {
