@@ -80,7 +80,7 @@ class JobPostingController extends Controller
     {
         try {
             //code...
-            $job=JobPosting::findofFail($id);
+            $job=JobPosting::findOrFail($id);
 
             $job->active = !$job->active;
     
@@ -104,7 +104,7 @@ class JobPostingController extends Controller
     {
         try {
             //code...
-            $job=JobPosting::findorFail($id);
+            $job=JobPosting::findOrFail($id);
 
             $job->verified = !$job->verified;
     
@@ -123,12 +123,4 @@ class JobPostingController extends Controller
         }
     }
 
-    // public function showJob(Request $request)
-    // {
-    //  try {
-    //     //code...
-    //  } catch (\Throwable $th) {
-    //     //throw $th;
-    //  }   
-    // }
 }
