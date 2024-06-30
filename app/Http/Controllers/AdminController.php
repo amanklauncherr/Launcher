@@ -35,6 +35,7 @@ class AdminController extends Controller
             ]);
     
             $token = JWTAuth::fromUser($admin);
+            $admin->assignRole('admin');
     
             return response()->json(compact('admin','token'), 201);
         } catch (\Exception $e) {
@@ -59,9 +60,11 @@ class AdminController extends Controller
         }
         try {
             $credentials = $request->only('email', 'password');
+            $user = User::where('email', $credentials['email'])->first();
 
             if (!$token = Auth::guard('api')->attempt($credentials)) {
-                $user = User::where('email', $credentials['email'])->first();
+                // $user = User::where('email', $credentials['email'])->first();
+              
 
                 if (!$user) {
                     return response()->json(['error' => 'Email does not exist'], 404);
@@ -74,6 +77,18 @@ class AdminController extends Controller
 
                 // If the above checks are passed but authentication fails
                 return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            //  to check roles
+            // $roles = $user->getRoleNames();
+            // print_r($roles->toArray());die();
+            // $user = User::find($userId);
+
+            // Role Login Condition
+            if (!$user->hasRole('admin')) 
+            {
+                // User has the 'admin' role
+                return response()->json(['error' => 'Unauthorized Login Role'], 401);  
             }
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
