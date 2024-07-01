@@ -12,15 +12,18 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends Controller
-{
-    
+{   
     //
-
     public function register(Request $request){
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:50',
             'email' => 'required|email|unique:users|max:50',
-             'password' => 'required|string|min:8'
+             'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ]
         ]);
 
         if($validator->fails()){
@@ -37,7 +40,7 @@ class AdminController extends Controller
             $token = JWTAuth::fromUser($admin);
             $admin->assignRole('admin');
     
-            return response()->json(compact('admin','token'), 201);
+            return response()->json(compact('admin'), 201);
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
@@ -88,7 +91,7 @@ class AdminController extends Controller
             if (!$user->hasRole('admin')) 
             {
                 // User has the 'admin' role
-                return response()->json(['error' => 'Unauthorized Login Role'], 401);  
+                return response()->json(['error' => 'Unauthorized Login Role. Only Admin can Login'], 401);  
             }
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
@@ -156,7 +159,6 @@ class AdminController extends Controller
                 $user->password = Hash::make($request->password);
             }
     
-
             $user->save();
 
             return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
@@ -171,4 +173,5 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
 }

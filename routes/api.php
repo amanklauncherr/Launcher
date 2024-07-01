@@ -66,7 +66,10 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
     Route::get('/profile',[AdminController::class,'profile']);
     Route::post('/logout',[AdminController::class,'logout']);
     Route::get('/alluser',[AdminController::class,'allUser']);
+    Route::post('/userRegister',[UserProfileController::class,'userRegister']);
+    Route::post('/userLogin',[UserProfileController::class,'userLogin']);
 });
+
 
 Route::middleware('auth:api')->group(function () {
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
@@ -103,6 +106,8 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     //    userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
+    Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
+
 });
 
 Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);
