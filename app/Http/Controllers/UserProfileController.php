@@ -148,12 +148,6 @@ class UserProfileController extends Controller
             $credentials = $request->only('old_password', 'new_password','confirm_new_password');
             $user = Auth::user();
 
-            // if (!$user->hasRole('user')) 
-            // {
-            //     // User has the 'admin' role
-            //     return response()->json(['error' => 'Unauthorized Login Role. Only User can Login'], 401);  
-            // }
-            // $oldPass=$user->password
 
             if(!Hash::check($credentials['old_password'],$user->password)){
                 return response()->json(['error' => 'Old Password does not match'], 401);
@@ -176,16 +170,19 @@ class UserProfileController extends Controller
         }
     }
 
-    public function AddProfile(Request $request)
+    public function AddUserProfile(Request $request)
     {
+        $user = Auth::user();
+        $userProfile= UserProfile::where('user_id',$user->id)->first();
         $validator = Validator::make($request->all(), [
-            'user_Number' => 'nullable|integer',
+            'user_Name'  => 'required|string',
+            'user_Number' => $userProfile ? 'required|integer' : 'required|integer|unique:user_profiles',
             'user_Address' => 'required|string',
             'user_City' => 'required|string',
             'user_State' => 'required|string',
             'user_Country' => 'required|string',
             'user_PinCode' => 'required|string',
-            'user_AboutMe' => 'nullable|string',
+            'user_AboutMe' => 'required|string',
         ]);
     
         if ($validator->fails()) {
@@ -193,14 +190,18 @@ class UserProfileController extends Controller
         }
     
         try {
-            $user = Auth::user();
+            // $user = Auth::user();
             $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);
 
-            $userProfile= UserProfile::where('user_id',$user->id)->first();
+            // $userProfile= UserProfile::where('user_id',$user->id)->first();
              
             if($userProfile)
             {
+                $user->name = $request->user_Name;
                 $userProfile->update($profile);
+                $user->save();
+
+                return response()->json(['message' => 'Profile updated successfully','user'=>$user, 'profile' => $userProfile], 200);
             }
             else{
                 $userProfile = UserProfile::create([
@@ -213,8 +214,9 @@ class UserProfileController extends Controller
                     'user_PinCode' => $profile['user_PinCode'],
                     'user_AboutMe' => $profile['user_AboutMe']
                 ]);
+                return response()->json(['message' => 'Profile created successfully', 'profile' => $userProfile], 201);
             }
-            return response()->json($userProfile, 201);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while Creating User Profile',
