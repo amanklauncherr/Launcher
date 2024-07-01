@@ -59,7 +59,12 @@ class UserProfileController extends Controller
     {
         $validator=Validator::make($request->all(),[
             'email' => 'required|email|max:50',
-            'password' => 'required|string|min:8'
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ],
         ]);
 
         if($validator->fails())
@@ -149,7 +154,7 @@ class UserProfileController extends Controller
             //     return response()->json(['error' => 'Unauthorized Login Role. Only User can Login'], 401);  
             // }
             // $oldPass=$user->password
-            
+
             if(!Hash::check($credentials['old_password'],$user->password)){
                 return response()->json(['error' => 'Old Password does not match'], 401);
             }

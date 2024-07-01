@@ -55,7 +55,12 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(),
         [
             'email'=>'required|email',
-            'password'=>'required|string|min:8'
+            'password'=>[
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -138,7 +143,12 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(),[
             'name'=>'nullable|string|max:50',
             'email'=>'nullable|email|unique:users,email'.Auth::id(),
-            'password'=>'nullable|string|min:8'
+            'password'=>[
+                'nullable',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ],
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
