@@ -89,11 +89,11 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
     Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
 
-
    //  Job
    Route::post('/addJob',[JobPostingController::class,'AddJob']);
    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);
+   Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
 });
 
@@ -123,3 +123,4 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
 Route::get('/showJobs',[JobPostingController::class,'showJob']);
+

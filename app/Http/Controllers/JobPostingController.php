@@ -14,6 +14,17 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class JobPostingController extends Controller
 {
     //
+    public function showJobAdmin()
+    {
+        $job = JobPosting::with(['user'])->get();
+        // $employer=EmployerProfile::get();
+        if($job->isEmpty())
+        {
+            return response()->json(['error'=>'Nothing'],404);
+        }
+        return response()->json(['job'=>$job],200);
+    }
+
     public function showJob()
     {
         $job = JobPosting::with(['user'])->get();
@@ -32,15 +43,23 @@ class JobPostingController extends Controller
         }
         return response()->json(['profile' => $employer], 200);
     }
+    
+// {
+//     "gigs_type": "Freelance",
+//     "gigs_about": "Travel Writer",
+//     "company_name": "CODEEDGE",
+//     "isVerified": true,
+//     "gigs_description": "Calling all wordsmiths with a love for exploration! We're looking for freelance travel writers to craft engaging articles, destination guides, and travel narratives. Share your unique perspective and inspire readers to embark on their own adventures."
+// },
 
     public function AddJob(Request $request)
     {
         $validator=Validator::make($request->all(),[
           'title' => 'required|string|max:50',
-            'description' => 'nullable|string',
-            'duration' => 'required|integer',
-            'active' => 'boolean',
-            'verified' => 'boolean',  
+          'description' => 'nullable|string',
+          'duration' => 'required|integer',
+          'active' => 'boolean',
+          'verified' => 'boolean',  
         ]);
 
         if ($validator->fails()) {
