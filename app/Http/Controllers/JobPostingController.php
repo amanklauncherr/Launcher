@@ -25,15 +25,37 @@ class JobPostingController extends Controller
         return response()->json(['job'=>$job],200);
     }
 
+// {
+//     "gigs_type": "Freelance",
+//     "gigs_about": "Travel Writer",
+//     "company_name": "CODEEDGE",
+//     "isVerified": true,
+//     "gigs_description": "Calling all wordsmiths with a love for exploration! We're looking for freelance travel writers to craft engaging articles, destination guides, and travel narratives. Share your unique perspective and inspire readers to embark on their own adventures."
+// },
+
     public function showJob()
     {
-        $job = JobPosting::with(['user'])->get();
+        $jobs = JobPosting::with(['user.employerProfile'])->get();
         // $employer=EmployerProfile::get();
-        if($job->isEmpty())
+
+        if($jobs->isEmpty())
         {
-            return response()->json(['error'=>'Nothing'],404);
+            return response()->json(['error'=>'Nothing in Gigs List'],404);
         }
-        return response()->json(['job'=>$job],200);
+        $jobsArray = $jobs->toArray();
+        $newJobsArray = array_map(function($job) {
+          
+            return [
+                'user_id' => $job['user_id'],
+                'gigs_title' => $job['title'],
+                'gigs_description' => $job['description'],
+                'gigs_duration' => $job['duration'],
+                'isActive' => $job['active'],
+                'isVerified' => $job['verified'],
+                'company_name' => $job['user']['employer_profile']['company_name'] ?? 'By Launcherr'
+            ];
+        }, $jobsArray);
+        return response()->json(['gigs'=>$newJobsArray],200);
     }
     
     public function empProfile(Request $request,$user_id){
@@ -44,14 +66,6 @@ class JobPostingController extends Controller
         return response()->json(['profile' => $employer], 200);
     }
     
-// {
-//     "gigs_type": "Freelance",
-//     "gigs_about": "Travel Writer",
-//     "company_name": "CODEEDGE",
-//     "isVerified": true,
-//     "gigs_description": "Calling all wordsmiths with a love for exploration! We're looking for freelance travel writers to craft engaging articles, destination guides, and travel narratives. Share your unique perspective and inspire readers to embark on their own adventures."
-// },
-
     public function AddJob(Request $request)
     {
         $validator=Validator::make($request->all(),[
@@ -105,7 +119,7 @@ class JobPostingController extends Controller
     
             $job->save();
             
-                return response()->json(["job" => $job], 200);
+                return response()->json(["job" => $job], 201);
         } catch (ModelNotFoundException $e) {
             // Return a response if the record was not found
             return response()->json(['message' => 'Record not found'], 404);
@@ -129,7 +143,7 @@ class JobPostingController extends Controller
     
             $job->save();
             
-                return response()->json(["job" => $job], 200);
+                return response()->json(["job" => $job], 201);
         } catch (ModelNotFoundException $e) {
             // Return a response if the record was not found
             return response()->json(['message' => 'Record not found'], 404);

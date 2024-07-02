@@ -114,7 +114,7 @@ class AdminController extends Controller
             'token_type'=>'bearer',
             'expires_in'=>auth()->guard('api')->factory()->getTTL()*60,
             'user'=>Auth::guard('api')->user(),
-        ]);
+        ], 200);
     }
 
     public function allUser()

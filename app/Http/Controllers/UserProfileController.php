@@ -31,7 +31,10 @@ class UserProfileController extends Controller
 
         if($validator->fails())
         {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([  
+              'success' => 0,
+              'error' => $validator->errors()
+            ], 422);
         }
 
         try {
@@ -42,13 +45,26 @@ class UserProfileController extends Controller
                 'password' => Hash::make($request->password),
             ]);
     
-            $token = JWTAuth::fromUser($user);
+            // $token = JWTAuth::fromUser($user);
             $user->assignRole('user');
     
-            return response()->json(compact('user','token'), 201);
+            if ($user) {
+                return response()->json([
+                    'success' => 1,
+                    'message' => 'User registered successfully',
+                    'user' => $user,
+                    // 'token' => $token
+                ], 201);
+            } else {
+                return response()->json([
+                    'success' => 0,
+                    'error' => 'Failed to register user'
+                ], 500);
+            }
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
+                'success' => '0',
                 'message' => 'Error while Register',
                 'error' => $e->getMessage()
             ], 500);
@@ -69,7 +85,9 @@ class UserProfileController extends Controller
 
         if($validator->fails())
         {
-            return response()->json(['errors' => $validator->errors()],422);
+            return response()->json([
+                'success' => 0,
+              'error' => $validator->errors()],422);
         }
         try {
             //code...
@@ -78,14 +96,14 @@ class UserProfileController extends Controller
             
             if(!$token=Auth::guard('api')->attempt($credentials)){
                 if(!$user){
-                    return response()->json(['error' => 'Email does not exist'], 404);
+                    return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
                 }
                 if(!Hash::check($credentials['password'],$user->password))
                 {
-                    return response()->json(['error' => 'Password does not match'], 401);
+                    return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
                 }
 
-                return response()->json(['error'=>'Unauthorized User'],401);
+                return response()->json([ 'success' => 0,'error'=>'Unauthorized User'],401);
             }
               //  to check roles
             // $roles = $user->getRoleNames();
@@ -95,12 +113,13 @@ class UserProfileController extends Controller
             if (!$user->hasRole('user')) 
             {
                 // User has the 'admin' role
-                return response()->json(['error' => 'Unauthorized Login Role. Only User can Login'], 401);  
+                return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
             }
             return $this->respondWithToken($token);
         }  catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
+                'success' => 0,
                 'message' => 'Error while Login',
                 'error' => $e->getMessage()
             ], 500);
@@ -109,10 +128,12 @@ class UserProfileController extends Controller
 
     protected function respondWithToken($token){
         return response()->json([
+            'success' => 1,
+            'user'=>Auth::guard('api')->user(),
             'access_token'=>$token,
             'token_type'=>'bearer',
             'expires_in'=>auth()->guard('api')->factory()->getTTL()*60,
-            'user'=>Auth::guard('api')->user(),
+            
         ]);
     }
 
@@ -160,7 +181,7 @@ class UserProfileController extends Controller
 
             $user->save();
 
-            return response()->json(['message' => 'Password Updated Succcessfully'], 200);
+            return response()->json(['message' => 'Password Updated Succcessfully'], 201);
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
@@ -197,11 +218,12 @@ class UserProfileController extends Controller
              
             if($userProfile)
             {
+
                 $user->name = $request->user_Name;
                 $userProfile->update($profile);
                 $user->save();
 
-                return response()->json(['message' => 'Profile updated successfully','user'=>$user, 'profile' => $userProfile], 200);
+                return response()->json(['message' => 'Profile updated successfully', 'profile' => $userProfile,'user'=>$user], 201);
             }
             else{
                 $userProfile = UserProfile::create([
@@ -229,8 +251,11 @@ class UserProfileController extends Controller
     {
         try {
             //code...
+
             $user=Auth::user();
-            $userProfile=UserProfile::where('user_id',$user->id)->first();
+            $id=$user->id;
+            // return response()->json([$user->id]);
+            $userProfile=UserProfile::where('user_id',$id)->first();
             if($userProfile)
             {        
                 return response()->json(['userprofile'=>$userProfile],200);

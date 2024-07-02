@@ -38,6 +38,11 @@ class JobPosting extends Model
         return $this->belongsTo(User::class);
     }
 
+    // public function employer()
+    // {
+    //     return $this->belongsTo(EmployerProfile::class);
+    // }
+
     /**
     * Format the date when serializing the model.
     *

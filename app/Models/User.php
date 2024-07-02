@@ -39,12 +39,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function jobPostings()
     {
-        return $this->hasMany(JobPosting::class);
+       return $this->hasMany(JobPosting::class);
     }
 
-    public function employer()
+    public function employerProfile()
     {
-        return $this->hasOne(EmployerProfile::class);
+       return $this->hasOne(EmployerProfile::class);
     }
 
     /**

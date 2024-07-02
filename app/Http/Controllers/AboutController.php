@@ -37,7 +37,7 @@ class AboutController extends Controller
                 $about->update($data);
                 // $about->created_at = $about->created_at->format('Y-m-d');
                 // $about->updated_at = $about->updated_at->format('Y-m-d');
-                return response()->json(['message' => 'About updated','About'=>$about], 200);
+                return response()->json(['message' => 'About updated','About'=>$about], 201);
             }else{
                 $aboutCreated=About::create($data);
         

@@ -16,7 +16,7 @@ use App\Http\Controllers\EmployerGigController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\UserProfileController;
-
+// use App\Http\Middleware\CheckBearerToken;
 // 
 use App\Models\About;
 use App\Models\Banner;
