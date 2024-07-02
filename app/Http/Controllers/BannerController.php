@@ -15,57 +15,54 @@ class BannerController extends Controller
 
     public function Upload(Request $request)
     {
-        $banner=BannerNew::where('Banner_No',$request->Banner_No)->first();
-        // return response()->json(['banner'=>$banner]);
+        $banner = BannerNew::where('Banner_No', $request->Banner_No)->first();
+
         $validator = Validator::make(
-            $request->all(),[
+            $request->all(), [
                 'Banner_No' => 'required|string',
-                'Banner_heading' => 'nullable|string',
+                'Banner_heading' => $banner ? 'nullable|string|max:25' : 'required|string|max:25',
+                'Banner_sub_heading' => $banner ? 'nullable|string|max:50' : 'required|string|max:50',
+                'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
                 'Banner_image' => $banner ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             ]);
 
-            if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $data = $validator->validated();
+
+            if (!$banner && BannerNew::count() >= 3) {
                 return response()->json([
-                    'errors' => $validator->errors()
-                ], 422);
+                    'message' => 'Cannot create more than 3 banners'
+                ], 400);
             }
 
-            try {
-                //code...
-                $data=$validator->validated();
-
-
-                // $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
-
-                // $data['Banner_image']=$uploadedFileUrl;
-                // // Create banner record
-
-                if ($request->hasFile('Banner_image')) {
-                    $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
-                    $data['Banner_image'] = $uploadedFileUrl;
-                }
-
-                // $banner= BannerNew::where('Banner_No',$request->Banner_No)->first();
-
-                if($banner)
-                {
-                    $banner->update($data);
-                    return response()->json(['message' => 'Banner updated'], 201);
-                }else{
-                    $data['Banner_heading'] = $request->input('Banner_heading', 'null');
-
-                    BannerNew::create($data);
-                    return response()->json(['message' => 'Banner created'], 201);
-                }
-            }catch (\Exception $e) {
-                // Return a custom error response in case of an exception
-                return response()->json([
-                    'message' => 'An error occurred while Adding or Updating Section',
-                    'error' => $e->getMessage()
-                ], 500);
+            if ($request->hasFile('Banner_image')) {
+                $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
+                $data['Banner_image'] = $uploadedFileUrl;
             }
 
+            if($banner)
+            {
+                
+                $banner->update($data);
+                return response()->json(['message' => 'Banner updated'], 201);
+            }else {
+                BannerNew::create($data);
+                return response()->json(['message' => 'Banner created'], 201);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while Adding or Updating Section',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     public function showUpload()
     {
@@ -83,4 +80,18 @@ class BannerController extends Controller
 
 
 
- 
+// use Illuminate\Database\Schema\Blueprint;
+// use Illuminate\Support\Facades\Schema;
+
+// class AddSubTextAndButtonTextToBannerNewTable extends Migration
+// {
+//     /**
+//      * Run the migrations.
+//      *
+//      * @return void
+//      */
+//     public function up()
+//     {
+//         Schema::table('banner_new', function (Blueprint $table) {
+//             $table->string('sub_text')->nullable()->after('column_name'); // Replace 'column_name' with the name of the column after
+// iem-xnrj-hhb

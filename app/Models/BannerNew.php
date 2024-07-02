@@ -11,7 +11,9 @@ class BannerNew extends Model
     protected $fillable=[
         'Banner_No',
         'Banner_heading',
-        'Banner_image'
+        'Banner_image',
+        'Banner_sub_heading',
+        'Banner_button_text'
     ];
 /**
     * Format the date when serializing the model.
