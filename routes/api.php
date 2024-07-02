@@ -94,10 +94,7 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
    Route::post('/addJob',[JobPostingController::class,'AddJob']);
    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);
-   Route::get('/job',[JobPostingController::class,'showJob']);
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
-
-
 });
 
 Route::middleware(['auth:api','role:user'])->group(function () {
@@ -125,3 +122,4 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
 
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
+Route::get('/showJobs',[JobPostingController::class,'showJob']);
