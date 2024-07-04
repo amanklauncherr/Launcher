@@ -48,7 +48,6 @@ class BannerController extends Controller
 
             if($banner)
             {
-                
                 $banner->update($data);
                 return response()->json(['message' => 'Banner updated'], 201);
             }else {

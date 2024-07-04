@@ -17,9 +17,9 @@ class Sections extends Controller
        
         $validator = Validator::make(
             $request->all(),[
-                'section' => 'required|string',
+                'section' => 'required|string|uniques:sections',
                 'heading' => $sectionExists ? 'nullable|string' : 'required|string',
-                'sub-heading' => 'sometimes|required|string',
+                'sub-heading' => $sectionExists ? 'nullable|string' : 'required|string',
             ]);
 
             if ($validator->fails()) {
@@ -56,12 +56,31 @@ class Sections extends Controller
 
     public function showSection()
     {
-        $sections = Section::all();
 
-        if ($sections) {
-            return response()->json($sections, 200);
-        } else {
-            return response()->json(['message' => 'No terms and conditions found'], 404);
+        try {
+            // Fetch all sections
+            $sections = Section::all();
+    
+            // Check if sections exist
+            if ($sections->isEmpty()) {
+                return response()->json(['message' => 'No sections found'], 404);
+            }
+    
+            $sectionsArray = [];
+            foreach ($sections as $section) {
+                $sectionsArray[$section->section] = [
+                    'heading' => $section->heading,
+                    'sub-heading' => $section->sub_heading,
+                ];
+            }
+    
+            return response()->json($sectionsArray, 200);    
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while fetching sections',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

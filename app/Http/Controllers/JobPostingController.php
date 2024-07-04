@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\EmployerProfile;
 use App\Models\JobPosting;
+use App\Models\Section;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,7 @@ class JobPostingController extends Controller
     public function showJob()
     {
         $jobs = JobPosting::with(['user.employerProfile'])->get();
+        // $sectionGig = Section::where('section','Gigs')->get();
         // $employer=EmployerProfile::get();
 
         if($jobs->isEmpty())
@@ -43,8 +45,8 @@ class JobPostingController extends Controller
             return response()->json(['error'=>'Nothing in Gigs List'],404);
         }
         $jobsArray = $jobs->toArray();
-        $newJobsArray = array_map(function($job) {
-          
+
+        $newJobsArray = array_map(function($job){       
             return [
                 'user_id' => $job['user_id'],
                 'gigs_title' => $job['title'],
@@ -74,6 +76,7 @@ class JobPostingController extends Controller
           'duration' => 'required|integer',
           'active' => 'boolean',
           'verified' => 'boolean',  
+          'location' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -83,7 +86,7 @@ class JobPostingController extends Controller
             //code...
             $user = Auth::user();
 
-            $jobData = $request->only(['title', 'description', 'duration', 'active', 'verified']);
+            $jobData = $request->only(['title', 'description', 'duration', 'active', 'verified','location']);
             if (!isset($jobData['active'])) {
                 $jobData['active'] = false;
             }
@@ -98,6 +101,7 @@ class JobPostingController extends Controller
                 'duration' => $jobData['duration'],
                 'active' => $jobData['active'],
                 'verified' => $jobData['verified'],
+                'location' => $jobData['location'],
             ]);
             return response()->json($newEmployer, 201);
         } catch (\Exception $e) {

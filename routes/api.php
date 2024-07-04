@@ -59,6 +59,7 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
 
 
 Route::middleware(['auth:api','role:admin'])->group(function () {
+
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
 
     // t and c
