@@ -16,6 +16,8 @@ use App\Http\Controllers\EmployerGigController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\QuizResponseController;
+use App\Http\Controllers\NewsLetterController;
 // use App\Http\Middleware\CheckBearerToken;
 // 
 use App\Models\About;
@@ -104,6 +106,14 @@ Route::middleware(['auth:api','role:user'])->group(function () {
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
 
 });
+
+Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
+
+Route::get('/ShowQuiz',[QuizResponseController::class,'ShowQuiz']);
+
+Route::post('/AddEmail',[NewsLetterController::class,'AddEmail']);
+
+Route::get('/ShowEmail',[NewsLetterController::class,'ShowEmail']);
 
 Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
 
