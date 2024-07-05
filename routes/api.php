@@ -12,12 +12,13 @@ use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\EmployerGigController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\QuizResponseController;
 use App\Http\Controllers\NewsLetterController;
+use App\Http\Controllers\CitesController;
+
 // use App\Http\Middleware\CheckBearerToken;
 // 
 use App\Models\About;
@@ -137,3 +138,5 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 Route::get('/showJobs',[JobPostingController::class,'showJob']);
 
 Route::get('/searchJob',[JobPostingController::class,'searchJob']);
+
+Route::get('/cities',[CitesController::class,'Cites']);
