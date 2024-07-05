@@ -18,7 +18,7 @@ class CompanyDetailController extends Controller
         $validator = Validator::make($request->all(), [
             'company_name' => $companyDetails ? 'nullable:string':'required|string',
             'company_address' => $companyDetails ? 'nullable:string':'required|string',
-            'company_email' => $companyDetails ? 'nullable:string':'required|string',
+            'company_email' => $companyDetails ? 'nullable:email':'required|email',
             'company_contact' => $companyDetails ? 'nullable:string':'required|string',
             'company_timing' => $companyDetails ? 'nullable:string':'required|string',
         ]);

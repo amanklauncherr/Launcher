@@ -121,6 +121,7 @@ Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
 Route::get('/Show-Banner',[BannerController::class,'showUpload']);
 
 Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);
+
 Route::get('/Apply-Coupon',[CouponController::class,'applyCoupon']);
 
 Route::get('/term-conditions',[TermsConditionsController::class,'show']);
