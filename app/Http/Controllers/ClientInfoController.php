@@ -15,7 +15,7 @@ class ClientInfoController extends Controller
     //
     public function addClient(Request $request){
         $validator = Validator::make($request->all(), [
-            'url' => 'nullable|url',
+            'url' => 'nullable|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 
@@ -56,7 +56,7 @@ class ClientInfoController extends Controller
 
      public function updateClient(Request $request,$id){
         $validator=Validator::make($request->all(),[
-            'url' => 'nullable|url',
+            'url' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
 

@@ -54,8 +54,7 @@ class JobPostingController extends Controller
                 'gigs_duration' => $job['duration'],
                 'isActive' => $job['active'],
                 'isVerified' => $job['verified'],
-                'company_name' => $job['user']['employer_profile']['company_name'] ?? 'By Launcherr',
-                'gigs_location' => $job['location'],
+                'company_name' => $job['user']['employer_profile']['company_name'] ?? 'By Launcherr'
             ];
         }, $jobsArray);
         return response()->json(['gigs'=>$newJobsArray],200);

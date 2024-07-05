@@ -19,7 +19,7 @@ class AboutController extends Controller
        $validator=Validator::make($request->all(),[
             'heading' => $about ? 'nullable|string' : 'required|string',
             'content' => $about ? 'nullable|string' : 'required|string',        
-            'url' =>  $about ? 'nullable|url' : 'required|url',
+            'url' =>  $about ? 'nullable|url' : 'required|url'
         ]);
 
         if($validator->fails())
