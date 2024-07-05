@@ -136,3 +136,4 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
 Route::get('/showJobs',[JobPostingController::class,'showJob']);
 
+Route::get('/searchJob',[JobPostingController::class,'searchJob']);

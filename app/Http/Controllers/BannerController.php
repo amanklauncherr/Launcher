@@ -17,21 +17,21 @@ class BannerController extends Controller
     {
         $banner = BannerNew::where('Banner_No', $request->Banner_No)->first();
 
-        $validator = Validator::make(
-            $request->all(), [
-                'Banner_No' => 'required|string',
-                'Banner_heading' => $banner ? 'nullable|string|max:25' : 'required|string|max:25',
-                'Banner_sub_heading' => $banner ? 'nullable|string|max:50' : 'required|string|max:50',
-                'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
-                'Banner_image' => $banner ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11' : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11',
-            ]);
-
+        $validator = Validator::make($request->all(), [
+            'Banner_No' => 'required|string',
+            'Banner_heading' => $banner ? 'nullable|string|max:25' : 'required|string|max:25',
+            'Banner_sub_heading' => $banner ? 'nullable|string|max:50' : 'required|string|max:50',
+            'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
+            'Banner_image' => $banner 
+                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11' 
+                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11',
+        ]);
+        
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
             ], 422);
         }
-
         try {
             $data = $validator->validated();
 

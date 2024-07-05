@@ -70,7 +70,7 @@ class Sections extends Controller
             foreach ($sections as $section) {
                 $sectionsArray[$section->section] = [
                     'heading' => $section->heading,
-                    'sub-heading' => $section->sub_heading,
+                    'sub-heading' => $section->{'sub-heading'} == null ? "" : $section->{'sub-heading'} 
                 ];
             }
     

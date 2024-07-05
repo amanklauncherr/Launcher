@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "5160ad98-13a8-41d7-b677-10db008d3f1c",
+		"_postman_id": "f05d9dc3-6b96-41f6-bebc-5a6733a9e430",
 		"name": "Laravel Launcher",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29611540"
+		"_exporter_id": "29611540",
+		"_collection_link": "https://mmr777.postman.co/workspace/Team-Workspace~0737c42f-24d1-4f2f-8f16-300d5e5d2eb0/collection/29611540-f05d9dc3-6b96-41f6-bebc-5a6733a9e430?action=share&source=collection_link&creator=29611540"
 	},
 	"item": [
 		{
@@ -1100,6 +1101,72 @@
 			"response": []
 		},
 		{
+			"name": "userRegister",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Testing User\",\r\n       \"email\":\"info@TestingUser.co\",\r\n       \"password\":\"Testing@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/userRegister",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"userRegister"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userLogin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"email\":\"info@TestingUser.co\",\r\n       \"password\":\"Testing@321\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/auth/userLogin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"auth",
+						"userLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "addUserProfile",
 			"request": {
 				"auth": {
@@ -1175,72 +1242,6 @@
 			"response": []
 		},
 		{
-			"name": "userRegister",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Testing User\",\r\n       \"email\":\"info@TestingUser.co\",\r\n       \"password\":\"Testing@123\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/userRegister",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"auth",
-						"userRegister"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "userLogin",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n        \"email\":\"info@TestingUser.co\",\r\n       \"password\":\"Testing@321\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/auth/userLogin",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"auth",
-						"userLogin"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "userPasswordUpdate",
 			"request": {
 				"auth": {
@@ -1277,6 +1278,116 @@
 					"path": [
 						"api",
 						"userPasswordUpdate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \r\n    \"email\":\"jagdish@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/AddEmail",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"AddEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowEmail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ShowEmail",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ShowEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddQuizResponse",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Jagdish\",\r\n    \"email\":\"jagidh@gmail.com\",\r\n    \"phone\":\"9334452344\",\r\n    \"answer1\":\"Everything is oky\",\r\n    \"answer2\":\"Hello ji\",\r\n    \"answer3\":\"hi how are you\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/AddQuiz",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"AddQuiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowQuizResponse",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ShowQuiz",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ShowQuiz"
 					]
 				}
 			},

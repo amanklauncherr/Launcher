@@ -160,4 +160,50 @@ class JobPostingController extends Controller
         }
     }
 
+    public function searchJob(Request $request){
+        $validator = Validator::make($request->all(), [
+            'location' => 'nullable|string',
+            'duration' => 'nullable|integer',
+            'isVerified' => 'nullable|boolean',
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+    
+        // Initialize query builder for JobPosting model
+        $query = JobPosting::query();
+    
+        // Apply filters based on JSON payload
+        if ($request->has('location')) {
+            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        }
+    
+        if ($request->has('duration')) {
+            $query->where('duration', 'like', '%' . $request->input('duration') . '%');
+        }
+    
+        if ($request->has('isVerified')) {
+            $query->where('verified', $request->input('isVerified'));
+        }
+
+        // else{
+        //     return response()->json(['message'=>'No Gig Found'],404);
+        // }
+        // Execute the query and fetch results
+        $searchResults = $query->get();
+
+        if($searchResults->isEmpty())
+        {
+            return response()->json(['message'=>'No Gig Found'],404);
+        }
+        // Return JSON response with search results
+        return response()->json(['jobs' => $searchResults]);
+    }
+
 }
+
+// error:{
+//     email is required , phone no. is required
+// }
