@@ -20,12 +20,7 @@ class CitesController extends Controller
             $cityArray[] = $city->city;
         }
         
-        // $city = $cities;
-        // if($city->isEmpty())
-        // {
-        //     return response()->json(['Message' => 'No Cities Found',404]);
-        // }
-
+        sort($cityArray);
         return response()->json($cityArray,200);
     }   
 }

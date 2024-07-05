@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\EmployerProfile;
 use App\Models\JobPosting;
-use App\Models\Section;
-use App\Models\User;
+// use App\Models\Section;
+// use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -160,50 +160,68 @@ class JobPostingController extends Controller
         }
     }
 
-    public function searchJob(Request $request){
-        $validator = Validator::make($request->all(), [
-            'location' => 'nullable|string',
-            'duration' => 'nullable|integer',
-            'isVerified' => 'nullable|boolean',
-        ]);
+    public function searchJob(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'location' => 'nullable|string',
+                'duration' => 'nullable|integer',
+                'isVerified' => 'nullable|boolean',
+            ]);
     
-        // Check if validation fails
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
     
-        // Initialize query builder for JobPosting model
-        $query = JobPosting::query();
+            // Initialize query builder for JobPosting model with eager loading
+            $query = JobPosting::with(['user.employerProfile']);
     
-        // Apply filters based on JSON payload
-        if ($request->has('location')) {
-            $query->where('location', 'like', '%' . $request->input('location') . '%');
-        }
+            // Apply filters based on JSON payload
+            if ($request->has('location')) {
+                $query->where('location', 'like', '%' . $request->input('location') . '%');
+            }
     
-        if ($request->has('duration')) {
-            $query->where('duration', 'like', '%' . $request->input('duration') . '%');
-        }
+            if ($request->has('duration')) {
+                $duration = $request->input('duration');
+                if ($duration == 1) {
+                    $query->where('duration', $duration);
+                } else {
+                    $query->where('duration', '<=', $duration);
+                }
+            }
     
-        if ($request->has('isVerified')) {
-            $query->where('verified', $request->input('isVerified'));
+            if ($request->has('isVerified')) {
+                $query->where('verified', $request->input('isVerified'));
+            }
+    
+            $searchResults = $query->get();
+    
+            // Return JSON response with search results
+            $jobsArray = $searchResults->toArray();
+    
+            $newJobsArray = array_map(function($job) {
+                return [
+                    'user_id' => $job['user_id'],
+                    'gigs_title' => $job['title'],
+                    'gigs_description' => $job['description'],
+                    'gigs_duration' => $job['duration'],
+                    'isActive' => $job['active'],
+                    'isVerified' => $job['verified'],
+                    'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
+                    'gigs_location' => $job['location'],
+                ];
+            }, $jobsArray);
+    
+            return response()->json(['job' => $newJobsArray], 200);
+        }  catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'message' => 'An error occurred while Adding or Updating About info',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
-        // else{
-        //     return response()->json(['message'=>'No Gig Found'],404);
-        // }
-        // Execute the query and fetch results
-        $searchResults = $query->get();
-
-        if($searchResults->isEmpty())
-        {
-            return response()->json(['message'=>'No Gig Found'],404);
-        }
-        // Return JSON response with search results
-        return response()->json(['jobs' => $searchResults]);
     }
 
 }
-
-// error:{
-//     email is required , phone no. is required
-// }
