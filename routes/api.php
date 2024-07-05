@@ -18,6 +18,7 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\QuizResponseController;
 use App\Http\Controllers\NewsLetterController;
 use App\Http\Controllers\CitesController;
+use App\Http\Controllers\EnquiryController;
 
 // use App\Http\Middleware\CheckBearerToken;
 // 
@@ -106,8 +107,12 @@ Route::middleware(['auth:api','role:user'])->group(function () {
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
+    Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
+    Route::get('/searchJob',[JobPostingController::class,'searchJob']);
 
 });
+Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
+
 
 Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
 
@@ -137,6 +142,5 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
 Route::get('/showJobs',[JobPostingController::class,'showJob']);
 
-Route::get('/searchJob',[JobPostingController::class,'searchJob']);
 
 Route::get('/cities',[CitesController::class,'Cites']);
