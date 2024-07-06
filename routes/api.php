@@ -19,6 +19,7 @@ use App\Http\Controllers\QuizResponseController;
 use App\Http\Controllers\NewsLetterController;
 use App\Http\Controllers\CitesController;
 use App\Http\Controllers\EnquiryController;
+use App\Http\Controllers\CardController;
 
 // use App\Http\Middleware\CheckBearerToken;
 // 
@@ -100,6 +101,10 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);
    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
+   
+   // Card
+   Route::post('/addCard',[CardController::class,'addCard']);
+
 });
 
 Route::middleware(['auth:api','role:user'])->group(function () {
@@ -111,8 +116,8 @@ Route::middleware(['auth:api','role:user'])->group(function () {
     Route::get('/searchJob',[JobPostingController::class,'searchJob']);
 
 });
-Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
+Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
 Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
 

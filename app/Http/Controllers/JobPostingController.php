@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\EmployerProfile;
 use App\Models\JobPosting;
-// use App\Models\Section;
+use App\Models\Enquiry;
 // use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -146,8 +146,8 @@ class JobPostingController extends Controller
             $job->verified = !$job->verified;
     
             $job->save();
-            
-                return response()->json(["job" => $job], 201);
+
+            return response()->json(["job" => $job], 201);
         } catch (ModelNotFoundException $e) {
             // Return a response if the record was not found
             return response()->json(['message' => 'Record not found'], 404);
@@ -168,16 +168,25 @@ class JobPostingController extends Controller
                 'duration' => 'nullable|integer',
                 'isVerified' => 'nullable|boolean',
             ]);
+
     
             // Check if validation fails
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
-    
-            // Initialize query builder for JobPosting model with eager loading
+
+            $user=Auth::user();
+
+            $gigEnquiry=Enquiry::where('userID',$user->id)->get();
+
+            $gigList=[];
+
+            $gigList = $gigEnquiry->pluck('gigID')->toArray();
+
+            // return response()->json($gigList);
+
             $query = JobPosting::with(['user.employerProfile']);
     
-            // Apply filters based on JSON payload
             if ($request->has('location')) {
                 $query->where('location', 'like', '%' . $request->input('location') . '%');
             }
@@ -200,7 +209,9 @@ class JobPostingController extends Controller
             // Return JSON response with search results
             $jobsArray = $searchResults->toArray();
     
-            $newJobsArray = array_map(function($job) {
+            $newJobsArray = array_map(function($job) use($gigList){
+                $isApplied = in_array($job['id'], $gigList); // Check if gigID exists in $gigList
+
                 return [
                     'user_id' => $job['user_id'],
                     'gigs_title' => $job['title'],
@@ -210,6 +221,7 @@ class JobPostingController extends Controller
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
                     'gigs_location' => $job['location'],
+                    'isApplied' => $isApplied ? true : false, // Assign isApplied based on existence in $gigList
                 ];
             }, $jobsArray);
     
