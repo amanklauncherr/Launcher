@@ -107,14 +107,13 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
 
 });
 
-Route::middleware(['auth:api','role:user'])->group(function () {
+Route::middleware(['publictokenOrauth'])->group(function () {
     //    userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
     Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
     Route::get('/searchJob',[JobPostingController::class,'searchJob']);
-
 });
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);

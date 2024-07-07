@@ -26,14 +26,6 @@ class JobPostingController extends Controller
         return response()->json(['job'=>$job],200);
     }
 
-// {
-//     "gigs_type": "Freelance",
-//     "gigs_about": "Travel Writer",
-//     "company_name": "CODEEDGE",
-//     "isVerified": true,
-//     "gigs_description": "Calling all wordsmiths with a love for exploration! We're looking for freelance travel writers to craft engaging articles, destination guides, and travel narratives. Share your unique perspective and inspire readers to embark on their own adventures."
-// },
-
     public function showJob()
     {
         $jobs = JobPosting::with(['user.employerProfile'])->get();
@@ -175,16 +167,16 @@ class JobPostingController extends Controller
                 return response()->json(['errors' => $validator->errors()], 422);
             }
 
-            $user=Auth::user();
-
-            $gigEnquiry=Enquiry::where('userID',$user->id)->get();
-
-            $gigList=[];
-
-            $gigList = $gigEnquiry->pluck('gigID')->toArray();
-
-            // return response()->json($gigList);
-
+            $tokenType = $request->attributes->get('token_type');
+            $user = $request->attributes->get('user');
+            $gigList = [];
+    
+            if ($tokenType === 'user' && $user) {
+                // If user is authenticated, get their gig enquiries
+                $gigEnquiry = Enquiry::where('userID', $user->id)->get();
+                $gigList = $gigEnquiry->pluck('gigID')->toArray();
+            }
+    
             $query = JobPosting::with(['user.employerProfile']);
     
             if ($request->has('location')) {
@@ -206,12 +198,11 @@ class JobPostingController extends Controller
     
             $searchResults = $query->get();
     
-            // Return JSON response with search results
             $jobsArray = $searchResults->toArray();
     
-            $newJobsArray = array_map(function($job) use($gigList){
-                $isApplied = in_array($job['id'], $gigList); // Check if gigID exists in $gigList
-
+            $newJobsArray = array_map(function ($job) use ($gigList, $tokenType) {
+                $isApplied = in_array($job['id'], $gigList);
+    
                 return [
                     'user_id' => $job['user_id'],
                     'gigs_title' => $job['title'],
@@ -221,11 +212,14 @@ class JobPostingController extends Controller
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
                     'gigs_location' => $job['location'],
-                    'isApplied' => $isApplied ? true : false, // Assign isApplied based on existence in $gigList
+                    'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
                 ];
             }, $jobsArray);
     
-            return response()->json(['job' => $newJobsArray], 200);
+            return response()->json(['job' => $newJobsArray], 200);        
+                        
+                        // return response()->json(['data' => 'This is user data', 'user' => $user]);
+
         }  catch (\Exception $e) {
             //throw $th;
             return response()->json([
@@ -233,7 +227,29 @@ class JobPostingController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
 
+
 }
+
+
+// namespace App\Http\Controllers;
+
+// use Illuminate\Http\Request;
+
+// class DataController extends Controller
+// {
+//     public function getData(Request $request)
+//     {
+//         $tokenType = $request->attributes->get('token_type');
+
+//         if ($tokenType === 'public') {
+//             return response()->json(['data' => 'This is public data']);
+//         } elseif ($tokenType === 'user') {
+//             $user = $request->attributes->get('user');
+//             return response()->json(['data' => 'This is user data', 'user' => $user]);
+//         }
+
+//         return response()->json(['error' => 'Unauthorized'], 401);
+//     }
+// }

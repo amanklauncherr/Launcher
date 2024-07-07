@@ -35,15 +35,9 @@ class AboutController extends Controller
     
             if($about){
                 $about->update($data);
-                // $about->created_at = $about->created_at->format('Y-m-d');
-                // $about->updated_at = $about->updated_at->format('Y-m-d');
                 return response()->json(['message' => 'About updated','About'=>$about], 201);
             }else{
                 $aboutCreated=About::create($data);
-        
-                // $aboutCreated->created_at = $aboutCreated->created_at->format('Y-m-d');
-                // $aboutCreated->updated_at = $aboutCreated->updated_at->format('Y-m-d');
-        
                 return response()->json(['message' => 'About Created','About'=>$aboutCreated], 201);
             }
         } catch (\Exception $e) {
@@ -65,8 +59,6 @@ class AboutController extends Controller
             "https://res.cloudinary.com/douuxmaix/image/upload/v1720289812/m7pzdvuezcuetbrzqlek.png",
             "https://res.cloudinary.com/douuxmaix/image/upload/v1720289779/vz2x9n2ualplwvlg0f9m.png",
             "https://res.cloudinary.com/douuxmaix/image/upload/v1720289651/jvmktrilyvzbl37mucxd.png",
-
-
         ];
 
 
