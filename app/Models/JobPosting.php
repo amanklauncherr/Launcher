@@ -38,6 +38,11 @@ class JobPosting extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function enquiries()
+    {
+        return $this->hasMany(Enquiry::class, 'gigID', 'id');
+    }   
+
     // public function employer()
     // {
     //     return $this->belongsTo(EmployerProfile::class);

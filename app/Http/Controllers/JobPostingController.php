@@ -231,25 +231,3 @@ class JobPostingController extends Controller
 
 
 }
-
-
-// namespace App\Http\Controllers;
-
-// use Illuminate\Http\Request;
-
-// class DataController extends Controller
-// {
-//     public function getData(Request $request)
-//     {
-//         $tokenType = $request->attributes->get('token_type');
-
-//         if ($tokenType === 'public') {
-//             return response()->json(['data' => 'This is public data']);
-//         } elseif ($tokenType === 'user') {
-//             $user = $request->attributes->get('user');
-//             return response()->json(['data' => 'This is user data', 'user' => $user]);
-//         }
-
-//         return response()->json(['error' => 'Unauthorized'], 401);
-//     }
-// }
