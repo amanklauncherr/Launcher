@@ -47,6 +47,16 @@ class User extends Authenticatable implements JWTSubject
        return $this->hasOne(EmployerProfile::class);
     }
 
+    public function enquiries()
+    {
+        return $this->hasMany(Enquiry::class, 'userID', 'id');
+    }
+
+    public function userProfile()
+    {
+        return $this->hasOne(UserProfile::class, 'user_id', 'id');
+    }
+
     /**
      * The attributes that should be cast.
      *

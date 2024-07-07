@@ -24,5 +24,7 @@ class Enquiry extends Model
     {
         return $this->belongsTo(JobPosting::class, 'gigID', 'id');
     }
+
+    
     
 }
