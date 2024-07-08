@@ -113,7 +113,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
     Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
-    Route::get('/searchJob',[JobPostingController::class,'searchJob']);
+    Route::post('/searchJob',[JobPostingController::class,'searchJob']);
 });
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
