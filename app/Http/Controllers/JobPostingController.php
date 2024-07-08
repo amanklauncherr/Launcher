@@ -155,13 +155,14 @@ class JobPostingController extends Controller
     public function searchJob(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $params=$request->all();
+
+            $validator = Validator::make($params, [
                 'location' => 'nullable|string',
                 'duration' => 'nullable|integer',
                 'isVerified' => 'nullable|boolean',
             ]);
 
-    
             // Check if validation fails
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
@@ -181,12 +182,12 @@ class JobPostingController extends Controller
     
             $query = JobPosting::with(['user.employerProfile']);
     
-            if ($request->has('location')) {
-                $query->where('location', 'like', '%' . $request->input('location') . '%');
+            if (!empty($params['location'])) {
+                $query->where('location', 'like', '%' . $params['location'] . '%');
             }
     
-            if ($request->has('duration')) {
-                $duration = $request->input('duration');
+            if (!empty($params['duration'])) {
+                $duration = $params['duration'];
                 if ($duration == 1) {
                     $query->where('duration', $duration);
                 } else {
@@ -194,8 +195,8 @@ class JobPostingController extends Controller
                 }
             }
     
-            if ($request->has('isVerified')) {
-                $query->where('verified', $request->input('isVerified'));
+            if (isset($params['isVerified'])) {
+                $query->where('verified', $params['isVerified']);
             }
     
             $searchResults = $query->get();
