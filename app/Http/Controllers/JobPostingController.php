@@ -207,7 +207,8 @@ class JobPostingController extends Controller
                 $isApplied = in_array($job['id'], $gigList);
     
                 return [
-                    'user_id' => $job['user_id'],
+                    // 'user_id' => $job['user_id'],
+                    'gig_id' => $job['id'],
                     'gigs_title' => $job['title'],
                     'gigs_description' => $job['description'],
                     'gigs_duration' => $job['duration'],
