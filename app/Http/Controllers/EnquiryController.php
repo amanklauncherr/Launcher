@@ -15,7 +15,6 @@ class EnquiryController extends Controller
     //
     public function AddEnquiry(Request $request)
     {
-
         $tokenType = $request->attributes->get('token_type');
 
         if ($tokenType === 'public') {

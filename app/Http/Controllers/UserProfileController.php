@@ -187,9 +187,14 @@ class UserProfileController extends Controller
         try {
             //code...
             $credentials = $request->only('old_password', 'new_password','confirm_new_password');
-            $user = Auth::user();
 
+            $tokenType = $request->attributes->get('token_type');
+            if ($tokenType === 'public') {
+                return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Add Enquiry']);
+            } elseif ($tokenType === 'user') {
+                // $user = Auth::user();
 
+            $user = $request->attributes->get('user');
             if(!Hash::check($credentials['old_password'],$user->password)){
                 return response()->json(['error' => 'Old Password does not match'], 401);
             }
@@ -202,6 +207,11 @@ class UserProfileController extends Controller
             $user->save();
 
             return response()->json(['message' => 'Password Updated Succcessfully'], 201);
+            }
+
+            return response()->json(['error' => 'Unauthorized'], 401);
+
+
         } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
@@ -213,66 +223,83 @@ class UserProfileController extends Controller
 
     public function AddUserProfile(Request $request)
     {
-        $user = Auth::user();
-        $userProfile= UserProfile::where('user_id',$user->id)->first();
-        $validator = Validator::make($request->all(), [
-            'user_Name'  => 'required|string',
-            'user_Number' => $userProfile ? 'required|integer' : 'required|integer|unique:user_profiles',
-            'user_Address' => 'required|string',
-            'user_City' => 'required|string',
-            'user_State' => 'required|string',
-            'user_Country' => 'required|string',
-            'user_PinCode' => 'required|string',
-            'user_AboutMe' => 'required|string',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        $tokenType = $request->attributes->get('token_type');
+
+        if ($tokenType === 'public') {
+            return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Update Your Profile']);
         }
-    
-        try {
+        elseif ($tokenType === 'user'){
             // $user = Auth::user();
-            $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);
-
-            // $userProfile= UserProfile::where('user_id',$user->id)->first();
-             
-            if($userProfile)
-            {
-
-                $user->name = $request->user_Name;
-                $userProfile->update($profile);
-                $user->save();
-
-                return response()->json(['message' => 'Profile updated successfully', 'profile' => $userProfile,'user'=>$user], 201);
+            $user = $request->attributes->get('user');
+            $userProfile= UserProfile::where('user_id',$user->id)->first();
+            $validator = Validator::make($request->all(), [
+                'user_Name'  => 'required|string',
+                'user_Number' => $userProfile ? 'required|integer' : 'required|integer|unique:user_profiles',
+                'user_Address' => 'required|string',
+                'user_City' => 'required|string',
+                'user_State' => 'required|string',
+                'user_Country' => 'required|string',
+                'user_PinCode' => 'required|string',
+                'user_AboutMe' => 'required|string',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
             }
-            else{
-                $userProfile = UserProfile::create([
-                    'user_id' => $user->id,
-                    'user_Number' => $profile['user_Number'],
-                    'user_Address' => $profile['user_Address'],
-                    'user_City' => $profile['user_City'],
-                    'user_State' => $profile['user_State'],
-                    'user_Country' => $profile['user_Country'],
-                    'user_PinCode' => $profile['user_PinCode'],
-                    'user_AboutMe' => $profile['user_AboutMe']
-                ]);
-                return response()->json(['message' => 'Profile created successfully', 'profile' => $userProfile], 201);
+        
+            try {
+                // $user = Auth::user();
+                $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);
+    
+                // $userProfile= UserProfile::where('user_id',$user->id)->first();
+                 
+                if($userProfile)
+                {
+    
+                    $user->name = $request->user_Name;
+                    $userProfile->update($profile);
+                    $user->save();
+    
+                    return response()->json(['message' => 'Profile updated successfully', 'profile' => $userProfile,'user'=>$user], 201);
+                }
+                else{
+                    $userProfile = UserProfile::create([
+                        'user_id' => $user->id,
+                        'user_Number' => $profile['user_Number'],
+                        'user_Address' => $profile['user_Address'],
+                        'user_City' => $profile['user_City'],
+                        'user_State' => $profile['user_State'],
+                        'user_Country' => $profile['user_Country'],
+                        'user_PinCode' => $profile['user_PinCode'],
+                        'user_AboutMe' => $profile['user_AboutMe']
+                    ]);
+                    return response()->json(['message' => 'Profile created successfully', 'profile' => $userProfile], 201);
+                }
+    
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'An error occurred while Creating User Profile',
+                    'error' => $e->getMessage()
+                ], 500);
             }
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while Creating User Profile',
-                'error' => $e->getMessage()
-            ], 500);
         }
+        return response()->json(['error' => 'Unauthorized'], 401);
+
     }
 
-    public function showUserProfile()
+    public function showUserProfile(Request $request)
     {
         try {
             //code...
+            
+        $tokenType = $request->attributes->get('token_type');
 
-            $user=Auth::user();
+        if ($tokenType === 'public') {
+            return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Update Your Profile']);
+        }
+        elseif ($tokenType === 'user'){
+            // $user=Auth::user();
+            $user = $request->attributes->get('user');
             $id=$user->id;
             // return response()->json([$user->id]);
             $userProfile=UserProfile::where('user_id',$id)->first();
@@ -281,6 +308,8 @@ class UserProfileController extends Controller
                 return response()->json(['userprofile'=>$userProfile],200);
             }
             return response()->json(['No User Profile found'],404);
+        }
+        return response()->json(['error' => 'Unauthorized'], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while Creating User Profile',

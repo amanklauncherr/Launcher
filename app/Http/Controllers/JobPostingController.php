@@ -167,6 +167,8 @@ class JobPostingController extends Controller
                 return response()->json(['errors' => $validator->errors()], 422);
             }
 
+            // $user=Auth::user();
+
             $tokenType = $request->attributes->get('token_type');
             $user = $request->attributes->get('user');
             $gigList = [];
@@ -215,7 +217,11 @@ class JobPostingController extends Controller
                     'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
                 ];
             }, $jobsArray);
-    
+
+            if(!$newJobsArray)
+            {
+                return response()->json(['message'=>'No Job Found'], 200);                        
+            }    
             return response()->json(['job' => $newJobsArray], 200);        
                         
                         // return response()->json(['data' => 'This is user data', 'user' => $user]);
