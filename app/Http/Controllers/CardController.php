@@ -17,8 +17,8 @@ class CardController extends Controller
 
         $validator = Validator::make($request->all(), [
             'Card_No' => 'required|string',
-            'Card_Heading' => $card ? 'nullable|string|max:25' : 'required|string|max:25',
-            'Card_Subheading' => $card ? 'nullable|string|max:35' : 'required|string|max:35',
+            'Card_Heading' => $card ? 'nullable|string|max:50' : 'required|string|max:50',
+            'Card_Subheading' => $card ? 'nullable|string|max:135' : 'required|string|max:135',
         ]);
         
         if ($validator->fails()) {

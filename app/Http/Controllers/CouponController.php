@@ -91,8 +91,8 @@ class CouponController extends Controller
     public function updateCoupon(Request $request,$coupon_code)
     {
         $validator = Validator::make($request->all(),[
-            'coupon_places' => 'sometimes|required|array',
-            'discount' => 'sometimes|required|numeric|min:0'
+            'coupon_places' => 'nullable|array',
+            'discount' => 'nullable|numeric|min:0'
         ]);
 
         if ($validator->fails()) {

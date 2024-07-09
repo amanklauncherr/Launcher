@@ -18,8 +18,8 @@ class Sections extends Controller
         $validator = Validator::make(
             $request->all(),[
                 'section' => $sectionExists ? 'required|string' : 'required|string|unique:sections',
-                'heading' => $sectionExists ? 'nullable|string' : 'required|string',
-                'sub-heading' => $sectionExists ? 'nullable|string' : 'required|string',
+                'heading' => $sectionExists ? 'nullable|string' : 'required|string' ,
+                'sub-heading' => $sectionExists ? 'nullable|string|max:1500' : 'required|string|max:1500',
             ]);
 
             if ($validator->fails()) {
