@@ -20,7 +20,7 @@ use App\Http\Controllers\NewsLetterController;
 use App\Http\Controllers\CitesController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
-
+use App\Http\Controllers\EmployerController;
 // use App\Http\Middleware\CheckBearerToken;
 // 
 use App\Models\About;
@@ -99,6 +99,7 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
    Route::post('/addJob',[JobPostingController::class,'AddJob']);
    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);
+   Route::put('/updateBadge/{id}',[JobPostingController::class,'updateBadge']); 
    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
    
@@ -114,7 +115,11 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
     Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
     Route::get('/searchJob',[JobPostingController::class,'searchJob']);
+    Route::get('/showJob/{id}',[JobPostingController::class,'showJob']);
+
 });
+
+Route::put('/updateProfile',[EmployerController::class,'update']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
@@ -144,6 +149,5 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
 
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
-Route::get('/showJobs',[JobPostingController::class,'showJob']);
 
 Route::get('/cities',[CitesController::class,'Cites']);

@@ -152,6 +152,30 @@ class JobPostingController extends Controller
         }
     }
 
+    public function updateJobActive(Request $request,$id)
+    {
+        try {
+            //code...
+            $job=JobPosting::findOrFail($id);
+
+            $job->active = !$job->active;
+    
+            $job->save();
+            
+                return response()->json(["job" => $job], 201);
+        } catch (ModelNotFoundException $e) {
+            // Return a response if the record was not found
+            return response()->json(['message' => 'Record not found'], 404);
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            return response()->json([
+                'message' => 'An error occurred while updating active feild',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
 
     public function updateBadge(Request $request,$id)
     {
