@@ -26,31 +26,63 @@ class JobPostingController extends Controller
         return response()->json(['job'=>$job],200);
     }
 
-    public function showJob()
-    {
-        $jobs = JobPosting::with(['user.employerProfile'])->get();
-        // $sectionGig = Section::where('section','Gigs')->get();
-        // $employer=EmployerProfile::get();
+    // public function showJob(Request $request,$id)
+    // {        
+    //     try {
+ 
+    //         // Check if validation fails
+    //         // $user=Auth::user();
 
-        if($jobs->isEmpty())
-        {
-            return response()->json(['error'=>'Nothing in Gigs List'],404);
-        }
-        $jobsArray = $jobs->toArray();
+    //         $tokenType = $request->attributes->get('token_type');
+    //         $user = $request->attributes->get('user');
+    //         $gigList = [];
+    
+    //         if ($tokenType === 'user' && $user) {
+    //             // If user is authenticated, get their gig enquiries
+    //             $gigEnquiry = Enquiry::where('userID', $user->id)->get();
+    //             $gigList = $gigEnquiry->pluck('gigID')->toArray();
+    //         }
+    
+    //         $query = JobPosting::with(['user.employerProfile'])->where('id',$id)->get();
+    
+    //         // $searchResults = $query->get();
+    
+    //         // $jobsArray = $searchResults;
 
-        $newJobsArray = array_map(function($job){       
-            return [
-                'user_id' => $job['user_id'],
-                'gigs_title' => $job['title'],
-                'gigs_description' => $job['description'],
-                'gigs_duration' => $job['duration'],
-                'isActive' => $job['active'],
-                'isVerified' => $job['verified'],
-                'company_name' => $job['user']['employer_profile']['company_name'] ?? 'By Launcherr'
-            ];
-        }, $jobsArray);
-        return response()->json(['gigs'=>$newJobsArray],200);
-    }
+    //         return response()->json(['job' =>[
+    //             'user_id' => $query['user_id'],
+    //             'gig_id' => $query['id'],
+    //             'gigs_title' => $query['title'],
+    //             'gigs_description' => $query['description'],
+    //             'gigs_duration' => $query['duration'],
+    //             'isActive' => $query['active'],
+    //             'isVerified' => $query['verified'],
+    //             'company_name' => isset($query['user']['employer_profile']) ? $query['user']['employer_profile']['company_name'] : 'By Launcherr',
+    //             'gigs_location' => $query['location'],
+    //             'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
+    //     ]],200);
+               
+    //     //     return response()->json(['job' =>[
+    //     //         'user_id' => $job['user_id'],
+    //     //         'gig_id' => $job['id'],
+    //     //         'gigs_title' => $job['title'],
+    //     //         'gigs_description' => $job['description'],
+    //     //         'gigs_duration' => $job['duration'],
+    //     //         'isActive' => $job['active'],
+    //     //         'isVerified' => $job['verified'],
+    //     //         'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
+    //     //         'gigs_location' => $job['location'],
+    //     //         'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
+    //     // ] ], 200);        
+
+    //     }  catch (\Exception $e) {
+    //         //throw $th;
+    //         return response()->json([
+    //             'message' => 'An error occurred while Adding or Updating About info',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
     
     public function empProfile(Request $request,$user_id){
         $employer=EmployerProfile::where('user_id',$user_id)->first();
@@ -207,7 +239,8 @@ class JobPostingController extends Controller
                 $isApplied = in_array($job['id'], $gigList);
     
                 return [
-                    // 'user_id' => $job['user_id'],
+                    'user_id' => $job['user_id'],
+                    'company_image' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['image'] : 'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg',                    
                     'gig_id' => $job['id'],
                     'gigs_title' => $job['title'],
                     'gigs_description' => $job['description'],
@@ -225,8 +258,6 @@ class JobPostingController extends Controller
                 return response()->json(['message'=>'No Job Found'], 200);                        
             }    
             return response()->json(['job' => $newJobsArray], 200);        
-                        
-                        // return response()->json(['data' => 'This is user data', 'user' => $user]);
 
         }  catch (\Exception $e) {
             //throw $th;
