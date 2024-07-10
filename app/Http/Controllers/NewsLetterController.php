@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\SendQueuedMailable;
+use App\Mail\NewsletterSubscriptionConfirmation;
+// use App\Mail\SubscriptionConfirmation;
 use App\Http\Controllers\Controller;
 use App\Models\NewsLetter;
 use Illuminate\Http\Request;
@@ -21,21 +25,66 @@ class NewsLetterController extends Controller
                 'errors' => $validator->errors()
                 ], 422);
         }
+        // try {
+        //     //code...
+        //     $data=$validator->validated();
+
+        //     Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
+
+        //     // Check if the email was sent successfully
+        //     if (Mail::send(new NewsletterSubscriptionConfirmation()) instanceof SendQueuedMailable) {
+        //         // Email sent successfully
+        //         NewsLetter::create($data);
+        //         return response()->json(['message' => 'Email Added & Mail sent successfully'], 201);
+        //     } else {
+        //         // Failed to send email
+        //         return response()->json(['message' => 'Failed to send confirmation email'], 500);
+        //     }
+
+        //     // Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
+            
+        //     // $failedRecipients = Mail::failures();
+        //     // if ($failedRecipients->isEmpty()) {
+        //     //     return response()->json(['message' => 'Failed to send confirmation email','failuer'=>[$failedRecipients]], 500);
+        //     // }
+
+        //     // // $result=
+        //     // NewsLetter::create($data);
+        //     // // if(!$result)
+        //     // // {
+        //     // //     return response()->json(['message'=>'Email not saved'],400);
+        //     // // }
+        //     // return response()->json([
+        //     //     'message' => 'Email Added'
+        //     // ], 201);
+        // } catch (\Exception $e) {
+        //     //throw $th;
+        //     return response()->json([
+        //         'message' => 'An error occurred while Adding Email',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
         try {
-            //code...
-            $data=$validator->validated();
-            $result=NewsLetter::create($data);
-            if(!$result)
-            {
-                return response()->json(['message'=>'Email not saved'],400);
-            }
-                return response()->json([
-                    'message' => 'Email Added'], 201);
-        } catch (\Exception $e) {
-            //throw $th;
+            $data = $validator->validated();
+    
+            // Send confirmation email (using a try-catch block for potential exceptions)
+            $sent = Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
+
+            // if (!$sent) {
+            //     return response()->json([
+            //         'message' => 'Error sending confirmation email.',
+            //     ], 500);
+            // }
+            // // Save email address to database
+            NewsLetter::create($data);
+    
             return response()->json([
-                'message' => 'An error occurred while Adding or Updating About info',
-                'error' => $e->getMessage()
+                'message' => 'Email Added Successfully',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while Adding Email',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
