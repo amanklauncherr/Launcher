@@ -23,8 +23,8 @@ class BannerController extends Controller
             'Banner_sub_heading' => $banner ? 'nullable|string|max:50' : 'required|string|max:50',
             'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
             'Banner_image' => $banner 
-                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11' 
-                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=180/11',
+                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120' 
+                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120',
         ]);
         
         if ($validator->fails()) {
