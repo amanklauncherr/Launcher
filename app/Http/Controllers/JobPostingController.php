@@ -50,6 +50,7 @@ class JobPostingController extends Controller
             // $searchResults = $query->get();
     
             // $jobsArray = $searchResults;
+
             $isApplied = in_array($id, $gigList);
 
             return response()->json(['job' =>[
@@ -90,8 +91,9 @@ class JobPostingController extends Controller
           'description' => 'nullable|string',
           'duration' => 'required|integer',
           'active' => 'boolean',
-          'verified' => 'boolean',  
-          'location' => 'required|string'
+          'verified' => 'boolean',
+          'location' => 'required|string',
+          'badge' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -108,6 +110,9 @@ class JobPostingController extends Controller
             if (!isset($jobData['verified'])) {
                 $jobData['verified'] = false;
             }
+            if (!isset($jobData['badge'])) {
+                $jobData['badge'] = true;
+            }
 
             $newEmployer = JobPosting::create([
                 'user_id' => $user->id,
@@ -117,6 +122,7 @@ class JobPostingController extends Controller
                 'active' => $jobData['active'],
                 'verified' => $jobData['verified'],
                 'location' => $jobData['location'],
+                'badge' => $jobData['badge'],
             ]);
             return response()->json($newEmployer, 201);
         } catch (\Exception $e) {
@@ -152,29 +158,29 @@ class JobPostingController extends Controller
         }
     }
 
-    public function updateJobActive(Request $request,$id)
-    {
-        try {
-            //code...
-            $job=JobPosting::findOrFail($id);
+    // public function updateJobActive(Request $request,$id)
+    // {
+    //     try {
+    //         //code...
+    //         $job=JobPosting::findOrFail($id);
 
-            $job->active = !$job->active;
+    //         $job->active = !$job->active;
     
-            $job->save();
+    //         $job->save();
             
-                return response()->json(["job" => $job], 201);
-        } catch (ModelNotFoundException $e) {
-            // Return a response if the record was not found
-            return response()->json(['message' => 'Record not found'], 404);
-        } catch (\Exception $e) {
-            // Handle any other exceptions
-            return response()->json([
-                'message' => 'An error occurred while updating active feild',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    //             return response()->json(["job" => $job], 201);
+    //     } catch (ModelNotFoundException $e) {
+    //         // Return a response if the record was not found
+    //         return response()->json(['message' => 'Record not found'], 404);
+    //     } catch (\Exception $e) {
+    //         // Handle any other exceptions
+    //         return response()->json([
+    //             'message' => 'An error occurred while updating active feild',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
 
-    }
+    // }
 
 
     public function updateBadge(Request $request,$id)
