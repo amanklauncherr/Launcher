@@ -22,7 +22,7 @@ class EmployerProfile extends Model
 
     // Define the attributes that are mass assignable
     protected $fillable = [
-        'user_id', 'company_name', 'company_website', 'address', 'about', 'city', 'state', 'country'
+        'user_id', 'image','company_name', 'company_website', 'address', 'about', 'city', 'state', 'country'
     ];
 
     // If the table does not have timestamps, set this to false

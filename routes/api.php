@@ -119,7 +119,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 });
 
-Route::put('/updateProfile',[EmployerController::class,'update']);
+Route::post('/updateProfile',[EmployerController::class,'update']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
