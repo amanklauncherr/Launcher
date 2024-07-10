@@ -26,13 +26,11 @@ class JobPostingController extends Controller
         return response()->json(['job'=>$job],200);
     }
 
-    public function showJob(Request $request,$id)
+    public function showJob(Request $request)
     {        
         try {
  
-            // Check if validation fails
-            // $user=Auth::user();
-
+            $params=$request->id;
             $tokenType = $request->attributes->get('token_type');
             $user = $request->attributes->get('user');
             $gigList = [];
@@ -43,15 +41,13 @@ class JobPostingController extends Controller
                 $gigList = $gigEnquiry->pluck('gigID')->toArray();
             }
     
-            $query = JobPosting::with(['user.employerProfile'])->where('id',$id)->get();
+            $query = JobPosting::with(['user.employerProfile'])->where('id',$params)->get();
 
-            // return response()->json($query->user->employerProfile);
-    
-            // $searchResults = $query->get();
-    
-            // $jobsArray = $searchResults;
+            if ($query->isEmpty()) {
+                return response()->json(['message' => 'Job not found'], 404);
+            }    
 
-            $isApplied = in_array($id, $gigList);
+            $isApplied = in_array($params, $gigList);
 
             return response()->json(['job' =>[
                 'user_id' => $query[0]->user_id,
