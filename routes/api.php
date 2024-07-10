@@ -21,6 +21,7 @@ use App\Http\Controllers\CitesController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\EmployerController;
+use App\Http\Controllers\JoinOfferController;
 // use App\Http\Middleware\CheckBearerToken;
 // 
 use App\Models\About;
@@ -106,6 +107,8 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
    // Card
    Route::post('/addCard',[CardController::class,'addCard']);
 
+  // Join Offer 
+  Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);
 });
 
 Route::middleware(['publictokenOrauth'])->group(function () {
@@ -148,5 +151,6 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
 
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
-
 Route::get('/cities',[CitesController::class,'Cites']);
+
+Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
