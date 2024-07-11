@@ -16,7 +16,7 @@ class JoinOfferController extends Controller
        
         $validator = Validator::make(
             $request->all(),[
-                'section' => $sectionExists ? 'required|string' : 'required|string|unique:join_offers',
+                'section' => $sectionExists ? 'required|string' : 'required|string|unique:join_offers,section',
                 'heading' => $sectionExists ? 'nullable|string' : 'required|string',
                 'sub_heading' =>'nullable|string|max:1500',
             ]);
@@ -107,5 +107,14 @@ class JoinOfferController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function showJoinOfferAdmin()
+    {
+        $cards=joinOffer::all();
+        if($cards->isEmpty()){
+            return response()->json(['Message'=>'No Join Card Found'],40);
+        }
+        return response()->json(['Cards'=>$cards],200);
     }
 }
