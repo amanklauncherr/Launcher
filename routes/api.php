@@ -20,6 +20,7 @@ use App\Http\Controllers\NewsLetterController;
 use App\Http\Controllers\CitesController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
@@ -46,10 +47,6 @@ use Ramsey\Collection\Map\AbstractMap;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-
-
-
 
 
 Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
@@ -123,9 +120,19 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
+
+    // Enquiry
     Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
+
+    // Search Gigs
     Route::get('/searchJob',[JobPostingController::class,'searchJob']);
+
+    // Single Gig Info
     Route::get('/showJob',[JobPostingController::class,'showJob']);
+
+    // Add to cart
+    Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
+    Route::get('/showCart',[CartDetailsController::class,'showCart']); 
 });
 
 Route::post('/updateProfile',[EmployerController::class,'update']);
@@ -161,5 +168,6 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 Route::get('/cities',[CitesController::class,'Cites']);
 
 Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
+
 Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
 
