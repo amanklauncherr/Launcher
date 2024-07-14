@@ -21,7 +21,7 @@ class JobPosting extends Model
 
     // Define the attributes that are mass assignable
     protected $fillable = [
-        'user_id', 'title', 'description', 'duration', 'active', 'verified','location','badge'
+        'user_id', 'title', 'description','short_description', 'duration', 'active', 'verified','location','badge'
     ];
 
     // If the table does not have timestamps, set this to false

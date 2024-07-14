@@ -83,6 +83,7 @@ class JobPostingController extends Controller
     
     public function AddJob(Request $request)
     {
+        // jobExist=JobPosting::where('');
         $validator=Validator::make($request->all(),[
           'title' => 'required|string|max:50',
           'description' => 'nullable|string',
@@ -102,6 +103,9 @@ class JobPostingController extends Controller
             $user = Auth::user();
 
             $jobData = $request->only(['title', 'description','short_description','duration', 'active', 'verified','location','badge']);
+
+
+
             if (!isset($jobData['active'])) {
                 $jobData['active'] = false;
             }
@@ -111,6 +115,8 @@ class JobPostingController extends Controller
             if (!isset($jobData['badge'])) {
                 $jobData['badge'] = true;
             }
+
+            
 
             $newEmployer = JobPosting::create([
                 'user_id' => $user->id,
@@ -128,6 +134,41 @@ class JobPostingController extends Controller
             // Return a custom error response in case of an exception
             return response()->json([
                 'message' => 'An error occurred while Adding Coupon',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function updateJob(Request $request,$id)
+    {
+        $jobExist=JobPosting::where('id',$id)->exists();
+        $validator=Validator::make($request->all(),[
+          'title' => $jobExist ? 'nullable|string|max:100' : 'required|string|max:100',
+          'description' => 'nullable|string',
+          'short_description' => 'nullable|string',
+          'duration' => $jobExist ? 'nullable|integer' : 'required|integer',
+          'location' => $jobExist ? 'nullable|string' : 'required|string',        
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        try {
+            //code...
+            // $user = Auth::user();
+
+            $data = $validator->validated();
+
+            $job=JobPosting::where('id',$id)->first();
+            if($job){
+                $job->update($data);
+                return response()->json(["Message"=>"Gig Update"], 201);
+            }
+            return response()->json(["Message"=>"Gig Not Found"], 404);
+        } catch (\Exception $e) {
+            // Return a custom error response in case of an exception
+            return response()->json([
+                'message' => 'An error occurred while updating Coupon',
                 'error' => $e->getMessage()
             ], 500);
         }

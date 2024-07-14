@@ -97,13 +97,14 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
     Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
 
-   //  Job
+   // Job
    Route::post('/addJob',[JobPostingController::class,'AddJob']);
    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
-   Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);
-//    Route::put('/updateBadge/{id}',[JobPostingController::class,'updateBadge']); 
+   Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']); 
+   // Route::put('/updateBadge/{id}',[JobPostingController::class,'updateBadge']); 
    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
+   Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']);
    
    // Card
    Route::post('/addCard',[CardController::class,'addCard']);
