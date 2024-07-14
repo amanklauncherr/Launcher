@@ -59,6 +59,7 @@ class JobPostingController extends Controller
                 'isVerified' => $query[0]->verified,
                 'company_name' => ($query[0]->user->id == env('AdminID')) ? 'By Launcherr' : $query[0]->user->employerProfile->company_name,
                 'company_image'=>($query[0]->user->id == env('AdminID')) ?  'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg' : $query[0]->user->employerProfile->image,
+                'company_description'=>($query[0]->user->id == env('AdminID')) ? '' : $query[0]->user->employerProfile->about,
                 'gigs_location' => $query[0]->location,
                 'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
                 'gigs_badge' => $query[0]->badge,
@@ -85,6 +86,7 @@ class JobPostingController extends Controller
         $validator=Validator::make($request->all(),[
           'title' => 'required|string|max:50',
           'description' => 'nullable|string',
+          'short_description' => 'nullable|string',
           'duration' => 'required|integer',
           'active' => 'boolean',
           'verified' => 'boolean',
@@ -99,7 +101,7 @@ class JobPostingController extends Controller
             //code...
             $user = Auth::user();
 
-            $jobData = $request->only(['title', 'description', 'duration', 'active', 'verified','location']);
+            $jobData = $request->only(['title', 'description','short_description','duration', 'active', 'verified','location','badge']);
             if (!isset($jobData['active'])) {
                 $jobData['active'] = false;
             }
@@ -114,6 +116,7 @@ class JobPostingController extends Controller
                 'user_id' => $user->id,
                 'title' => $jobData['title'],
                 'description' => $jobData['description'],
+                'short_description' => $jobData['short_description'],
                 'duration' => $jobData['duration'],
                 'active' => $jobData['active'],
                 'verified' => $jobData['verified'],
