@@ -55,14 +55,42 @@ class CartDetailsController extends Controller
         
     }
 
-    public function showCart(){
+    public function showCart(Request $request){
         $user=Auth::user();
         $totalCart=CartDetails::where('user_id',$user->id)->get();
         if($totalCart->isEmpty())
         {
             return response()->json(['message'=>'Please Add Some products in Yout Cart'],404);
         }
+        if ($request->has('products')) {
+            foreach ($request->products as $productData) {
+                $product = CartDetails::where('user_id', $user->id)
+                                    ->where('product_id', $productData['product_id'])
+                                    ->first();
+    
+                if ($product) {
+                    if ($productData['quantity'] > 0) {
+                        $product->update(['quantity' => $productData['quantity']]);
+                    $total = $productData['quantity'] * $productData['price'];
+                    $product->update([
+                        'quantity' => $productData['quantity'],
+                        'price' => $total,
+                        // 'product_name' => $productData['product_name'] ?? $product->product_name
+                    ]);
+                    } else {
+                        $product->delete();
+                    }
+                }
+            }
+    
+            // Re-fetch the updated cart items
+            $totalCart = CartDetails::where('user_id', $user->id)->get();
+        }
+
         $total=$totalCart->sum('price');
+        // $total = $totalCart->sum(function ($item) {
+        //     return $item->price * $item->quantity;
+        // });
         $gstAmount = $total * 0.18;
         $grand=$total + $gstAmount + 18;
         return response()->json([

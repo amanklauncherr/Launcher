@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
     Route::post('/register',[AdminController::class,'register']);
     Route::post('/login',[AdminController::class,'login']);
+
     Route::get('/profile',[AdminController::class,'profile']);
     Route::post('/logout',[AdminController::class,'logout']);
     Route::get('/alluser',[AdminController::class,'allUser']);
@@ -63,6 +64,8 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
 Route::middleware(['auth:api','role:admin'])->group(function () {
 
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
+
+    // Route::post('/refresh',[AdminController::class,'refresh']);
 
     // t and c
     Route::post('/term-conditions',[TermsConditionsController::class, 'store']);
@@ -132,7 +135,8 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     // Add to cart
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
-    Route::get('/showCart',[CartDetailsController::class,'showCart']); 
+
+    Route::post('/showCart',[CartDetailsController::class,'showCart']); 
 });
 
 Route::post('/updateProfile',[EmployerController::class,'update']);
