@@ -54,6 +54,7 @@ class JobPostingController extends Controller
                 'gig_id' => $query[0]->id,
                 'gigs_title' => $query[0]->title,
                 'gigs_description' => $query[0]->description,
+                'gigs_Shortdescription' => $query[0]->short_description,
                 'gigs_duration' => $query[0]->duration,
                 'isActive' => $query[0]->active,
                 'isVerified' => $query[0]->verified,
@@ -173,7 +174,6 @@ class JobPostingController extends Controller
             ], 500);
         }
     }
-
   
     public function updateJobVerified(Request $request,$id)
     {
@@ -304,6 +304,7 @@ class JobPostingController extends Controller
                     'gig_id' => $job['id'],
                     'gigs_title' => $job['title'],
                     'gigs_description' => $job['description'],
+                    'gigs_Shortdescription' => $job['short_description'],
                     'gigs_duration' => $job['duration'],
                     'gigs_location' => $job['location'],
                     'gigs_badge' => $job['badge'],
@@ -311,6 +312,7 @@ class JobPostingController extends Controller
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
                     'company_image' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['image'] : 'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg',                    
+                    'company_description' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['about'] : '',                    
                     'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
                     'gigs_badge' => $job['badge'],
                 ];
