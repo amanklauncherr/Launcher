@@ -88,15 +88,12 @@ class CartDetailsController extends Controller
         }
 
         $total=$totalCart->sum('price');
-        // $total = $totalCart->sum(function ($item) {
-        //     return $item->price * $item->quantity;
-        // });
         $gstAmount = $total * 0.18;
-        $grand=$total + $gstAmount + 18;
+        $grand=$total + $gstAmount;
         return response()->json([
             'products'=>$totalCart,
             'subTotal'=>$total,
-            'delivery'=>18,
+            // 'delivery'=>18,
             'gstAmt' => $gstAmount,
             'grand_Total'=>$grand],200);
     }
