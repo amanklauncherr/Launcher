@@ -135,7 +135,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
-Route::post('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
+Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
