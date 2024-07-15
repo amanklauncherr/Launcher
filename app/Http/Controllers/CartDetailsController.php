@@ -16,10 +16,10 @@ class CartDetailsController extends Controller
         try {
             $productExist = CartDetails::where('product_id', $request->product_id)->exists();
             $validator = Validator::make($request->all(), [
-                'product_id' => 'required|integer|min:1',
-                'product_name' => $productExist ? 'nullable|string': 'required|string',
+                'product_id' => 'nullable|integer',
+                'product_name' => $productExist ? 'nullable|string':'required|string',   
                 'quantity' => 'required|integer|min:0',
-                'price' => 'required|integer|min:0',
+                'price' => 'required|integer|min:1',
             ]);
         
             if ($validator->fails()) {
@@ -41,6 +41,10 @@ class CartDetailsController extends Controller
                 $product->delete();
                 return response()->json(['message' => 'Product removed from cart'], 200);
             }
+            else if(!$product && $request->quantity === 0)
+            {
+                return response()->json(['Message'=>'Quantity should be greater than 0'],400);
+            }
             else {
                 $finalCart = CartDetails::create($data);
                 return response()->json($finalCart);
@@ -52,7 +56,6 @@ class CartDetailsController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-        
     }
 
     public function showCart(Request $request){
@@ -66,8 +69,7 @@ class CartDetailsController extends Controller
             foreach ($request->products as $productData) {
                 $product = CartDetails::where('user_id', $user->id)
                                     ->where('product_id', $productData['product_id'])
-                                    ->first();
-    
+                                    ->first();    
                 if ($product) {
                     if ($productData['quantity'] > 0) {
                         $product->update(['quantity' => $productData['quantity']]);
@@ -75,23 +77,35 @@ class CartDetailsController extends Controller
                     $product->update([
                         'quantity' => $productData['quantity'],
                         'price' => $total,
-                        // 'product_name' => $productData['product_name'] ?? $product->product_name
                     ]);
+                    // $product['single_price']=$total/$productData['quantity'];
+                    // $product->single_price = $total/$productData['quantity'];
                     } else {
                         $product->delete();
                     }
                 }
             }
-    
             // Re-fetch the updated cart items
+            // $totalCart = CartDetails::where('user_id', $user->id)->get();
             $totalCart = CartDetails::where('user_id', $user->id)->get();
+            // foreach ($totalCart as $product) {
+            //     // Add single_price to the product response
+            //     $product->single_price = $product->price / $product->quantity;
+            // }
         }
 
         $total=$totalCart->sum('price');
         $gstAmount = $total * 0.18;
         $grand=$total + $gstAmount;
+
+        $products = $totalCart->map(function($product) {
+            $productArray = $product->toArray();
+            $productArray['single_price'] = $product->price / $product->quantity;
+            return $productArray;
+        });
+
         return response()->json([
-            'products'=>$totalCart,
+            'products'=>$products,
             'subTotal'=>$total,
             // 'delivery'=>18,
             'gstAmt' => $gstAmount,
