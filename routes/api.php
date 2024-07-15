@@ -24,14 +24,8 @@ use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
+use App\Http\Controllers\UserVerificationController;
 // use App\Http\Middleware\CheckBearerToken;
-// 
-use App\Models\About;
-use App\Models\Banner;
-use App\Models\ClientInfo;
-use App\Models\QueAndAns;
-use App\Models\UserProfile;
-use Ramsey\Collection\Map\AbstractMap;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,7 +110,6 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     //   Subscription Card
     Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
     Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
-    
 });
 
 Route::middleware(['publictokenOrauth'])->group(function () {
@@ -140,7 +133,9 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
 });
 
-Route::post('/updateProfile',[EmployerController::class,'update']);
+// Route::post('/updateProfile',[EmployerController::class,'update']);
+
+Route::post('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 

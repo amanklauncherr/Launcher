@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\UserProfile;
 use App\Models\User;
+use App\Models\UserVerification;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserVerificationConfirmation;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -20,7 +24,7 @@ class UserProfileController extends Controller
     {
         $validator=Validator::make($request->all(),[
             'name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users|max:50',
+            'email' => 'required|email|unique:users,email|max:50',
             'password' => [
                 'required',
                 'string',
@@ -44,18 +48,25 @@ class UserProfileController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-    
             // $token = JWTAuth::fromUser($user);
             $user->assignRole('user');
     
             if ($user) {
+                UserVerification::create([
+                    'userID'=>$user->id,
+                    'uniqueCode'=> Str::random(100),
+                    'verified' => 0,
+                ]);              
+                $code=UserVerification::where('userID',$user->id)->first();
+                Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
                 return response()->json([
                     'success' => 1,
-                    'message' => 'User registered successfully',
+                    'message' => 'User registered successfully. Visit Your email to Verify',
                     'user' => $user,
-                    // 'token' => $token
+
                 ], 201);
-            } else {
+            }
+             else {
                 return response()->json([
                     'success' => 0,
                     'error' => 'Failed to register user'
@@ -114,6 +125,7 @@ class UserProfileController extends Controller
             $credentials = $request->only('email','password');
             $user = User::where('email',$credentials['email'])->first();
             
+
             if(!$token=Auth::guard('api')->attempt($credentials)){
                 if(!$user){
                     return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
@@ -125,17 +137,23 @@ class UserProfileController extends Controller
 
                 return response()->json([ 'success' => 0,'error'=>'Unauthorized User'],401);
             }
-              //  to check roles
+            //  //  to check roles
             // $roles = $user->getRoleNames();
             // print_r($roles->toArray());die();
-
-            // Role Login Condition
-            if (!$user->hasRole('user')) 
+            
+            $verificationStatus=UserVerification::where('userID',$user->id)->get();
+            if($verificationStatus[0]->verified === 1)
             {
-                // User has the 'admin' role
-                return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
+                if (!$user->hasRole('user')) 
+                {
+                    // User has the 'admin' role
+                    return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
+                }
+                return $this->respondWithToken($token);
             }
-            return $this->respondWithToken($token);
+
+            return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
+
         }  catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
