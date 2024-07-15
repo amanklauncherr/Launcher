@@ -52,18 +52,17 @@ class UserProfileController extends Controller
             $user->assignRole('user');
     
             if ($user) {
-                UserVerification::create([
-                    'userID'=>$user->id,
-                    'uniqueCode'=> Str::random(100),
-                    'verified' => 0,
-                ]);              
-                $code=UserVerification::where('userID',$user->id)->first();
-                Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
+                // UserVerification::create([
+                //     'userID'=>$user->id,
+                //     'uniqueCode'=> Str::random(100),
+                //     'verified' => 0,
+                // ]);              
+                // $code=UserVerification::where('userID',$user->id)->first();
+                // Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
                 return response()->json([
                     'success' => 1,
                     'message' => 'User registered successfully. Visit Your email to Verify',
                     'user' => $user,
-
                 ], 201);
             }
              else {
@@ -141,18 +140,17 @@ class UserProfileController extends Controller
             // $roles = $user->getRoleNames();
             // print_r($roles->toArray());die();
             
-            $verificationStatus=UserVerification::where('userID',$user->id)->get();
-            if($verificationStatus[0]->verified === 1)
-            {
+            // $verificationStatus=UserVerification::where('userID',$user->id)->get();
+            // if($verificationStatus[0]->verified === 1)
+            // {
                 if (!$user->hasRole('user')) 
                 {
                     // User has the 'admin' role
                     return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
                 }
                 return $this->respondWithToken($token);
-            }
-
-            return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
+            // }
+            // return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
 
         }  catch (\Exception $e) {
             // Handle any exceptions
