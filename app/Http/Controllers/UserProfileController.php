@@ -94,7 +94,7 @@ class UserProfileController extends Controller
             'password.regex' => 'Enter a valid password ex -: Test@123'
         ];
         $validator=Validator::make($request->all(),[
-            'email' => 'required|email|max:25',
+            'email' => 'required|email|max:50',
             'password' => [
                 'required',
                 'string',
