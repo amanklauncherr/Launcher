@@ -8,6 +8,6 @@
 <body>
     <h1>Email Verification!</h1>
     <p>Please click on the given link below to Verify your email</p>
-    <a href="https://api.launcherr.co/api/verify/{{ $uniqueCode }}">Verify Email</a>
+    <a href="https://api.launcherr.co/api/verified/{{ $uniqueCode }}">Verify Email</a>
 </body>
 </html>
