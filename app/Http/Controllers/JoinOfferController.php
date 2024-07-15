@@ -39,7 +39,7 @@ class JoinOfferController extends Controller
                     return response()->json(['message' => 'Join Offer Section updated'], 200);
                 }else{
 
-                    $data['sub_heading'] = $request->input('sub_heading', " ");
+                    // $data['sub_heading'] = $request->input('sub_heading', " ");
 
                     joinOffer::create($data);
                     return response()->json(['message' => 'Join Offer Section created'], 201);
@@ -72,7 +72,8 @@ class JoinOfferController extends Controller
             foreach ($sections as $section) {
                 if ($section->section === 'MainHeading') {
                     $mainHeading = [
-                        'heading' => $section->heading,
+                        'heading' => $section->{'heading'} == null ? "" : $section->{'heading'},
+                        'sub_heading' => $section->{'sub_heading'} == null ? "" : $section->{'sub_heading'},
                         'Cards' => []
                     ];
                 } else {
