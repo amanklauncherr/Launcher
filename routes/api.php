@@ -21,6 +21,7 @@ use App\Http\Controllers\CitesController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CartDetailsController;
+use App\Http\Controllers\CountryCodeController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
@@ -134,6 +135,9 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 });
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
+
+// Route::post('/add',[CountryCodeController::class,'add']);
+Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
 
 Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
 
