@@ -57,7 +57,6 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
 
 
 Route::middleware(['auth:api','role:admin'])->group(function () {
-
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
 
     // Route::post('/refresh',[AdminController::class,'refresh']);
@@ -130,7 +129,6 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     // Add to cart
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
-
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
 });
 

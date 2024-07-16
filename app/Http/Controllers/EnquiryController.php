@@ -18,8 +18,14 @@ class EnquiryController extends Controller
         $tokenType = $request->attributes->get('token_type');
 
         if ($tokenType === 'public') {
-            return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Add Enquiry']);
-        } elseif ($tokenType === 'user') {
+            return response()->json(
+                [
+                    'success'=> 0,
+                    'message' => 'Unauthorized, Login To Add Enquiry'
+                ]
+            );
+        } 
+        elseif ($tokenType === 'user') {
             $user = $request->attributes->get('user');
             $validator=Validator::make($request->all(),[
                 'gigID' => 'required|integer|exists:job_posting,id',
@@ -29,31 +35,31 @@ class EnquiryController extends Controller
                 return response()->json(['errors' => $validator->errors()], 422);
             }
             try {
-    
                 $existingEnquiry = Enquiry::where('userID', $user->id)->where('gigID', $request->input('gigID'))->first();
-    
-            // If an enquiry already exists, return a response indicating so
-            if ($existingEnquiry) {
-                return response()->json(['success' => 0,'message'=>'User has already enquired for this Gig'], 422);
-            }
-            // Create a new enquiry if no existing enquiry is found
-            $enquiry = Enquiry::create([
-                'userID' => $user->id,
-                'gigID' => $request->input('gigID'),
-                'note' => $request->input('note'),
-            ]);
-            return response()->json(['success'=>1,'enquiry'=>$enquiry], 201);
+                if ($existingEnquiry) {
+                    return response()->json(
+                        [
+                            'success' => 0,
+                            'message'=>'User has already enquired for this Gig'
+                        ], 422);
+                }
+                $enquiry = Enquiry::create([
+                    'userID' => $user->id,
+                    'gigID' => $request->input('gigID'),
+                    'note' => $request->input('note'),
+                ]);
+                return response()->json(['success'=>1,'enquiry'=>$enquiry], 201);
             } catch (\Exception $e) {
                 // Return a custom error response in case of an exception
                 return response()->json([
-                    'message' => 'An error occurred while Adding Coupon',
+                    'success'=>0,
+                    'message' => 'An error occurred while Adding Enquiry',
                     'error' => $e->getMessage()
                 ], 500);
             }       
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
-
+        return response()->json(['success'=>0,'message' => 'Unauthorized'], 401);
 
         // $user = Auth::user();
     }   
@@ -61,6 +67,11 @@ class EnquiryController extends Controller
     public function showEnquiry(Request $request){
    
        $enquries=Enquiry::get();
+
+       if($enquries->isEmpty())
+       { 
+        return response()->json(['success'=>0,'message'=>'No Enquiry found'],400);
+       }
    
        $gigIds=$enquries->pluck('gigID')->toArray();
    

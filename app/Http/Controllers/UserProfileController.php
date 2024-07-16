@@ -143,12 +143,12 @@ class UserProfileController extends Controller
             // $verificationStatus=UserVerification::where('userID',$user->id)->get();
             // if($verificationStatus[0]->verified === 1)
             // {
-                if (!$user->hasRole('user')) 
-                {
-                    // User has the 'admin' role
-                    return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
-                }
-                return $this->respondWithToken($token);
+            if (!$user->hasRole('user')) 
+            {
+                // User has the 'admin' role
+                return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
+            }
+            return $this->respondWithToken($token);
             // }
             // return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
 
@@ -173,9 +173,6 @@ class UserProfileController extends Controller
         ]);
     }
 
-    // public function updateUserProfile(Request $request){
-        
-    // }
 
     public function passwordUpdateUser(Request $request)
     {
@@ -242,7 +239,7 @@ class UserProfileController extends Controller
         $tokenType = $request->attributes->get('token_type');
 
         if ($tokenType === 'public') {
-            return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Update Your Profile']);
+            return response()->json(['success'=> 0,'message' => 'Unauthorized, Login To Update Your Profile']);
         }
         elseif ($tokenType === 'user'){
             // $user = Auth::user();
@@ -271,12 +268,14 @@ class UserProfileController extends Controller
                  
                 if($userProfile)
                 {
-    
                     $user->name = $request->user_Name;
                     $userProfile->update($profile);
                     $user->save();
     
-                    return response()->json(['message' => 'Profile updated successfully', 'profile' => $userProfile,'user'=>$user], 201);
+                    return response()->json([
+                        'success'=>1,
+                        'message' => 'Profile updated successfully','profile' => $userProfile,'user'=>$user
+                    ], 201);
                 }
                 else{
                     $userProfile = UserProfile::create([
@@ -289,7 +288,7 @@ class UserProfileController extends Controller
                         'user_PinCode' => $profile['user_PinCode'],
                         'user_AboutMe' => $profile['user_AboutMe']
                     ]);
-                    return response()->json(['message' => 'Profile created successfully', 'profile' => $userProfile], 201);
+                    return response()->json(['success'=>1, 'message' => 'Profile created successfully', 'profile' => $userProfile], 201);
                 }
     
             } catch (\Exception $e) {
@@ -299,19 +298,18 @@ class UserProfileController extends Controller
                 ], 500);
             }
         }
-        return response()->json(['error' => 'Unauthorized'], 401);
-
+        return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
     }
+
 
     public function showUserProfile(Request $request)
     {
         try {
-            //code...
-            
+            //code...            
         $tokenType = $request->attributes->get('token_type');
 
         if ($tokenType === 'public') {
-            return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Update Your Profile']);
+            return response()->json(['success'=> 0,'message' => 'Unauthorized, Login To Update Your Profile']);
         }
         elseif ($tokenType === 'user'){
             // $user=Auth::user();
@@ -319,16 +317,29 @@ class UserProfileController extends Controller
             $id=$user->id;
             // return response()->json([$user->id]);
             $userProfile=UserProfile::where('user_id',$id)->first();
-            if($userProfile)
+            if($user && $userProfile)
             {        
-                return response()->json(['userprofile'=>$userProfile],200);
+                return response()->json([
+                    'success' =>1,
+                    'user'=>$user,
+                    'userprofile'=>$userProfile
+                ],200);
+            }            
+            if($user && !$userProfile)
+            {
+                {        
+                    return response()->json([
+                        'success' => 1,
+                        'user'=>$user,
+                        'userprofile'=>'Please add your personal information in your profile'
+                    ],200);
+                }      
             }
-            return response()->json(['No User Profile found'],404);
         }
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'An error occurred while Creating User Profile',
+                'message' => 'An error occurred while Showing User data',
                 'error' => $e->getMessage()
             ], 500);
         }
