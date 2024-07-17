@@ -22,10 +22,11 @@ use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\CountryCodeController;
-use App\Http\Controllers\EmployerController;
+// use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
 use App\Http\Controllers\UserVerificationController;
+use App\Http\Controllers\IataCodeController;
 // use App\Http\Middleware\CheckBearerToken;
 
 /*
@@ -172,4 +173,7 @@ Route::get('/cities',[CitesController::class,'Cites']);
 Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
 
 Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
+
+Route::get('/showIata',[IataCodeController::class,'showIata']);
+
 
