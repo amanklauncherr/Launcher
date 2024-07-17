@@ -93,7 +93,6 @@
 <body>
     <div class="container">
         <div class="header">
-            <!-- Add your logo here -->
             <img src="https://res.cloudinary.com/douuxmaix/image/upload/v1721205125/a71sfea2cvab31oqmxvk.png" alt="Launcherr Logo">
         </div>
         <div class="content">

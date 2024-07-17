@@ -64,10 +64,9 @@ class EnquiryController extends Controller
         // $user = Auth::user();
     }   
     
-    public function showEnquiry(Request $request){
+    public function showEnquiry(){
    
        $enquries=Enquiry::get();
-
        if($enquries->isEmpty())
        { 
         return response()->json(['success'=>0,'message'=>'No Enquiry found'],400);
