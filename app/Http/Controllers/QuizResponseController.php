@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\SendQueuedMailable;
+use App\Mail\NewsletterSubscriptionConfirmation;
 use App\Models\QuizResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -35,6 +38,7 @@ class QuizResponseController extends Controller
             {
                 return response()->json(['message'=>'Answer Not saved. Some Error might occur'],400);
             }
+              Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
                 return response()->json([
                     'message' => 'Quiz Answered Properly ','User'=>[
                         'name'=>$savedAns->name,
