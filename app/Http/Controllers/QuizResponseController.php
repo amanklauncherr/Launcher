@@ -18,7 +18,7 @@ class QuizResponseController extends Controller
         $validator= Validator::make($request->all(),[
             'name' => 'required|string',
             'email' => 'required|email|unique:quiz_responses',
-            'phone' => 'required|string|min:10|max:10|unique:quiz_responses',
+            'phone' => 'required|string|unique:quiz_responses',
             'answer1' => 'required|string',
             'answer2' => 'required|string',
             'answer3' => 'required|string',
