@@ -29,7 +29,7 @@ class UserVerificationConfirmation extends Mailable
                     ->view('userverificationConfimation')
                     ->with([
                         'uniqueCode' => $this->uniqueCode,
-                    ]);;
+                    ]);
     }
 
 }

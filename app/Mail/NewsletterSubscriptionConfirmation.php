@@ -13,49 +13,24 @@ class NewsletterSubscriptionConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
+
+    public $name;
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($name='Subscriber')
     {
         //
+        $this->name=$name;
     }
-
-    /**
-     * Get the message envelope.
-     */
-    // public function envelope(): Envelope
-    // {
-    //     return new Envelope(
-    //         subject: 'Newsletter Subscription Confirmation',
-    //     );
-    // }
-
-    // /**
-    //  * Get the message content definition.
-    //  */
-    // public function content(): Content
-    // {
-    //     return new Content(
-    //         view: 'view.name',
-    //     );
-    // }
-
-    // /**
-    //  * Get the attachments for the message.
-    //  *
-    //  * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-    //  */
-    // public function attachments(): array
-    // {
-    //     return [];
-    // }
-
 
     public function build()
     {
         return $this->subject('Subscription Confirmation')
-                    ->view('subscriptionconfirmation');
+                    ->view('subscriptionconfirmation')
+                    ->with([
+                        'name' => $this->name,
+                    ]);
     }
 
 }

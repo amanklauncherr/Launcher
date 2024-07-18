@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Mail\SendQueuedMailable;
 use App\Mail\NewsletterSubscriptionConfirmation;
-// use App\Mail\SubscriptionConfirmation;
 use App\Http\Controllers\Controller;
 use App\Models\NewsLetter;
 use Illuminate\Http\Request;
@@ -68,7 +66,7 @@ class NewsLetterController extends Controller
             $data = $validator->validated();
     
             // Send confirmation email (using a try-catch block for potential exceptions)
-            $sent = Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
+            Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
 
             // if (!$sent) {
             //     return response()->json([

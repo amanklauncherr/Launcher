@@ -97,7 +97,7 @@
         </div>
         <div class="content">
             <h1>Welcome to Launcherr!</h1>
-            <p>Hi Subscriber,</p>
+            <h2>Hi {{$name}},</h2>
             <p>We're thrilled to have you. Here’s a 10% discount just for you: <strong>LAUNCHERRSVX10</strong>.</p>
             <h2>Why Launcherr?</h2>
             <ul>
