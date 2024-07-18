@@ -23,8 +23,8 @@ class BannerController extends Controller
             'Banner_sub_heading' => $banner ? 'nullable|string|max:50' : 'required|string|max:50',
             'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
             'Banner_image' => $banner 
-                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=16/9' 
-                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120|dimensions:ratio=16/9',
+                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' 
+                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
         ]);
         
         if ($validator->fails()) {
@@ -76,21 +76,3 @@ class BannerController extends Controller
         }
     }
 }
-
-
-
-// use Illuminate\Database\Schema\Blueprint;
-// use Illuminate\Support\Facades\Schema;
-
-// class AddSubTextAndButtonTextToBannerNewTable extends Migration
-// {
-//     /**
-//      * Run the migrations.
-//      *
-//      * @return void
-//      */
-//     public function up()
-//     {
-//         Schema::table('banner_new', function (Blueprint $table) {
-//             $table->string('sub_text')->nullable()->after('column_name'); // Replace 'column_name' with the name of the column after
-// iem-xnrj-hhb
