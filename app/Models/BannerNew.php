@@ -10,9 +10,7 @@ class BannerNew extends Model
     use HasFactory;
     protected $fillable=[
         'Banner_No',
-        'Banner_heading',
         'Banner_image',
-        'Banner_sub_heading',
         'Banner_button_text'
     ];
 /**
