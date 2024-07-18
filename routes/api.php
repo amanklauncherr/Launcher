@@ -22,6 +22,7 @@ use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\CountryCodeController;
+use App\Http\Controllers\DestinationController;
 // use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
@@ -111,7 +112,12 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     //   Subscription Card
     Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
     Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
+
+    Route::post('/addDestination',[DestinationController::class,'addDestination']);
+
 });
+
+Route::get('/showDestination',[DestinationController::class,'showDestination']);
 
 Route::middleware(['publictokenOrauth'])->group(function () {
     //    userProfile
