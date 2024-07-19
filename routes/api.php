@@ -114,6 +114,7 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
     Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
 
     Route::post('/addDestination',[DestinationController::class,'addDestination']);
+    Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);
 
 });
 

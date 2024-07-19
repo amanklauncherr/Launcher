@@ -73,7 +73,7 @@ class DestinationController extends Controller
            $terms = Destination::all();
 
         if ($terms->isEmpty()) {
-            return response()->json(['message' => 'No Destinations found'], 404);
+            return response()->json(['success'=>0,'message' => 'No Destinations found'], 404);
         } else {
             $existingImages = [];
 
@@ -90,9 +90,30 @@ class DestinationController extends Controller
                 ];
         }
 
-    return response()->json($existingImages, 200);
+    return response()->json(['success'=>1,'data'=>$existingImages], 200);
     
             }   
+    }
+
+    public function deleteDestination(Request $request){
+        try {
+            //code...
+            $params = $request->query('id');
+            $destination = Destination::where('id', $params)->first();
+            if(!$destination)
+            {
+                return response()->json(['success'=>0,'message'=>'No Data Found'],404);
+            }
+            $destination->delete();
+            return response()->json(['success'=>1,'message'=>'Destination Removed Successfully'],200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json([
+                'success' => 0,
+                'error' => 'Something went wrong while deleating ', 
+                'details' => $th->getMessage()], 500);
+        }
+
     }
 }
 // |dimensions:ratio=16/9
