@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AirlineCodeController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\UserProfileController;
@@ -184,4 +185,7 @@ Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
 Route::get('/showIata',[IataCodeController::class,'showIata']);
 
 Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
+
+Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
+
 
