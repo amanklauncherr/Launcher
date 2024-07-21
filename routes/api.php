@@ -183,4 +183,5 @@ Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
 
 Route::get('/showIata',[IataCodeController::class,'showIata']);
 
+Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
 
