@@ -122,6 +122,7 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
 });
 
 Route::get('/showDestination',[DestinationController::class,'showDestination']);
+Route::get('/destination',[DestinationController::class,'destination']);
 Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
 Route::get('/destinationType',[DestinationController::class,'destinationType']);
 

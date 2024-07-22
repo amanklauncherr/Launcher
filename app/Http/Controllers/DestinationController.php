@@ -95,6 +95,30 @@ class DestinationController extends Controller
             }   
     }
 
+    public function destination(Request $request){
+        try {
+            // Retrieve the 'id' from the query parameters
+            $params = $request->query('id');
+    
+            // Fetch the destination record by id
+            $terms = Destination::where('id', $params)->get();
+    
+            if ($terms->isEmpty()) {
+                return response()->json(['success'=>0,'message' => 'Destination not found'], 404);
+            }
+    
+            $terms[0]->makeHidden(['created_at', 'updated_at']);
+
+            // Encode the 'images' attribute to JSON
+            $terms[0]->images = json_decode($terms[0]->images);
+    
+            // Return the response as JSON
+            return response()->json(['success'=>1,'destination'=>$terms[0]], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>0,'message' => 'Something went wrong', 'details' => $th->getMessage()], 500);
+        }
+    }
+
     public function searchDestination(Request $request){
         try {
             //code...
