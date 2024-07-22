@@ -29,6 +29,8 @@ use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
 use App\Http\Controllers\UserVerificationController;
 use App\Http\Controllers\IataCodeController;
+use App\Models\Destination;
+
 // use App\Http\Middleware\CheckBearerToken;
 
 /*
@@ -120,6 +122,8 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
 });
 
 Route::get('/showDestination',[DestinationController::class,'showDestination']);
+Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
+Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
 Route::middleware(['publictokenOrauth'])->group(function () {
     //    userProfile
