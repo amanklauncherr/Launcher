@@ -10,6 +10,9 @@ class Destination extends Model
     use HasFactory;
     protected $fillable=[
         'name',
+        'city',
+        'state',
+        'destination_type',
         'thumbnail_image',
         'images',
         'short_description',

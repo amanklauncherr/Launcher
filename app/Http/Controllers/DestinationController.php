@@ -17,6 +17,9 @@ class DestinationController extends Controller
     
         $validator = Validator::make($request->all(), [
             'name' => $destination ? 'nullable|string' : 'required|string',
+            'city' => $destination ? 'nullable|string' : 'required|string',
+            'state' => $destination ? 'nullable|string' : 'required|string',
+            'destination_type' => $destination ? 'nullable|string' : 'required|string',
             'thumbnail_image' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120',
             'images' => $destination ? 'nullable|array' : 'required|array',
             'images.*' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120',
@@ -34,8 +37,6 @@ class DestinationController extends Controller
                 $urlthumbnailPath = Cloudinary::upload($request->file('thumbnail_image')->getRealPath())->getSecurePath();
                 $data['thumbnail_image'] = $urlthumbnailPath;
             }
-    
-
     
             if ($destination) {
                 if ($request->hasFile('images')) {
