@@ -87,10 +87,13 @@ class DestinationController extends Controller
                 $existingImages[] = [
                     'id' => $destination->id,
                     'name' => $destination->name,
+                    'city' => $destination->city,
+                    'state' => $destination->state,
+                    'destination_type'=> $destination->destination_type,
                     'thumbnail_image' => $destination->thumbnail_image,
+                    'images' => $images,
                     'short_description' => $destination->short_description,
                     'description' => $destination->description,
-                    'images' => $images,
                     // Add other fields as needed
                 ];
         }
