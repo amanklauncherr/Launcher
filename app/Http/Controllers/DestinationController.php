@@ -17,12 +17,12 @@ class DestinationController extends Controller
     
         $validator = Validator::make($request->all(), [
             'name' => $destination ? 'nullable|string' : 'required|string',
-            'city' => $destination ? 'nullable|string' : 'required|string',
+            'city' => 'nullable|string',
             'state' => $destination ? 'nullable|string' : 'required|string',
             'destination_type' => $destination ? 'nullable|string' : 'required|string',
-            'thumbnail_image' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120',
+            'thumbnail_image' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg' : 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'images' => $destination ? 'nullable|array' : 'required|array',
-            'images.*' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120' : 'required|image|mimes:jpeg,png,jpg,gif,svg|min:250|max:5120',
+            'images.*' => $destination ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg' : 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'short_description' => $destination ? 'nullable|string' : 'required|string',
             'description' => $destination ? 'nullable|string' : 'required|string'
         ]);
@@ -30,9 +30,13 @@ class DestinationController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         try {
             $data = $validator->validated();
+            if(!isset($data['city']))
+            {
+                $data['city'] = '';
+            }
             if ($request->hasFile('thumbnail_image')) {
                 $urlthumbnailPath = Cloudinary::upload($request->file('thumbnail_image')->getRealPath())->getSecurePath();
                 $data['thumbnail_image'] = $urlthumbnailPath;
@@ -162,15 +166,24 @@ class DestinationController extends Controller
     }
 
     public function destinationType(){
-        // $type=Destination::get();
-        // $type->destination_type->array_unique();
     
-        $types = Destination::get();
+    try {
+        // Get all Destination records
+        $types = Destination::all();
 
-     // Extract the destination_type values as an array
-      $uniqueTypes = $types->pluck('destination_type')->all();
+        if(!$types){
+            return response()->json(['success'=>0,'message'=>'No data Found'], 404);       
+        }
 
-    return response()->json(['destination_types' => $uniqueTypes]);
+        $uniqueTypes = $types->pluck('destination_type')->unique()->values();
+        // Return the unique destination types in a JSON response
+        return response()->json(['success'=>1,'destination_types' => $uniqueTypes], 200);
+    } catch (\Throwable $th) {
+        return response()->json([
+            'success' => 0,
+            'error' => 'Something went wrong', 
+            'details' => $th->getMessage()], 500);
+    }
     }
 
     public function deleteDestination(Request $request){
