@@ -92,8 +92,61 @@ class DestinationController extends Controller
         }
 
     return response()->json(['success'=>1,'data'=>$existingImages], 200);
-    
             }   
+    }
+
+    public function searchDestination(Request $request){
+        try {
+            //code...
+            $params=$request->all();
+            $validator= Validator::make($params,[
+              'state' => 'nullable|string',
+              'destination_type' =>'nullable|string',
+            ]);
+            if ($validator->fails()) {
+                $errors = $validator->errors()->all(); // Get all error messages
+                $formattedErrors = [];
+        
+                foreach ($errors as $error) {
+                    $formattedErrors[] = $error;
+                }
+                return response()->json([
+                    'success' => 0,
+                    'errors' => $formattedErrors
+                ], 422);
+            }   
+            $query=Destination::query();
+            if(!empty($params['state']))
+            {
+                $query->where('state', 'like', '%' . $params['state'] . '%');
+            }
+            if(!empty($params['destination_type']))
+            {
+                $query->where('destination_type', 'like', '%' . $params['destination_type'] . '%');
+            }
+
+            $searchResults = $query->get();
+            if($searchResults->isEmpty())
+            {
+                return response()->json(['success' => 0, 'message'=>'No destination Found'], 404);  
+            }
+            return response()->json(['success' => 1,'Destination' => $searchResults], 200);     
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' => 'Something went wrong', 'details' => $th->getMessage()], 500);
+        }
+    }
+
+    public function destinationType(){
+        // $type=Destination::get();
+        // $type->destination_type->array_unique();
+    
+        $types = Destination::get();
+
+     // Extract the destination_type values as an array
+      $uniqueTypes = $types->pluck('destination_type')->all();
+
+    return response()->json(['destination_types' => $uniqueTypes]);
     }
 
     public function deleteDestination(Request $request){
