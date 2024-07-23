@@ -195,4 +195,4 @@ Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 
-Route::post('/showState',[StateController::class,'showState']);
+Route::get('/showState',[StateController::class,'showState']);
