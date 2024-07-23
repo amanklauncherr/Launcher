@@ -29,6 +29,7 @@ use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
 use App\Http\Controllers\UserVerificationController;
 use App\Http\Controllers\IataCodeController;
+use App\Http\Controllers\StateController;
 use App\Models\Destination;
 
 // use App\Http\Middleware\CheckBearerToken;
@@ -194,3 +195,4 @@ Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 
+Route::post('/showState',[StateController::class,'showState']);
