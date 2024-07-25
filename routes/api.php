@@ -149,7 +149,8 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
-// Route::post('/add',[CountryCodeController::class,'add']);
+Route::post('/add',[IataCodeController::class,'addIata']);
+
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
 
 Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
@@ -194,5 +195,8 @@ Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
 
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
-
 Route::get('/showState',[StateController::class,'showState']);
+
+
+
+
