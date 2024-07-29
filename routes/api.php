@@ -30,7 +30,11 @@ use App\Http\Controllers\SubscriptionCardController;
 use App\Http\Controllers\UserVerificationController;
 use App\Http\Controllers\IataCodeController;
 use App\Http\Controllers\StateController;
+use App\Http\Controllers\SubscriptionDetailController;
+use App\Http\Controllers\UserSubscriptionController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Models\Destination;
+use App\Models\SubscriptionDetail;
 
 // use App\Http\Middleware\CheckBearerToken;
 
@@ -60,6 +64,7 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
     Route::post('/userRegister',[UserProfileController::class,'userRegister']);
     Route::post('/userLogin',[UserProfileController::class,'userLogin']);
 });
+
 
 
 Route::middleware(['auth:api','role:admin'])->group(function () {
@@ -122,6 +127,10 @@ Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCou
 
 });
 
+Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
+
+Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
+
 Route::get('/showDestination',[DestinationController::class,'showDestination']);
 Route::get('/destination',[DestinationController::class,'destination']);
 Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
@@ -145,7 +154,21 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     // Add to cart
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
+
+    // Add User Subscription
+    Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
+
+    // payment
+// Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
+// Route::get('/payment-redirect', function () {
+//     // Handle the redirect after payment
+//     return response()->json(['message' => 'Redirect after payment']);
+// });
+ 
 });
+
+Route::get('/initiate', [PaymentController::class, 'initiatePayment']);
+Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
@@ -189,9 +212,11 @@ Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
 
 Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
 
+// All iata
 Route::get('/showIata',[IataCodeController::class,'showIata']);
 
-Route::get('showIata/airport',[IataCodeController::class,'showAirport']);
+// Iata by query
+Route::get('/showIata/airport',[IataCodeController::class,'showAirport']);
 
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
