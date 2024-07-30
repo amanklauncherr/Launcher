@@ -18778,7 +18778,6 @@ public function showIata()
         $params = $request->query('query');
           
           $airport = iatacode::where('iata_code', 'like', '%' . $params . '%')
-          ->orWhere('city', 'like', '%' . $params . '%')
           ->get();
           
           if ($airport->isEmpty()) {
