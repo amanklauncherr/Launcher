@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 
 class AdminController extends Controller
 {   
@@ -17,7 +19,18 @@ class AdminController extends Controller
     public function register(Request $request){
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users|max:50',
+            'email' => [
+                'required',
+                'email',
+                'unique:users',
+                'max:50',
+                function ($attribute, $value, $fail) {
+                    $validator = new EmailValidator();
+                    if (!$validator->isValid($value, new RFCValidation())) {
+                        $fail('The '.$attribute.' is invalid.');
+                    }
+                },
+            ],
              'password' => [
                 'required',
                 'string',
@@ -25,10 +38,18 @@ class AdminController extends Controller
                 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
             ]
         ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
+            return response()->json([
+                'success' => 0,
+                'error' => $formattedErrors[0]
+            ], 422);
         }
+
         try {
             //code...
             $admin = User::create([
@@ -114,8 +135,40 @@ class AdminController extends Controller
             'token_type'=>'bearer',
             'expires_in'=>auth()->guard('api')->factory()->getTTL()*60,
             'user'=>Auth::guard('api')->user(),
+            // 'refresh_token' => $this->createRefreshToken(),
         ], 200);
     }
+
+    // public function refresh()
+    // {
+    //     return $this->respondWithToken(JWTAuth::refresh());
+    // }
+
+    // protected function createRefreshToken() {
+    //     // $customClaims = ['type' => 'refresh'];
+      
+    //     try {
+    //     // $refreshToken = JWTAuth::customClaims($customClaims)
+    //     //     ->setTTLMinutes(config('jwt.refresh_ttl'))
+    //     //     ->fromUser(auth()->user());
+      
+    //     //   return $refreshToken;
+
+    //     $customClaims = [
+    //         'type' => 'refresh',
+    //         'exp' => now()->addMinutes(config('jwt.refresh_ttl'))->timestamp
+    //     ];
+    //     return JWTAuth::claims($customClaims)->fromUser(auth()->user());
+
+    //     } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+    //       report($e); // Report the exception for logging or debugging
+      
+    //       return response()->json([
+    //         'message' => 'Error generating refresh token',
+    //         'error' => $e->getMessage(), // Consider providing a more generic message for security reasons
+    //       ], 500);
+    //     }
+    //   }
 
     public function allUser()
     {
@@ -185,3 +238,35 @@ class AdminController extends Controller
     }
 
 }
+
+
+    // try {
+    //     // Extract the refresh token from the Authorization header
+    //     $authHeader = $request->header('Authorization');
+    //     if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+    //         return response()->json(['error' => 'Refresh token not provided'], 400);
+    //     }
+
+    //     $refreshToken = str_replace('Bearer ', '', $authHeader);
+
+    //     // Pass the refresh token to the JWTAuth::refresh() method
+    //     $newToken = JWTAuth::setToken($refreshToken)->refresh();
+
+    //     return $this->respondWithToken($newToken);
+    // } catch (JWTException $e) {
+    //     return response()->json(['error' => 'Could not refresh token'], 500);
+    // }
+    
+    // protected function createRefreshToken(){
+    //     // return JWTAuth::claims(['type' => 'refresh'])->attempt(['email' => JWTAuth::user()->email, 'password' =>'']);
+
+    //     // $customClaims = ['type' => 'refresh'];
+    //     // return JWTAuth::customClaims($customClaims)->fromUser(auth()->user());
+
+    //     $customClaims = ['type' => 'refresh'];
+    //     $refreshToken = JWTAuth::customClaims($customClaims)
+    //         ->setTTL(config('jwt.refresh_ttl'))
+    //         ->fromUser(auth()->user());
+    
+    //     return $refreshToken;
+    // }

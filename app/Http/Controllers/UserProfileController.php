@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\UserVerificationConfirmation;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 
 class UserProfileController extends Controller
 {
@@ -24,7 +25,18 @@ class UserProfileController extends Controller
     {
         $validator=Validator::make($request->all(),[
             'name' => 'required|string|max:50',
-            'email' => 'required|email|unique:users,email|max:50',
+            'email' => [
+                'required',
+                'email',
+                'unique:users',
+                'max:50',
+                function ($attribute, $value, $fail) {
+                    $validator = new EmailValidator();
+                    if (!$validator->isValid($value, new RFCValidation())) {
+                        $fail('The '.$attribute.' is invalid.');
+                    }
+                },
+            ],
             'password' => [
                 'required',
                 'string',
@@ -33,11 +45,15 @@ class UserProfileController extends Controller
             ]
         ]);
 
-        if($validator->fails())
-        {
-            return response()->json([  
-              'success' => 0,
-              'error' => $validator->errors()
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
+            return response()->json([
+                'success' => 0,
+                'error' => $formattedErrors[0]
             ], 422);
         }
 
