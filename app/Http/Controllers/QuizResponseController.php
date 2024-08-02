@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Mail\SendQueuedMailable;
 use App\Mail\NewsletterSubscriptionConfirmation;
 use App\Models\QuizResponse;
 use App\Http\Controllers\Controller;
@@ -24,12 +23,18 @@ class QuizResponseController extends Controller
             'answer3' => 'required|string',
         ]);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
             return response()->json([
-                'errors' => $validator->errors()
-                ], 422);
+                'success' => 0,
+                'error' => $formattedErrors[0]
+            ], 422);
         }
+        
         try {
             //code...
             $data=$validator->validated();
@@ -37,8 +42,8 @@ class QuizResponseController extends Controller
             if(!$savedAns)
             {
                 return response()->json(['message'=>'Answer Not saved. Some Error might occur'],400);
-            }
-              Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation());
+            }else{
+                Mail::to($request->email)->send(new NewsletterSubscriptionConfirmation($request->name));
                 return response()->json([
                     'message' => 'Quiz Answered Properly ','User'=>[
                         'name'=>$savedAns->name,
@@ -48,6 +53,7 @@ class QuizResponseController extends Controller
                         'Answer1'=>$savedAns->answer1,
                         'Answer2'=>$savedAns->answer2,
                         'Answer3'=>$savedAns->answer3]], 201);
+            }
         } catch (\Exception $e) {
             //throw $th;
             return response()->json([
@@ -61,7 +67,6 @@ class QuizResponseController extends Controller
     {
         $result=QuizResponse::all();
         
-
         if($result->isEmpty())
         {
             return response()->json(['message' => 'No Quiz Response found'], 404);        
