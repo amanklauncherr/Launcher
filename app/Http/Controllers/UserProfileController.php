@@ -99,15 +99,6 @@ class UserProfileController extends Controller
 
     public function userLogin(Request $request)
     {
-        $message=[
-            'email.required'=> 'Email is required.',
-            'email.email' => 'Enter a email.',
-            'email.max' => 'Email character exceed 25 characters.',
-            'password.required'=> 'password is required.',
-            'password.string' => 'Paswword must be string.',
-            'password.min' => 'password must be atlest 8 character',
-            'password.regex' => 'Enter a valid password ex -: Test@123'
-        ];
         $validator=Validator::make($request->all(),[
             'email' => 'required|email|max:50',
             'password' => [
@@ -118,23 +109,18 @@ class UserProfileController extends Controller
             ],
         ]);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all(); // Get all error messages
             $formattedErrors = [];
-            foreach ($validator->errors()->all() as $message) {
-                $formattedErrors[] = [
-                    'message' => $message,
-                    'code' => 422,
-                ];
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
             }
             return response()->json([
                 'success' => 0,
-                'errors' => $formattedErrors
+                'error' => $formattedErrors[0]
             ], 422);
-            // return response()->json([
-            //     'success' => 0,
-            //   'error' => $validator->errors()],422);
         }
+
         try {
             //code...
             $credentials = $request->only('email','password');

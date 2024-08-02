@@ -85,8 +85,17 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
+            return response()->json([
+                'success' => 0,
+                'error' => $formattedErrors[0]
+            ], 422);
         }
+
         try {
             $credentials = $request->only('email', 'password');
             $user = User::where('email', $credentials['email'])->first();
