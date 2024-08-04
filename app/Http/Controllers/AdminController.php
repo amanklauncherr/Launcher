@@ -96,46 +96,36 @@ class AdminController extends Controller
             ], 422);
         }
 
+        $credentials = $request->only('email', 'password');
+
+        $admin = User::where('email', $credentials['email'])->first();
+
+        if (!$admin) {
+            return response()->json(['success' => 0, 'error' => "Email doesn't exist"], 404);
+        }
+        
+        if (!Hash::check($credentials['password'], $admin->password)) {
+            return response()->json(['success' => 0, 'error' => 'Password does not match'], 401);
+        }
+        
+        if (!$admin->hasRole('admin')) {
+            return response()->json(['success' => 0, 'error' => 'Unauthorized Login Role. Only Admin can Login'], 401);
+        }
+        
         try {
-            $credentials = $request->only('email', 'password');
-            $user = User::where('email', $credentials['email'])->first();
-
-            if (!$token = Auth::guard('api')->attempt($credentials)) {
-                // $user = User::where('email', $credentials['email'])->first();
-              
-
-                if (!$user) {
-                    return response()->json(['error' => 'Email does not exist'], 404);
-                }
-
-                // Check if the password matches
-                if (!Hash::check($credentials['password'], $user->password)) {
-                    return response()->json(['error' => 'Password does not match'], 401);
-                }
-
-                // If the above checks are passed but authentication fails
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            //  to check roles
-            // $roles = $user->getRoleNames();
-            // print_r($roles->toArray());die();
-            // $user = User::find($userId);
-
-            // Role Login Condition
-            if (!$user->hasRole('admin')) 
-            {
-                // User has the 'admin' role
-                return response()->json(['error' => 'Unauthorized Login Role. Only Admin can Login'], 401);  
-            }
+            $token = Auth::guard('api')->login($admin);
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
-            // Handle any exceptions
             return response()->json([
-                'message' => 'Error while Login',
+                'success' => 0,
+                'message' => 'Error while logging in',
                 'error' => $e->getMessage()
             ], 500);
         }
+                    //  to check roles
+            // $roles = $user->getRoleNames();
+            // print_r($roles->toArray());die();
+            // $user = User::find($userId);
     }
 
     protected function respondWithToken($token){
@@ -198,7 +188,12 @@ class AdminController extends Controller
 
     public function profile()
     {
-        return response()->json(Auth::guard('api')->user());
+            $user = Auth::guard('api')->user();
+    
+            if (!$user) {
+                return response()->json(['success' => 0, 'error' => 'Unauthorized. This token is not assigned to any user'], 401);
+            }
+            return response()->json(['success' => 1, 'data' => $user], 200);    
     }
 
     public function updateProfile(Request $request){

@@ -33,10 +33,10 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserSubscriptionController;
 use App\Http\Controllers\Payment\PaymentController;
+
 use App\Models\Destination;
 use App\Models\SubscriptionDetail;
-
-// use App\Http\Middleware\CheckBearerToken;
+use App\Http\Middleware\CheckBearerToken;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,19 +55,24 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
+    // Admin
     Route::post('/register',[AdminController::class,'register']);
     Route::post('/login',[AdminController::class,'login']);
 
-    Route::get('/profile',[AdminController::class,'profile']);
     Route::post('/logout',[AdminController::class,'logout']);
     Route::get('/alluser',[AdminController::class,'allUser']);
+
+    // User
     Route::post('/userRegister',[UserProfileController::class,'userRegister']);
     Route::post('/userLogin',[UserProfileController::class,'userLogin']);
 });
 
 
 
-Route::middleware(['auth:api','role:admin'])->group(function () {
+Route::middleware(['check.bearer.token','role:admin'])->group(function () {
+
+    Route::get('/admin/profile',[AdminController::class,'profile']);
+
     Route::put('/profile/update', [AdminController::class, 'updateProfile']);
 
     // Route::post('/refresh',[AdminController::class,'refresh']);
@@ -92,10 +97,10 @@ Route::middleware(['auth:api','role:admin'])->group(function () {
     // Banner
     Route::post('/Add-Banner',[BannerController::class,'Upload']);
     
-    // coupon 
+    // Coupon 
     Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);
     Route::put('/Update-Coupon/{coupon_code}',[CouponController::class,'updateCoupon']);
-Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);
+    Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);
 
     // Client 
     Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);

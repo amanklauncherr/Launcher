@@ -121,40 +121,29 @@ class UserProfileController extends Controller
             ], 422);
         }
 
-        try {
+
             //code...
             $credentials = $request->only('email','password');
             $user = User::where('email',$credentials['email'])->first();
             
-
-            if(!$token=Auth::guard('api')->attempt($credentials)){
-                if(!$user){
-                    return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
-                }
-                if(!Hash::check($credentials['password'],$user->password))
-                {
-                    return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
-                }
-
-                return response()->json([ 'success' => 0,'error'=>'Unauthorized User'],401);
+            if(!$user){
+                return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
             }
-            //  //  to check roles
-            // $roles = $user->getRoleNames();
-            // print_r($roles->toArray());die();
-            
-            // $verificationStatus=UserVerification::where('userID',$user->id)->get();
-            // if($verificationStatus[0]->verified === 1)
-            // {
+            if(!Hash::check($credentials['password'],$user->password))
+            {
+                return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
+            }
+
             if (!$user->hasRole('user')) 
             {
                 // User has the 'admin' role
                 return response()->json([ 'success' => 0,'error' => 'Unauthorized Login Role. Only User can Login'], 401);  
-            }
-            return $this->respondWithToken($token);
-            // }
-            // return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
+            }    
 
-        }  catch (\Exception $e) {
+        try {
+                $token=Auth::guard('api')->login($user);
+                return $this->respondWithToken($token);
+        } catch (\Exception $e) {
             // Handle any exceptions
             return response()->json([
                 'success' => 0,
@@ -162,6 +151,17 @@ class UserProfileController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+            //  //  to check roles
+            // $roles = $user->getRoleNames();
+            // print_r($roles->toArray());die();
+            
+            // $verificationStatus=UserVerification::where('userID',$user->id)->get();
+            // if($verificationStatus[0]->verified === 1)
+            // {
+            // }
+            // return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
+
+
     }
 
     protected function respondWithToken($token){
