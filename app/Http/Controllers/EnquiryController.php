@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Enquiry;
 use App\Models\JobPosting;
 use App\Models\EmployerProfile;
+use App\Models\UserProfile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,7 +27,7 @@ class EnquiryController extends Controller
                 ]
             );
         } 
-        elseif ($tokenType === 'user') {
+        else if ($tokenType === 'user') {
             $user = $request->attributes->get('user');
             $validator=Validator::make($request->all(),[
                 'gigID' => 'required|integer|exists:job_posting,id',
@@ -46,7 +48,7 @@ class EnquiryController extends Controller
                 $enquiry = Enquiry::create([
                     'userID' => $user->id,
                     'gigID' => $request->input('gigID'),
-                    'note' => $request->input('note'),
+                    'note' => $request->input('note') ? $request->input('note') : "" ,
                 ]);
                 return response()->json(['success'=>1,'enquiry'=>$enquiry], 201);
             } catch (\Exception $e) {
@@ -64,43 +66,66 @@ class EnquiryController extends Controller
         // $user = Auth::user();
     }   
     
-    public function showEnquiry(){
+    public function showEnquiry()
+    {
    
-       $enquries=Enquiry::get();
-       if($enquries->isEmpty())
-       { 
-        return response()->json(['success'=>0,'message'=>'No Enquiry found'],400);
-       }
-   
-       $gigIds=$enquries->pluck('gigID')->toArray();
-   
-       $jobPostings = JobPosting::whereIn('id', $gigIds)->get();
-   
-       $userId=$jobPostings->pluck('user_id')->unique();
-   
-       $employerProfileUserIds = EmployerProfile::pluck('user_id');
-   
-       $filteredUserIds = $userId->diff($employerProfileUserIds)->values()->toArray();
-   
-       $AdminGig=JobPosting::whereIn('user_id',$filteredUserIds)->get();
-   
-       $AdminGigArray=$AdminGig->pluck('id');
-   
-       $finalGigs=Enquiry::whereIn('gigID',$AdminGigArray)->with(['jobPosting','user.userProfile'])->get();
-       
-       $formattedData = $finalGigs->map(function ($finalGig) {
-        return [
-            'job_title' => $finalGig->jobPosting->title ?? 'N/A',
-            'job_location' => $finalGig->jobPosting->location ?? 'N/A',
-            'note' => $finalGig->note,
-            'user_name' => $finalGig->user->name ?? 'N/A',
-            'user_email' => $finalGig->user->email ?? 'N/A',
-            'user_phone_no' => $finalGig->user->userProfile->user_Number ?? 'N/A',
-        ];
-    });
+            //    $enquries=Enquiry::get();
+            //    if($enquries->isEmpty())
+            //    { 
+            //     return response()->json(['success'=>0,'message'=>'No Enquiry found'],400);
+            //    }
 
-    return response()->json($formattedData, 200);
+       $jobs=DB::table('enquiries')
+             ->leftJoin('job_posting','enquiries.gigID','=','job_posting.id')
+             ->leftJoin('users','enquiries.userID','=','users.id')
+             ->leftJoin('user_profiles','enquiries.userID','=','user_profiles.user_id')
+             ->select(
+                'job_posting.title as job_title',
+                'job_posting.location as job_location',
+                'users.name as user_name',
+                'users.email as user_email',
+                'user_profiles.user_Number as user_phone_no',
+                'enquiries.note as note'
+             )->get();
+   
+             if(!$jobs){
+                return response()->json([
+                    'success' => 0,
+                    'error' => 'No Data Found'
+                ], 404);
+            }
+                return response()->json(['success'=>1 ,'Enquires'=>$jobs]);
 
     }    
 
 }
+
+ //    $gigIds=$enquries->pluck('gigID')->toArray();
+   
+    //    $jobPostings = JobPosting::whereIn('id', $gigIds)->get();
+   
+    //    $userId=$jobPostings->pluck('user_id')->unique();
+   
+    //    $UserProfileIds = UserProfile::pluck('user_id');
+   
+    //    $filteredUserIds = $userId->diff($UserProfileIds)->values()->toArray();
+   
+    //    $AdminGig=JobPosting::whereIn('user_id',$filteredUserIds)->get();
+   
+    //    $AdminGigArray=$AdminGig->pluck('id');
+   
+    //    $finalGigs=Enquiry::whereIn('gigID',$AdminGigArray)->with(['jobPosting','user.userProfile'])->get();
+
+
+    //    $formattedData = $finalGigs->map(function ($finalGig) {
+    //     return [
+    //         'job_title' => $finalGig->jobPosting->title ,
+    //         'job_location' => $finalGig->jobPosting->location,
+    //         'note' => $finalGig->note,
+    //         'user_name' => $finalGig->user->name,
+    //         'user_email' => $finalGig->user->email,
+    //         'user_phone_no' => $finalGig->user->userProfile->user_Number ?? 'N/A',
+    //     ];
+    // });
+    // return response()->json([$userId,$UserProfileIds,$filteredUserIds], 200);
+    // return response()->json($formattedData, 200);
