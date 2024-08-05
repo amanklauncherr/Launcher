@@ -104,7 +104,7 @@ class CartDetailsController extends Controller
     
             $total=$totalCart->sum('price');
             $gstAmount = $total * 0.18;
-            $gstAmount=round($gstAmount, 2);
+            $gstAmount=$gstAmount;
             $grand=$total + $gstAmount;
     
             // $products = $totalCart->map(function($product) {
@@ -126,7 +126,7 @@ class CartDetailsController extends Controller
                 'products'=>$products,
                 'subTotal'=>$total,
                 'gstAmt' => $gstAmount,
-                'grand_Total'=>$grand],200);
+                'grand_Total'=>round($grand,2)],200);
             
         }
     }
