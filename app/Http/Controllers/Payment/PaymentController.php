@@ -84,7 +84,6 @@ class PaymentController extends Controller
     {
         return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure'], 500); 
     }
-
     // public function success(Request $request){
     //     $provider= new PayPalClient();
     //     $provider->setApiCredentials(config('paypal'));
