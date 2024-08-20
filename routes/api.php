@@ -163,17 +163,22 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     // Add User Subscription
     Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
-    // payment
-// Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
-// Route::get('/payment-redirect', function () {
-//     // Handle the redirect after payment
-//     return response()->json(['message' => 'Redirect after payment']);
-// });
+   
  
 });
 
-Route::get('/initiate', [PaymentController::class, 'initiatePayment']);
+
+
+Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
 Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
+
+ // payment
+ Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
+ Route::get('/payment-redirect', function () 
+ {
+     // Handle the redirect after payment
+     return response()->json(['message' => 'Redirect after payment']);
+ });
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
@@ -227,6 +232,9 @@ Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 Route::get('/showState',[StateController::class,'showState']);
 
+Route::post('/paypal',[PaymentController::class,'paypal']);
 
-
+Route::get('/success',[PaymentController::class,'success'])->name('success');
+ // payment
+ Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
