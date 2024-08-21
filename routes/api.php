@@ -29,6 +29,7 @@ use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
 use App\Http\Controllers\UserVerificationController;
 use App\Http\Controllers\IataCodeController;
+use App\Http\Controllers\OrderIDCreationController;
 use App\Http\Controllers\StateController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserSubscriptionController;
@@ -232,6 +233,12 @@ Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 Route::get('/showState',[StateController::class,'showState']);
 
+
+// ORDERID
+Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
+
+
+// PAYPAL
 Route::post('/paypal',[PaymentController::class,'paypal']);
 
 Route::get('/success',[PaymentController::class,'success'])->name('success');
