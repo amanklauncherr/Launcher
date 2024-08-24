@@ -164,8 +164,10 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     // Add to cart
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
+    
+    // Add User Subscription
+    Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
- 
 });
 
 
