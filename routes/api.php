@@ -124,23 +124,27 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
   Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);
   Route::get('/showJoinOfferAdmin',[JoinOfferController::class,'showJoinOfferAdmin']);
 
-    //   Subscription Card
+    // Subscription Card
     Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
     Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
 
     Route::post('/addDestination',[DestinationController::class,'addDestination']);
     Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);
 
+    // Subscription Details
+    Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
 });
 
-Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
 
-Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
 Route::get('/showDestination',[DestinationController::class,'showDestination']);
+
 Route::get('/destination',[DestinationController::class,'destination']);
+
 Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
+
 Route::get('/destinationType',[DestinationController::class,'destinationType']);
+
 
 Route::middleware(['publictokenOrauth'])->group(function () {
     //    userProfile
@@ -161,16 +165,13 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
 
-    // Add User Subscription
-    Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
-
-   
  
 });
 
 
 
 Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
+
 Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
 
  // payment
@@ -245,3 +246,5 @@ Route::get('/success',[PaymentController::class,'success'])->name('success');
  // payment
  Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
+
+ 
