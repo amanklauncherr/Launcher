@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -28,6 +29,19 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof ThrottleRequestsException) {
+            // Return a custom response
+            return response()->json([
+                'message' => 'You are making too many requests. Please slow down and try again later.',
+                'retry_after' => $exception->getHeaders()['Retry-After']  ?? 60,
+            ], 429);
+        }
+
+        return parent::render($request, $exception);
     }
 
 }

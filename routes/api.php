@@ -136,16 +136,6 @@ Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(fu
 });
 
 
-
-Route::get('/showDestination',[DestinationController::class,'showDestination']);
-
-Route::get('/destination',[DestinationController::class,'destination']);
-
-Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
-
-Route::get('/destinationType',[DestinationController::class,'destinationType']);
-
-
 Route::middleware(['publictokenOrauth','throttle:10,1'])->group(function () {
     //    userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
@@ -185,6 +175,7 @@ Route::any('phonepe-response',[PaymentController::class,'response'])->name('resp
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
 Route::middleware(['throttle:10,1'])->group(function (){
+
 Route::post('/add',[IataCodeController::class,'addIata']);
 
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
@@ -235,6 +226,14 @@ Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 Route::get('/showState',[StateController::class,'showState']);
 
+// Destination
+Route::get('/showDestination',[DestinationController::class,'showDestination']);
+
+Route::get('/destination',[DestinationController::class,'destination']);
+
+Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
+
+Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
 // ORDERID
 Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
