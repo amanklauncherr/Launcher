@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
+Route::group(['middleware'=>['api', 'throttle:5,1'],'prefix'=>'auth'], function(){
     // Admin
     Route::post('/register',[AdminController::class,'register']);
     Route::post('/login',[AdminController::class,'login']);
@@ -70,7 +70,7 @@ Route::group(['middleware'=>'api','prefix'=>'auth'], function(){
 
 
 
-Route::middleware(['check.bearer.token','role:admin'])->group(function () {
+Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(function () {
 
     Route::get('/admin/profile',[AdminController::class,'profile']);
 
@@ -146,7 +146,7 @@ Route::post('/searchDestination',[DestinationController::class,'searchDestinatio
 Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
 
-Route::middleware(['publictokenOrauth'])->group(function () {
+Route::middleware(['publictokenOrauth','throttle:10,1'])->group(function () {
     //    userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
@@ -170,8 +170,6 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 });
 
-
-
 Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
 
 Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
@@ -186,6 +184,7 @@ Route::any('phonepe-response',[PaymentController::class,'response'])->name('resp
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
+Route::middleware(['throttle:10,1'])->group(function (){
 Route::post('/add',[IataCodeController::class,'addIata']);
 
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
@@ -247,6 +246,8 @@ Route::post('/paypal',[PaymentController::class,'paypal']);
 Route::get('/success',[PaymentController::class,'success'])->name('success');
  // payment
  Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
+
+});
 
 
  
