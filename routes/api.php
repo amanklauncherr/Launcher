@@ -137,6 +137,7 @@ Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(fu
 
 
 Route::middleware(['publictokenOrauth','throttle:10,1'])->group(function () {
+
     //    userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
@@ -212,6 +213,9 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 
 Route::get('/cities',[CitesController::class,'Cites']);
 
+Route::get('/STATE',[StateController::class,'AllState']);
+Route::get('/CITIES',[StateController::class,'CITIES']);
+
 Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
 
 Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
@@ -237,7 +241,6 @@ Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
 // ORDERID
 Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
-
 
 // PAYPAL
 Route::post('/paypal',[PaymentController::class,'paypal']);
