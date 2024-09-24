@@ -12,6 +12,7 @@ use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\QueAndAnsController;
 use App\Http\Controllers\ClientInfoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AESEncryption;
 use App\Http\Controllers\AirlineCodeController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\JobPostingController;
@@ -248,6 +249,8 @@ Route::post('/paypal',[PaymentController::class,'paypal']);
 Route::get('/success',[PaymentController::class,'success'])->name('success');
  // payment
  Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
+
+ Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
 
 });
 
