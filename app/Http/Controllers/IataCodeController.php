@@ -6,6 +6,7 @@ use App\Models\iatacode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class IataCodeController extends Controller
 {
@@ -18753,6 +18754,7 @@ class IataCodeController extends Controller
     return response()->json(['success'=>1, 'Data' => 'added']);
 
 }
+
 // DB::table('iatacodes')
 //       ->where('iata_code', $data['code'])
 //       ->where""('city')
@@ -18761,45 +18763,81 @@ class IataCodeController extends Controller
 //           'city' => $data['city'],
 //           'state' => $data['state']
 //       ]);
+
 public function showIata()
 {
-        $code=iatacode::get();
-        if($code->isEmpty())
-        {
-         return response()->json(['success'=>0,'message' => 'No Data Found']);
-        } 
-        return response()->json(['success'=>1, 'Data' => $code]);
+    $code=iatacode::get();
+    if($code->isEmpty())
+    {
+      return response()->json(['success'=>0,'message' => 'No Data Found']);
+    }
+    return response()->json(['success'=>1, 'Data' => $code]);
 }
 
-    public function showAirport(Request $request)
+public function CheckVIAIATA(Request $request)
+{
+    $params = $request->query('iata');
+
+    if(!$params)
     {
-     try 
-     {
-        $params = $request->query('query');
-          
-          $airport = iatacode::where('iata_code', 'like', '%' . $params . '%')
-          ->orWhere('city', 'like', '%' . $params . '%')
-          ->get();
-          
-          if ($airport->isEmpty()) {
-            return response()->json([
-                'success' => 0,
-                'message' => 'No Data Found'
-            ], 404);
-          }
-          return response()->json([
-            'success' => 1,
-            'data' => $airport
-          ], 200);     
-          
-    } catch (\Throwable $th) {
-        // Handle any exceptions and return a JSON response
-        return response()->json([
-            'success' => 0,
-            'error' => 'Something went wrong while retrieving data',
-            'details' => $th->getMessage()
-        ], 500);
+      return response()->json([
+        'success' => 0,
+        'message' => 'Please Provide Iata'
+      ], 404);
     }
+
+    $IataExists = iatacode::where('iata_code',$params)->first();
+
+    if(!$IataExists)
+    {
+      return response()->json([
+        'success' => 0,
+        'message' => 'No Data Found'
+      ], 404);
+    }
+
+    if($IataExists->country === 'India' )
+    {
+      return response()->json([
+        'success' => 1,
+        'data' => 'PHONEPEPAY'
+      ], 200); 
+    }
+    return response()->json([
+      'success' => 1,
+      'data' => 'PAYPAL'
+    ], 200);   
+}
+
+public function showAirport(Request $request)
+{
+  try 
+  {
+    $params = $request->query('query');
+    
+    $airport = iatacode::where('iata_code', 'like', '%' . $params . '%')
+    ->orWhere('city', 'like', '%' . $params . '%')
+    ->get();
+    
+    if ($airport->isEmpty()) {
+      return response()->json([
+          'success' => 0,
+          'message' => 'No Data Found'
+      ], 404);
+    }
+    return response()->json([
+      'success' => 1,
+      'data' => $airport
+    ], 200);     
+      
+} catch (\Throwable $th) {
+      // Handle any exceptions and return a JSON response
+      return response()->json([
+          'success' => 0,
+          'error' => 'Something went wrong while retrieving data',
+          'details' => $th->getMessage()
+      ], 500);
+  }
 }    
 }
 
