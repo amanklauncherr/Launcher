@@ -18800,7 +18800,7 @@ public function CheckVIAIATA(Request $request)
     {
       return response()->json([
         'success' => 1,
-        'data' => 'PHONEPEPAY'
+        'data' => 'PHONEPAY'
       ], 200); 
     }
     return response()->json([
