@@ -215,6 +215,7 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
 Route::get('/cities',[CitesController::class,'Cites']);
 
 Route::get('/STATE',[StateController::class,'AllState']);
+
 Route::get('/CITIES',[StateController::class,'CITIES']);
 
 Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
@@ -226,6 +227,8 @@ Route::get('/showIata',[IataCodeController::class,'showIata']);
 
 // Iata by query
 Route::get('/showIata/airport',[IataCodeController::class,'showAirport']);
+
+Route::get('/Check/IATA',[IataCodeController::class,'CheckVIAIATA']);
 
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
