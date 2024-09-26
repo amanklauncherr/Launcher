@@ -248,11 +248,9 @@ Route::post('/paypal',[PaymentController::class,'paypal']);
 
 Route::get('/success',[PaymentController::class,'success'])->name('success');
  // payment
- Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
- Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
+ Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
 });
 
-
- 
+Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
