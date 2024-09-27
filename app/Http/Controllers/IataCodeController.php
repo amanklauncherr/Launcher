@@ -18813,31 +18813,68 @@ public function showAirport(Request $request)
 {
   try 
   {
-    $params = $request->query('query');
+    // $iata = $request->query('iata');
+    // $city = $request->query('city');
     
-    $airport = iatacode::where('iata_code', 'like', '%' . $params . '%')
-    ->orWhere('city', 'like', '%' . $params . '%')
-    ->get();
+    // $airport = iatacode::where('iata_code', 'like', '%' . $iata . '%')
+    // ->orWhere('city', 'like', '%' . $city . '%')
+    // ->get();
     
-    if ($airport->isEmpty()) {
-      return response()->json([
-          'success' => 0,
-          'message' => 'No Data Found'
-      ], 404);
+    // if ($airport->isEmpty()) {
+    //   return response()->json([
+    //       'success' => 0,
+    //       'message' => 'No Data Found'
+    //   ], 404);
+    // }
+    // return response()->json([
+    //   'success' => 1,
+    //   'data' => $airport
+    // ], 200);     
+    $iata = $request->query('iata');
+    $city = $request->query('city');
+
+    // Ensure that at least one parameter is provided for searching
+    if (!$iata && !$city) {
+        return response()->json([
+            'success' => 0,
+            'message' => 'Please provide either IATA code or City name to search.'
+        ], 400);
     }
+
+    // Create the query, but only add conditions if values are provided
+    $query = iatacode::query();
+
+    if ($iata) {
+        $query->where('iata_code', 'like', '%' . $iata . '%');
+    }
+
+    if ($city) {
+        $query->orWhere('city', 'like', '%' . $city . '%');
+    }
+
+    $airport = $query->get();
+
+    if ($airport->isEmpty()) {
+        return response()->json([
+            'success' => 0,
+            'message' => 'No Data Found'
+        ], 404);
+    }
+
     return response()->json([
-      'success' => 1,
-      'data' => $airport
-    ], 200);     
+        'success' => 1,
+        'data' => $airport
+    ], 200);
+
       
-} catch (\Throwable $th) {
-      // Handle any exceptions and return a JSON response
-      return response()->json([
-          'success' => 0,
-          'error' => 'Something went wrong while retrieving data',
-          'details' => $th->getMessage()
-      ], 500);
-  }
+  } catch (\Throwable $th) {
+        // Handle any exceptions and return a JSON response
+        return response()->json([
+            'success' => 0,
+            'error' => 'Something went wrong while retrieving data',
+            'details' => $th->getMessage()
+        ], 500);
+    }
 }    
 }
 
