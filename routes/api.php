@@ -139,7 +139,7 @@ Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(fu
 
 Route::middleware(['publictokenOrauth','throttle:10,1'])->group(function () {
 
-    //    userProfile
+    // userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
     Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
     Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
@@ -176,7 +176,7 @@ Route::any('phonepe-response',[PaymentController::class,'response'])->name('resp
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
-Route::middleware(['throttle:10,1'])->group(function (){
+Route::middleware(['throttle:20,1'])->group(function (){
 
 Route::post('/add',[IataCodeController::class,'addIata']);
 
