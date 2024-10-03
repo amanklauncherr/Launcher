@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::group(['middleware'=>['api', 'throttle:5,1'],'prefix'=>'auth'], function(){
+Route::group(['middleware'=>['api', 'throttle:500,1'],'prefix'=>'auth'], function(){
     // Admin
     Route::post('/register',[AdminController::class,'register']);
     Route::post('/login',[AdminController::class,'login']);
@@ -71,7 +71,7 @@ Route::group(['middleware'=>['api', 'throttle:5,1'],'prefix'=>'auth'], function(
 
 
 
-Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(function () {
+Route::middleware(['check.bearer.token','role:admin','throttle:1000,1'])->group(function () {
 
     Route::get('/admin/profile',[AdminController::class,'profile']);
 
@@ -137,7 +137,7 @@ Route::middleware(['check.bearer.token','role:admin','throttle:10,1'])->group(fu
 });
 
 
-Route::middleware(['publictokenOrauth','throttle:10,1'])->group(function () {
+Route::middleware(['publictokenOrauth','throttle:1000,1'])->group(function () {
 
     // userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
