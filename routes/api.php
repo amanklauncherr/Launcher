@@ -277,6 +277,6 @@ Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
 
 Route::post('/Low/Fare',[DotMikController::class,'LowFare']);
 
-Route::post('/Sector/Avalablity',[DotMikController::class,'SectorAvalablity']);
+Route::post('/Sector/Avalability',[DotMikController::class,'SectorAvalability']);
 
 Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
