@@ -25,6 +25,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\CountryCodeController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\DotMikController;
 // use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
@@ -257,3 +258,25 @@ Route::get('/success',[PaymentController::class,'success'])->name('success');
 });
 
 Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
+
+Route::post('/Search/Flight',[DotMikController::class,'SearchFlight']);
+
+Route::post('/Fare/Rule',[DotMikController::class,'fareRule']);
+
+Route::post('/Re/Price',[DotMikController::class,'RePrice']);
+
+Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
+
+Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
+
+Route::post('/History',[DotMikController::class,'History']);
+
+Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
+
+Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
+
+Route::post('/Low/Fare',[DotMikController::class,'LowFare']);
+
+Route::post('/Sector/Avalablity',[DotMikController::class,'SectorAvalablity']);
+
+Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
