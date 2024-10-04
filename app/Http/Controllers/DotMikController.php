@@ -777,12 +777,12 @@ class DotMikController extends Controller
         $validator = Validator::make($request->all(),[
             'headersToken' => 'required|string',
             'headersKey' => 'required|string',
-            "origin" => "required|string",
-            "destination" => "required|string",
-            "tripId" => "required|string",
-            "travelDate" => "required|date",
             "travelType" => "required|string",
             "bookingType" => "required|string",
+            "origin" => "required|string",
+            "destination" => "required|string",
+            "travelDate" => "required|date",
+            "tripId" => "required|string",
             "adultCount" => "required|string",
             "childCount" => "required|string",
             "infantCount" => "required|string",
@@ -828,7 +828,7 @@ class DotMikController extends Controller
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
             'D-SECRET-KEY' => $data['headersKey'],
-            // 'CROP-CODE' => 'DOTMIK160614',
+            'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
@@ -927,7 +927,7 @@ class DotMikController extends Controller
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
             'D-SECRET-KEY' => $data['headersKey'],
-            // 'CROP-CODE' => 'DOTMIK160614',
+            'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
@@ -1056,7 +1056,7 @@ class DotMikController extends Controller
         }   
     }
 
-    public function SectorAvalablity(Request $request)
+    public function SectorAvalability(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'headersToken' => 'required|string',
