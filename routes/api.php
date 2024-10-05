@@ -57,8 +57,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::group(['middleware'=>['api', 'throttle:500,1'],'prefix'=>'auth'], function(){
+// , 'throttle:500,1'
+Route::group(['middleware'=>['api'],'prefix'=>'auth'], function(){
     // Admin
     Route::post('/register',[AdminController::class,'register']);
     Route::post('/login',[AdminController::class,'login']);
@@ -72,8 +72,8 @@ Route::group(['middleware'=>['api', 'throttle:500,1'],'prefix'=>'auth'], functio
 });
 
 
-
-Route::middleware(['check.bearer.token','role:admin','throttle:1000,1'])->group(function () {
+// ,'throttle:1000,1'
+Route::middleware(['check.bearer.token','role:admin'])->group(function () {
 
     Route::get('/admin/profile',[AdminController::class,'profile']);
 
@@ -138,8 +138,8 @@ Route::middleware(['check.bearer.token','role:admin','throttle:1000,1'])->group(
     Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
 });
 
-
-Route::middleware(['publictokenOrauth','throttle:1000,1'])->group(function () {
+// ,'throttle:1000,1'
+Route::middleware(['publictokenOrauth'])->group(function () {
 
     // userProfile
     Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
@@ -178,7 +178,7 @@ Route::any('phonepe-response',[PaymentController::class,'response'])->name('resp
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
-Route::middleware(['throttle:20,1'])->group(function (){
+// Route::middleware(['throttle:20,1'])->group(function (){
 
 Route::post('/add',[IataCodeController::class,'addIata']);
 
@@ -256,7 +256,7 @@ Route::get('/success',[PaymentController::class,'success'])->name('success');
 
  Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
-});
+// });
 
 
 
