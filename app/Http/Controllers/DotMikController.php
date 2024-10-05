@@ -12,7 +12,6 @@ class DotMikController extends Controller
     //
     public function SearchFlight(Request $request)
     {
-        
         $validator=Validator::make($request->all(),[
             "origin" => "required|string",
             "destination" => "required|string",
@@ -169,10 +168,7 @@ class DotMikController extends Controller
     
                         $filteredFlights = $filteredSegments->all();
     
-                        $filteredFlights = array_values($filteredFlights);
-
-
- 
+                        $filteredFlights = array_values($filteredFlights); 
                     }
                     else if (isset($data['Arrival'])) 
                     {                       
@@ -255,7 +251,6 @@ class DotMikController extends Controller
                     else {
                         $filteredFlights = $flights; // No filter, return all flights
                         // return response()->json($filteredFlights[0]['Fares'][0]['Refundable'],400);
-
                     }
 
                     if(isset($data['Refundable']))
@@ -285,12 +280,30 @@ class DotMikController extends Controller
 
                     $count = count($filtered);
 
+                    $payloads = [
+                            'errors' => [],
+                            'data' => [
+                                'tripDetails' => [
+                                    [
+                                        'Flights' => $filtered
+                                    ]
+                                ]
+                            ]
+                    ];
+                    
+                    // Output the array structure to see the JSON-like format
+                    // echo json_encode($payloads, JSON_PRETTY_PRINT);
+                    
+
                     return response()->json([
-                        'success' => true,
+                        'status' => true,
                         'count' => $count,
+                        'status_code' => $result['status_code'],
+                        'request_id' => $result['request_id'],
                         'SearchKey' => $result['payloads']['data']['searchKey'],
                         'AirlineCodes' =>  $distinctAirlineCodes,
-                        'data' => $filtered,
+                        'payloads' => $payloads,
+                        // 'data' => $filtered,
                     ], 200);
                 } else {
                     return response()->json([
@@ -482,8 +495,13 @@ class DotMikController extends Controller
 
     public function TemporaryBooking(Request $request){
         $validator = Validator::make($request->all(),[
-            'SearchKey' => 'required|string',
+            'searchKey' => 'required|string',
             'FlightKey' => 'required|string',
+            "DOB" => 'required|date',
+            "passportNumber" => 'required|string',
+            "passportIssuingAuthority" => "required|string",
+            "passportExpire" => "required|date",
+            "nationality" => "required|string",
             'headersToken' => 'required|string',
             'headersKey' => 'required|string'
         ]);     
@@ -522,11 +540,11 @@ class DotMikController extends Controller
                         "lastName"=> "testing",
                         "gender"=> 0,        
                         "age" => null,
-                        "dob" => "1997-10-12",
-                        "passportNumber" => null,
-                        "passportIssuingAuthority" => null,
-                        "passportExpire" => null,
-                        "nationality" => null,
+                        "dob" => $data['DOB'],
+                        "passportNumber" => $data['passportNumber'],
+                        "passportIssuingAuthority" => $data['passportIssuingAuthority'],
+                        "passportExpire" => $data['passportExpire'],
+                        "nationality" => $data['nationality'],
                         "pancardNumber" => null,
                         "frequentFlyerDetails" => null
                     ]
@@ -540,7 +558,7 @@ class DotMikController extends Controller
             ],
             "flightDetails" => [
                 [
-                    "searchKey" => $data['SearchKey'], // Provided data
+                    "searchKey" => $data['searchKey'], // Provided data
                     "flightKey" => $data['FlightKey'], // Provided data
                     "ssrDetails" => [] // Empty array as per the structure
                 ]
@@ -887,50 +905,50 @@ class DotMikController extends Controller
             "infantCount" => "required|string",
             "classOfTravel" => "required|string",
         ]);     
-
+        
         if ($validator->fails()) {
             $errors = $validator->errors()->all(); // Get all error messages
             $formattedErrors = [];
-    
+            
             foreach ($errors as $error) {
                 $formattedErrors[] = $error;
             }
-    
+        
             return response()->json([
                 'success' => 0,
                 'error' => $formattedErrors[0]
             ], 422);
         }
         
-        $data=$validator->validated();
-
+        $data = $validator->validated();
+        
         $payload = [
             "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
+                "ip" => "122.161.52.233", // Keep this static or dynamically assign if needed
+                "imeiNumber" => "12384659878976879887" // Static for now
             ],
-            "travelType" => $data['travelType'], // Domestic or International
-            "bookingType" => $data['bookingType'], // One way
+            "travelType" => $data['travelType'] ?? '0', // Default to '0' (Domestic)
+            "bookingType" => $data['bookingType'] ?? '0', // Default to '0' (One way)
             "tripInfo" => [
-                "origin" => $data['origin'],
-                "destination" => $data['destination'],
-                "travelDate" => $data['travelDate'], // MM/DD/YYYY
-                "tripId" => $data['tripId'] // Ongoing trip
+                "origin" => $data['origin'] ?? 'Unknown Origin', // Provide a default value
+                "destination" => $data['destination'] ?? 'Unknown Destination', // Default value
+                "travelDate" => $data['travelDate'] ?? now()->format('m/d/Y'), // Provide a default date
+                "tripId" => $data['tripId'] ?? '0' // Default trip ID
             ],
-            "adultCount" => $data['adultCount'],
-            "childCount" => $data['childCount'],
-            "infantCount" => $data['infantCount'],
-            "classOfTravel" => $data['classOfTravel'],// This requires the class of Travel. Possible values: 0- ECONOMY/ 1- BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+            "adultCount" => $data['adultCount'] ?? '1', // Default to 1
+            "childCount" => $data['childCount'] ?? '0', // Default to 0
+            "infantCount" => $data['infantCount'] ?? '0', // Default to 0
+            "classOfTravel" => $data['classOfTravel'] ?? '0' // Default to '0' (Economy)
         ];
         
         // Headers
         $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
+            'D-SECRET-TOKEN' => $data['headersToken'] ?? '', // Use null coalescing to avoid issues
+            'D-SECRET-KEY' => $data['headersKey'] ?? '', // Same for the key
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
-
+               
         // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/cancellation';
 
