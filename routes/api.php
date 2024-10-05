@@ -25,6 +25,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\CartDetailsController;
 use App\Http\Controllers\CountryCodeController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\DotMikBusController;
 use App\Http\Controllers\DotMikController;
 // use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
@@ -257,6 +258,8 @@ Route::get('/success',[PaymentController::class,'success'])->name('success');
 
 });
 
+
+
 Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
 
 Route::post('/Search/Flight',[DotMikController::class,'SearchFlight']);
@@ -280,3 +283,5 @@ Route::post('/Low/Fare',[DotMikController::class,'LowFare']);
 Route::post('/Sector/Avalability',[DotMikController::class,'SectorAvalability']);
 
 Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
+
+Route::get('/Get/Source/Cities',[DotMikBusController::class,'GetSourceCities']);
