@@ -105,6 +105,7 @@ class DotMikController extends Controller
                     // Filter flights based on Departure and Arrival times
                     if(isset($data['Arrival']) && isset($data['Departure']))
                     {
+
                         if($data['Arrival'] === '12AM6AM')
                         {  
                             $arrivalDateTimeLow = "{$data['travelDate']} 00:00";
@@ -374,6 +375,7 @@ class DotMikController extends Controller
             // Make the POST request using Laravel HTTP Client
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result=$response->json();
+            
             $statusCode = $response->status();
 
             if($result['status'] === false)
@@ -494,33 +496,46 @@ class DotMikController extends Controller
     }
 
     public function TemporaryBooking(Request $request){
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
+            'passenger_details.mobile' => 'required|string',
+            'passenger_details.whatsApp' => 'required|string',
+            'passenger_details.email' => 'required|string',
+            'passenger_details.paxId' => 'required|integer',
+            'passenger_details.paxType' => 'required|integer', // 0-ADT/1-CHD/2-INF
+            'passenger_details.title' => 'required|string',   // MR, MRS, MS; MSTR, MISS for child/infant
+            'passenger_details.firstName' => 'required|string',
+            'passenger_details.lastName' => 'required|string',
+            'passenger_details.age' => 'nullable|integer',
+            'passenger_details.gender' => 'required|integer',  // 0-Male, 1-Female
+            'passenger_details.dob' => 'required|date',
+            'passenger_details.passportNumber' => 'required|string',
+            'passenger_details.passportIssuingAuthority' => 'required|string',
+            'passenger_details.passportExpire' => 'required|date',
+            'passenger_details.nationality' => 'required|string',
+            'passenger_details.pancardNumber' => 'nullable|string',
+            'passenger_details.frequentFlyerDetails' => 'nullable|string',
+            'gst.isGst' => 'required|string',
+            'gst.gstNumber' => 'nullable|string',
+            'gst.gstName' => 'nullable|string',
+            'gst.gstAddress' => 'nullable|string',
             'searchKey' => 'required|string',
             'FlightKey' => 'required|string',
-            "DOB" => 'required|date',
-            "passportNumber" => 'required|string',
-            "passportIssuingAuthority" => "required|string",
-            "passportExpire" => "required|date",
-            "nationality" => "required|string",
             'headersToken' => 'required|string',
             'headersKey' => 'required|string'
-        ]);     
-
+        ]);
+        
         if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-    
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-    
+            $errors = $validator->errors()->all();
             return response()->json([
                 'success' => 0,
-                'error' => $formattedErrors[0]
+                'error' => $errors[0] // Return the first error
             ], 422);
         }
         
-        $data=$validator->validated();
+        $data = $validator->validated();
+
+
+        // return response()->json($data['passenger_details']['mobile']);
 
         $payload = [
             "deviceInfo" => [
@@ -528,39 +543,39 @@ class DotMikController extends Controller
                 "imeiNumber" => "12384659878976879887"
             ],
             "passengers" => [
-                "mobile"=> "9067498778",
-                "whatsApp"=> "9067498778",
-                "email"=> "mmrtesting@gmail.com",
+                "mobile" => $data['passenger_details']['mobile'],
+                "whatsApp" => $data['passenger_details']['whatsApp'],
+                "email" => $data['passenger_details']['email'],
                 "paxDetails" => [
                     [
-                        "paxId"=> 1,
-                        "paxType"=> 0,
-                        "title"=> "Mr",
-                        "firstName"=> "mmr",
-                        "lastName"=> "testing",
-                        "gender"=> 0,        
-                        "age" => null,
-                        "dob" => $data['DOB'],
-                        "passportNumber" => $data['passportNumber'],
-                        "passportIssuingAuthority" => $data['passportIssuingAuthority'],
-                        "passportExpire" => $data['passportExpire'],
-                        "nationality" => $data['nationality'],
-                        "pancardNumber" => null,
-                        "frequentFlyerDetails" => null
+                        "paxId" => $data['passenger_details']['paxId'],
+                        "paxType" => $data['passenger_details']['paxType'],
+                        "title" => $data['passenger_details']['title'],
+                        "firstName" => $data['passenger_details']['firstName'],
+                        "lastName" => $data['passenger_details']['lastName'],
+                        "gender" => $data['passenger_details']['gender'],
+                        "age" => $data['passenger_details']['age'] ?? null,
+                        "dob" => $data['passenger_details']['dob'],
+                        "passportNumber" => $data['passenger_details']['passportNumber'],
+                        "passportIssuingAuthority" => $data['passenger_details']['passportIssuingAuthority'],
+                        "passportExpire" => $data['passenger_details']['passportExpire'],
+                        "nationality" => $data['passenger_details']['nationality'],
+                        "pancardNumber" => $data['passenger_details']['pancardNumber'] ?? null,
+                        "frequentFlyerDetails" => $data['passenger_details']['frequentFlyerDetails'] ?? null
                     ]
                 ]
             ],
             "gst" => [
-                "isGst" => "false", // Boolean value for GST
-                "gstNumber" => "", // Empty as isGst is false
-                "gstName" => "",   // Empty as isGst is false
-                "gstAddress" => "" // Empty as isGst is false
+                "isGst" => $data['gst']['isGst'],
+                "gstNumber" => $data['gst']['gstNumber'],
+                "gstName" => $data['gst']['gstName'],
+                "gstAddress" => $data['gst']['gstAddress']
             ],
             "flightDetails" => [
                 [
-                    "searchKey" => $data['searchKey'], // Provided data
-                    "flightKey" => $data['FlightKey'], // Provided data
-                    "ssrDetails" => [] // Empty array as per the structure
+                    "searchKey" => $data['searchKey'],
+                    "flightKey" => $data['FlightKey'],
+                    "ssrDetails" => [] // Empty SSR details
                 ]
             ],
             "costCenterId" => 0,
@@ -582,23 +597,20 @@ class DotMikController extends Controller
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
-
+        
         // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/tempBooking';
-
+        
         try {
-            // Make the POST request using Laravel HTTP Client
+            // Make POST request
             $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
+            $result = $response->json();
             $statusCode = $response->status();
-
-            if($result['status'] === false)
-            {
-                return response()->json($result,$statusCode);   
-            }
-            else{
-                if($response->successful())
-                {
+        
+            if ($result['status'] === false) {
+                return response()->json($result, $statusCode);
+            } else {
+                if ($response->successful()) {
                     return response()->json([
                         'success' => true,
                         'data' => $result,
@@ -611,15 +623,13 @@ class DotMikController extends Controller
                     ], $response->status());
                 }
             }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred',
                 'error' => $e->getMessage()
             ], 500);
-        }
+        }        
     }
 
     public function Ticketing(Request $request)
