@@ -10208,33 +10208,64 @@ class DotMikController extends Controller
         ];
 
         // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
+        // $url = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
 
         try {
             // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
+            // $response = Http::withHeaders($headers)->post($url, $payload);
+            // $result=$response->json();
+            // $statusCode = $response->status();
 
-            if($result['status'] === false)
-            {
-                return response()->json($result,$statusCode);   
-            }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
-                }
-            }
+            // if($result['status'] === false)
+            // {
+            //     return response()->json($result,$statusCode);   
+            // }
+            // else{
+            //     if($response->successful())
+            //     {
+            $result='{
+                "status": true,
+                "status_code": "TXN",
+                "request_id": "NjcwN2E3ZTYyODFlYjIwMjQtMTAtMTAgMTU6Mzk6NDI=",
+                "payloads": {
+                    "errors": [],
+                    "data": {
+                        "bookingRef": "TBB7V89P",
+                        "pnrDetails": [
+                            {
+                                "AirlinePNRs": [
+                                    {
+                                        "Airline_Code": "6E",
+                                        "Airline_PNR": "GRPMFY",
+                                        "CRS_Code": null,
+                                        "CRS_PNR": null,
+                                        "Record_Locator": null,
+                                        "Supplier_RefNo": ""
+                                    }
+                                ],
+                                "Failure_Remark": null,
+                                "Flight_Id": "5564976327999057767",
+                                "Hold_Validity": null,
+                                "Status_Id": "11"
+                            }
+                        ]
+                    },
+                    "transaction": []
+                },
+                "message": "Ticket booking successfully"
+                }';
+            return response()->json([
+                'success' => true,
+                'data' => json_decode($result,true),
+            ], 200);
+            //     } else {
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => 'Failed to fetch flight data',
+            //             'error' => $response->json()
+            //         ], $response->status());
+            //     }
+            // }
             //code...
         } catch  (\Exception $e) {
             // Handle exception (e.g. network issues)
