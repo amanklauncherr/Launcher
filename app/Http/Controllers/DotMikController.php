@@ -10209,7 +10209,6 @@ class DotMikController extends Controller
 
         // API URL
         // $url = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
-
         try {
             // Make the POST request using Laravel HTTP Client
             // $response = Http::withHeaders($headers)->post($url, $payload);
