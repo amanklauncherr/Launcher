@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
+use DateTime;
 
 class DotMikController extends Controller
 {
@@ -10331,53 +10333,141 @@ class DotMikController extends Controller
         }   
     }
 
-    public function RePrintTicket(Request $request)
+    public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket,$ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration)
     {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-            "bookingRef" => "required|string", 
-            "pnr" => "nullable|string"
-        ]);     
-        
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-            
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
+    // Define your HTML code
+    $htmlCode = "<!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>E-Ticket</title>
+        <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
+        <style> 
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #F0F4F8;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
             }
-        
-            return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
-            ], 422);
-        }
-        
-        $data = $validator->validated();
-        
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233", // Keep this static or dynamically assign if needed
-                "imeiNumber" => "12384659878976879887" // Static for now
-            ],
-            "bookingRef" => $data['bookingRef'], //"TBB7V78R",
-            "pnr" => $data["pnr"]
-        ];
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
+            .ticket-container {
+                background: #FFFFFF;
+                color: #333;
+                width: 700px;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border: 1px solid #DCDCDC;
+            }
+            /* Add your other styles */
+        </style>
+    </head>
+    <body>
+        <div class='ticket-container'>
+            <div class='header-container'>
+                <img src='https://via.placeholder.com/50' alt='Dummy Logo'>
+                <h1>Airline E-Ticket</h1>
+                <img src='https://via.placeholder.com/50' alt='Dummy Logo'>
+            </div>
+            <div class='ticket-header'>
+                <h2>E-Ticket</h2>
+                <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Paytm_logo.svg/2560px-Paytm_logo.svg.png' alt='Paytm Logo'>
+            </div>
+            <div class='ticket-body'>
+                <div class='ticket-section'>
+                    <h3><img class='icons' src='https://via.placeholder.com/15' alt='Flight Icon'> Onward Flight Details</h3>
+                    <div class='ticket-segment'>
+                        <div>
+                            <p><strong>{$Origin_Code} {$DepartureTime}</strong></p>
+                            <p>{$ArrivalDate}</p>
+                            <p>{$Origin}, Terminal {$Origin_terminal}</p>
+                        </div>
+                        <div>
+                            <p>{$Duration}</p>
+                            <p>{$flight_type}</p>
+                        </div>
+                        <div>
+                            <p><strong>{$Destination_Code} {$ArrivalTime}</strong></p>
+                            <p>{$DepartureDate}</p>
+                                <p>{$Destination}, Terminal {$Destination_terminal}</p>
+                         </div>
+                    </div>
+                    <p>Traveller: {$first} {$last} | PNR: {$PNR} | Ticket: {$Ticket}</p>
+                </div>
+                <!-- Add your other sections -->
+            </div>
+        </div>
+    </body>
+    </html>";
 
-        // API URL
-        // $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
+    // // Load HTML into PDF
+    // $pdf = Pdf::loadHTML($htmlCode);
 
-        try {
-            // Make the POST request using Laravel HTTP Client
+    // // Save the PDF temporarily to the storage
+    // $filePath = 'tickets/ticket-' . uniqid() . '.pdf';
+    // $pdf->save(storage_path('app/public/' . $filePath));
+
+    // // Return the saved file path to be used in the response
+    // return $filePath;
+    $directoryPath = storage_path('app/public/tickets');
+    $fileName = 'ticket-' . uniqid() . '.pdf';
+    $filePath = $directoryPath . '/' . $fileName;
+
+    // Check if the directory exists, if not, create it
+    if (!file_exists($directoryPath)) {
+        mkdir($directoryPath, 0755, true); // Create directory with appropriate permissions
+    }
+
+    // Load HTML into PDF and save it to the specified path
+    $pdf = Pdf::loadHTML($htmlCode);
+    $pdf->save($filePath);
+
+    // Return the saved file path
+    return 'tickets/' . $fileName; 
+}
+
+public function RePrintTicket(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string',
+        "bookingRef" => "required|string", 
+        "pnr" => "nullable|string"
+    ]);     
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => 0,
+            'error' => $validator->errors()->first()
+        ], 422);
+    }
+    
+    $data = $validator->validated();
+    
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "bookingRef" => $data['bookingRef'],
+        "pnr" => $data["pnr"]
+    ];
+    
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    // $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
+
+    try {
+         // Make the POST request using Laravel HTTP Client
             // $response = Http::withHeaders($headers)->post($url, $payload);
             // $result=$response->json();
             // $statusCode = $response->status();
@@ -10389,10 +10479,451 @@ class DotMikController extends Controller
             // else{
             //     if($response->successful())
             //     {
-            //         return response()->json([
-            //             'success' => true,
-            //             'data' => $result,
-            //         ], 200);
+                $result = '{
+                    "success": true,
+                    "data": {
+                        "status": true,
+                        "status_code": "TXN",
+                        "request_id": "NjcwNjU3YjdiMTkwNTIwMjQtMTAtMDkgMTU6NDU6MTk=",
+                        "payloads": {
+                            "errors": [],
+                            "data": 
+                            {
+                                "rePrintTicket": {
+                                    "adultCount": 1,
+                                    "pnrDetails": [
+                                        {
+                                            "Airline_Code": "AI",
+                                            "Airline_Name": null,
+                                            "Airline_PNR": "5JUN3J",
+                                            "BlockedExpiryDate": "",
+                                            "BookingChangeRequests": [],
+                                            "CRS_Code": "",
+                                            "CRS_PNR": "972DSY",
+                                            "FailureRemark": null,
+                                            "Flights": [
+                                                {
+                                                    "Airline_Code": "AI",
+                                                    "Block_Ticket_Allowed": false,
+                                                    "Cached": false,
+                                                    "Destination": "DELHI (DEL)",
+                                                    "Fares": [
+                                                        {
+                                                            "FareDetails": [
+                                                                {
+                                                                    "AirportTax_Amount": 1501,
+                                                                    "AirportTaxes": [
+                                                                        {
+                                                                            "Tax_Amount": 236,
+                                                                            "Tax_Code": "P2",
+                                                                            "Tax_Desc": "P2"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 268,
+                                                                            "Tax_Code": "K3",
+                                                                            "Tax_Desc": "K3"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 160,
+                                                                            "Tax_Code": "YR",
+                                                                            "Tax_Desc": "YR"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 837,
+                                                                            "Tax_Code": "IN",
+                                                                            "Tax_Desc": "IN"
+                                                                        }
+                                                                    ],
+                                                                    "Basic_Amount": 5184,
+                                                                    "CancellationCharges": [
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 0,
+                                                                            "DurationTo": 3,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 0,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "100",
+                                                                            "ValueType": 1
+                                                                        },
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 3,
+                                                                            "DurationTo": 365,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 1,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "4200.00",
+                                                                            "ValueType": 0
+                                                                        }
+                                                                    ],
+                                                                    "Currency_Code": "INR",
+                                                                    "FareClasses": [
+                                                                        {
+                                                                            "Class_Code": "V",
+                                                                            "Class_Desc": "V",
+                                                                            "FareBasis": "VU1YXSII",
+                                                                            "Privileges": null,
+                                                                            "Segment_Id": 0
+                                                                        }
+                                                                    ],
+                                                                    "Free_Baggage": {
+                                                                        "Check_In_Baggage": "15 KG",
+                                                                        "Hand_Baggage": "5 KG"
+                                                                    },
+                                                                    "GST": 0,
+                                                                    "Gross_Commission": 0,
+                                                                    "Net_Commission": 0,
+                                                                    "PAX_Type": 0,
+                                                                    "Promo_Discount": 0,
+                                                                    "RescheduleCharges": [
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 0,
+                                                                            "DurationTo": 3,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 0,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "100",
+                                                                            "ValueType": 1
+                                                                        },
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 3,
+                                                                            "DurationTo": 365,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 1,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "3150.00",
+                                                                            "ValueType": 0
+                                                                        }
+                                                                    ],
+                                                                    "Service_Fee_Amount": 0,
+                                                                    "TDS": 0,
+                                                                    "Total_Amount": 6789,
+                                                                    "Trade_Markup_Amount": 0,
+                                                                    "YQ_Amount": 0
+                                                                }
+                                                            ],
+                                                            "FareType": 0,
+                                                            "Fare_Id": null,
+                                                            "Fare_Key": null,
+                                                            "Food_onboard": "F",
+                                                            "GSTMandatory": false,
+                                                            "LastFewSeats": null,
+                                                            "ProductClass": "V",
+                                                            "PromptMessage": null,
+                                                            "Refundable": true,
+                                                            "Seats_Available": null,
+                                                            "Warning": ""
+                                                        }
+                                                    ],
+                                                    "Flight_Id": "5184186127799212463",
+                                                    "Flight_Key": "KEY3pIuMX9fQaqcBfq1wQGGjn9RLsgqCzknNCNiQw6vgyFoNdSgzhN41GpyivXqXpw9chox8PVnS/FQ0CDyo4oCzAOrnL0URI28i0dOCi6ZiaI5J1JZjGH+Hmt8yevN0KKcK06+MW1IGFKitXvw4dJPUILZ9EncgyymhhPzy/Qkv6z1AFyQPWjV1dnKSu6uRL/67COjMsgHgiZFkIKsy0PtC4eNvpxbSA30ZW4SFwzw2qCFAJGPM2Gh2ziYyV84by3Wx7Iv+nH1Qv/QL+92FfvI/u+Co67nc1xavmO9vL4e1MDQbiEgx4P8HToxCQXZ25EMndJ/vXh/EqUx6qZFYCbri2ZD5+dSwxiD6W/O4rYulQQfKf22957MLOMDDzsoSPW6Ck8euxD7OzS6odCCjSsX7y151oaVwd+uV0XzbtwawR+JNoOr/epTzvTUEKjSC7OnHpQnKUKQWQvy3jyUZ6nZIdMfhQDfNSkgx5YZPIxPjBc4sCxnGsx+VjH04nGeAbuXkYZNUPBi/f9CD/G2pNqSDkYAS7AVgCuVQ+NrQ3ysNsQn9EQ64den1ZSH2ZJ00SAZldO5NnnRc3qd4ik8PDqYbcrI0saZXYorfx1R6pBmzV6oiqqjxBvp7iBOZ60f1f3s",
+                                                    "Flight_Numbers": null,
+                                                    "GST_Entry_Allowed": false,
+                                                    "HasMoreClass": false,
+                                                    "InventoryType": 7,
+                                                    "IsLCC": false,
+                                                    "Origin": "DEHRADUN (DED) ",
+                                                    "Repriced": false,
+                                                    "Segments": [
+                                                        {
+                                                            "Aircraft_Type": "32N",
+                                                            "Airline_Code": "AI",
+                                                            "Airline_Name": "Air India",
+                                                            "Arrival_DateTime": "12/15/2024 16:25:00",
+                                                            "Departure_DateTime": "12/15/2024 15:20:00",
+                                                            "Destination": "DELHI (DEL) ",
+                                                            "Destination_City": null,
+                                                            "Destination_Terminal": "3",
+                                                            "Duration": "01:05",
+                                                            "Flight_Number": "2618",
+                                                            "Leg_Index": 0,
+                                                            "OperatedBy": null,
+                                                            "Origin": "DEHRADUN (DED) ",
+                                                            "Origin_City": null,
+                                                            "Origin_Terminal": "",
+                                                            "Return_Flight": false,
+                                                            "Segment_Id": 0,
+                                                            "Stop_Over": null
+                                                        }
+                                                    ],
+                                                    "TravelDate": "12/15/2024"
+                                                }
+                                            ],
+                                            "Gross_Amount": 6789,
+                                            "PAXTicketDetails": [
+                                                {
+                                                    "Age": "0",
+                                                    "DOB": "09-09-1990",
+                                                    "Fares": [
+                                                        {
+                                                            "FareDetails": [
+                                                                {
+                                                                    "AirportTax_Amount": 1501,
+                                                                    "AirportTaxes": [
+                                                                        {
+                                                                            "Tax_Amount": 236,
+                                                                            "Tax_Code": "P2",
+                                                                            "Tax_Desc": "P2"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 268,
+                                                                            "Tax_Code": "K3",
+                                                                            "Tax_Desc": "K3"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 160,
+                                                                            "Tax_Code": "YR",
+                                                                            "Tax_Desc": "YR"
+                                                                        },
+                                                                        {
+                                                                            "Tax_Amount": 837,
+                                                                            "Tax_Code": "IN",
+                                                                            "Tax_Desc": "IN"
+                                                                        }
+                                                                    ],
+                                                                    "Basic_Amount": 5184,
+                                                                    "CancellationCharges": [
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 0,
+                                                                            "DurationTo": 3,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 0,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "100",
+                                                                            "ValueType": 1
+                                                                        },
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 3,
+                                                                            "DurationTo": 365,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 1,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "4200.00",
+                                                                            "ValueType": 0
+                                                                        }
+                                                                    ],
+                                                                    "Currency_Code": "INR",
+                                                                    "FareClasses": [
+                                                                        {
+                                                                            "Class_Code": "V",
+                                                                            "Class_Desc": "V",
+                                                                            "FareBasis": "VU1YXSII",
+                                                                            "Privileges": null,
+                                                                            "Segment_Id": 0
+                                                                        }
+                                                                    ],
+                                                                    "Free_Baggage": {
+                                                                        "Check_In_Baggage": "15 KG",
+                                                                        "Hand_Baggage": "5 KG"
+                                                                    },
+                                                                    "GST": 0,
+                                                                    "Gross_Commission": 0,
+                                                                    "Net_Commission": 0,
+                                                                    "PAX_Type": 0,
+                                                                    "Promo_Discount": 0,
+                                                                    "RescheduleCharges": [
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 0,
+                                                                            "DurationTo": 3,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 0,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "100",
+                                                                            "ValueType": 1
+                                                                        },
+                                                                        {
+                                                                            "Applicablility": 1,
+                                                                            "DurationFrom": 3,
+                                                                            "DurationTo": 365,
+                                                                            "DurationTypeFrom": 0,
+                                                                            "DurationTypeTo": 1,
+                                                                            "OfflineServiceFee": 0,
+                                                                            "OnlineServiceFee": 0,
+                                                                            "PassengerType": 0,
+                                                                            "Remarks": "",
+                                                                            "Return_Flight": false,
+                                                                            "Value": "3150.00",
+                                                                            "ValueType": 0
+                                                                        }
+                                                                    ],
+                                                                    "Service_Fee_Amount": 0,
+                                                                    "TDS": 0,
+                                                                    "Total_Amount": 6789,
+                                                                    "Trade_Markup_Amount": 0,
+                                                                    "YQ_Amount": 0
+                                                                }
+                                                            ],
+                                                            "FareType": 0,
+                                                            "Fare_Id": null,
+                                                            "Fare_Key": null,
+                                                            "Food_onboard": "F",
+                                                            "GSTMandatory": false,
+                                                            "LastFewSeats": null,
+                                                            "ProductClass": "V",
+                                                            "PromptMessage": null,
+                                                            "Refundable": true,
+                                                            "Seats_Available": null,
+                                                            "Warning": ""
+                                                        }
+                                                    ],
+                                                    "First_Name": "MMR",
+                                                    "FrequentFlyerDetails": null,
+                                                    "Gender": 0,
+                                                    "Last_Name": "Solutions",
+                                                    "Nationality": "Indian",
+                                                    "Passport_Expiry": "09-09-2030",
+                                                    "Passport_Issuing_Country": "India",
+                                                    "Passport_Number": "1234567891",
+                                                    "Pax_Id": 1,
+                                                    "Pax_type": 0,
+                                                    "SSRDetails": [],
+                                                    "TicketDetails": [
+                                                        {
+                                                            "Flight_Id": "5184186127799212463",
+                                                            "SegemtWiseChanges": [
+                                                                {
+                                                                    "CancelRequestId": "0",
+                                                                    "CancelStatus": "LIVE",
+                                                                    "Destination": "DEL",
+                                                                    "Origin": "DED",
+                                                                    "RescheduleRequestId": "0",
+                                                                    "RescheduleStatus": "LIVE",
+                                                                    "Return_Flight": false,
+                                                                    "Segement_Id": "0"
+                                                                }
+                                                            ],
+                                                            "SupPax_ID": null,
+                                                            "Ticket_Number": "0983420649446"
+                                                        }
+                                                    ],
+                                                    "TicketStatus": "Live",
+                                                    "Title": "Mr"
+                                                }
+                                            ],
+                                            "Post_Markup": 0,
+                                            "Record_Locator": "",
+                                            "RetailerPostMarkup": 0,
+                                            "Supplier_RefNo": "1MK563",
+                                            "Ticket_Status_Desc": "Confirmed",
+                                            "Ticket_Status_Id": "4",
+                                            "TicketingDate": "10/09/2024 13:26:30"
+                                        }
+                                    ],
+                                    "Booking_DateTime": "09/10/2024 13:24:42",
+                                    "Booking_RefNo": "TBB7V78R",
+                                    "Booking_Type": 0,
+                                    "Child_Count": 0,
+                                    "Class_of_Travel": 0,
+                                    "GST": false,
+                                    "GSTIN": "",
+                                    "Infant_Count": 0,
+                                    "Invoice_Number": "DN/OCT-24/0807091",
+                                    "PAX_EmailId": "adhikari@gmail.com",
+                                    "PAX_Mobile": "9910179393",
+                                    "Remark": "Test booking with PAX details",
+                                    "Travel_Type": 0
+                                }
+                            },
+                            "transaction": []
+                        },
+                        "message": "Ticket details fetched successfully"
+                    }
+                }';        
+                
+            // return response()->json([json_decode($response),"pdf" => $this->generateTicketPdf()]);
+            $json_response=json_decode($result,true);
+                    
+            $PNR= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+            $Ticket= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['Ticket_Number'];
+            $Origin_Code= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
+            $Destination_Code= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
+            $first= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['First_Name'];
+            $last= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Last_Name'];
+            $Origin=$json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
+            $Origin_terminal=$json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
+            $ArrivalDateTime=new DateTime($json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Arrival_DateTime']);
+            $DepartureDateTime=new DateTime($json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
+            $Destination=$json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
+            $Destination_terminal=$json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
+            $DurationTime= $json_response['data']['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
+            $type=$json_response['data']['payloads']['data']['rePrintTicket']['Class_of_Travel'];
+    
+    
+            if($type === 0)
+            {
+                $flight_type="Ecomony";
+            }
+            else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+            {
+                $flight_type="Business";
+            }
+            else if($type === 2)
+            {
+                $flight_type="First Class";
+            }
+            else if($type === 3)
+            {
+                $flight_type="Premium Ecomomy";
+            }
+    
+            $ArrivalTime = $ArrivalDateTime->format('H:i'); // Outputs '16:25'
+            $DepartureTime= $DepartureDateTime->format('H:i');
+            $ArrivalDate = $ArrivalDateTime->format('D d M, Y');
+            $DepartureDate = $DepartureDateTime->format('D d M, Y');
+    
+            $dateTime = DateTime::createFromFormat('H:i', $DurationTime);
+    
+            // Extract hours and minutes
+            $hours = $dateTime->format('G'); // 'G' formats hours without leading zeros
+            $minutes = $dateTime->format('i'); // 'i' formats minutes with leading zeros
+    
+            // Format as "1h 05m"
+            $Duration = $hours . 'h ' . $minutes . 'm';
+    
+            // Generate the PDF
+            $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration);
+
+            // $data=json_decode($result,true);
+    
+            return response()->json([
+                'success' => true,
+                'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
+                'data' => $json_response['data'],
+            ]);
             //     } else {
             //         return response()->json([
             //             'success' => false,
@@ -10401,403 +10932,18 @@ class DotMikController extends Controller
             //         ], $response->status());
             //     }
             // }
-            //code...
 
-            $response = '{
-                "success": true,
-                "data": {
-                    "status": true,
-                    "status_code": "TXN",
-                    "request_id": "NjcwNjU3YjdiMTkwNTIwMjQtMTAtMDkgMTU6NDU6MTk=",
-                    "payloads": {
-                        "errors": [],
-                        "data": {
-                            "rePrintTicket": {
-                                "adultCount": 1,
-                                "pnrDetails": [
-                                    {
-                                        "Airline_Code": "AI",
-                                        "Airline_Name": null,
-                                        "Airline_PNR": "5JUN3J",
-                                        "BlockedExpiryDate": "",
-                                        "BookingChangeRequests": [],
-                                        "CRS_Code": "",
-                                        "CRS_PNR": "972DSY",
-                                        "FailureRemark": null,
-                                        "Flights": [
-                                            {
-                                                "Airline_Code": "AI",
-                                                "Block_Ticket_Allowed": false,
-                                                "Cached": false,
-                                                "Destination": "DELHI (DEL)",
-                                                "Fares": [
-                                                    {
-                                                        "FareDetails": [
-                                                            {
-                                                                "AirportTax_Amount": 1501,
-                                                                "AirportTaxes": [
-                                                                    {
-                                                                        "Tax_Amount": 236,
-                                                                        "Tax_Code": "P2",
-                                                                        "Tax_Desc": "P2"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 268,
-                                                                        "Tax_Code": "K3",
-                                                                        "Tax_Desc": "K3"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 160,
-                                                                        "Tax_Code": "YR",
-                                                                        "Tax_Desc": "YR"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 837,
-                                                                        "Tax_Code": "IN",
-                                                                        "Tax_Desc": "IN"
-                                                                    }
-                                                                ],
-                                                                "Basic_Amount": 5184,
-                                                                "CancellationCharges": [
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 0,
-                                                                        "DurationTo": 3,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 0,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "100",
-                                                                        "ValueType": 1
-                                                                    },
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 3,
-                                                                        "DurationTo": 365,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 1,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "4200.00",
-                                                                        "ValueType": 0
-                                                                    }
-                                                                ],
-                                                                "Currency_Code": "INR",
-                                                                "FareClasses": [
-                                                                    {
-                                                                        "Class_Code": "V",
-                                                                        "Class_Desc": "V",
-                                                                        "FareBasis": "VU1YXSII",
-                                                                        "Privileges": null,
-                                                                        "Segment_Id": 0
-                                                                    }
-                                                                ],
-                                                                "Free_Baggage": {
-                                                                    "Check_In_Baggage": "15 KG",
-                                                                    "Hand_Baggage": "5 KG"
-                                                                },
-                                                                "GST": 0,
-                                                                "Gross_Commission": 0,
-                                                                "Net_Commission": 0,
-                                                                "PAX_Type": 0,
-                                                                "Promo_Discount": 0,
-                                                                "RescheduleCharges": [
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 0,
-                                                                        "DurationTo": 3,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 0,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "100",
-                                                                        "ValueType": 1
-                                                                    },
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 3,
-                                                                        "DurationTo": 365,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 1,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "3150.00",
-                                                                        "ValueType": 0
-                                                                    }
-                                                                ],
-                                                                "Service_Fee_Amount": 0,
-                                                                "TDS": 0,
-                                                                "Total_Amount": 6789,
-                                                                "Trade_Markup_Amount": 0,
-                                                                "YQ_Amount": 0
-                                                            }
-                                                        ],
-                                                        "FareType": 0,
-                                                        "Fare_Id": null,
-                                                        "Fare_Key": null,
-                                                        "Food_onboard": "F",
-                                                        "GSTMandatory": false,
-                                                        "LastFewSeats": null,
-                                                        "ProductClass": "V",
-                                                        "PromptMessage": null,
-                                                        "Refundable": true,
-                                                        "Seats_Available": null,
-                                                        "Warning": ""
-                                                    }
-                                                ],
-                                                "Flight_Id": "5184186127799212463",
-                                                "Flight_Key": "KEY3pIuMX9fQaqcBfq1wQGGjn9RLsgqCzknNCNiQw6vgyFoNdSgzhN41GpyivXqXpw9chox8PVnS/FQ0CDyo4oCzAOrnL0URI28i0dOCi6ZiaI5J1JZjGH+Hmt8yevN0KKcK06+MW1IGFKitXvw4dJPUILZ9EncgyymhhPzy/Qkv6z1AFyQPWjV1dnKSu6uRL/67COjMsgHgiZFkIKsy0PtC4eNvpxbSA30ZW4SFwzw2qCFAJGPM2Gh2ziYyV84by3Wx7Iv+nH1Qv/QL+92FfvI/u+Co67nc1xavmO9vL4e1MDQbiEgx4P8HToxCQXZ25EMndJ/vXh/EqUx6qZFYCbri2ZD5+dSwxiD6W/O4rYulQQfKf22957MLOMDDzsoSPW6Ck8euxD7OzS6odCCjSsX7y151oaVwd+uV0XzbtwawR+JNoOr/epTzvTUEKjSC7OnHpQnKUKQWQvy3jyUZ6nZIdMfhQDfNSkgx5YZPIxPjBc4sCxnGsx+VjH04nGeAbuXkYZNUPBi/f9CD/G2pNqSDkYAS7AVgCuVQ+NrQ3ysNsQn9EQ64den1ZSH2ZJ00SAZldO5NnnRc3qd4ik8PDqYbcrI0saZXYorfx1R6pBmzV6oiqqjxBvp7iBOZ60f1f3s",
-                                                "Flight_Numbers": null,
-                                                "GST_Entry_Allowed": false,
-                                                "HasMoreClass": false,
-                                                "InventoryType": 7,
-                                                "IsLCC": false,
-                                                "Origin": "DEHRADUN (DED) ",
-                                                "Repriced": false,
-                                                "Segments": [
-                                                    {
-                                                        "Aircraft_Type": "32N",
-                                                        "Airline_Code": "AI",
-                                                        "Airline_Name": "Air India",
-                                                        "Arrival_DateTime": "12/15/2024 16:25:00",
-                                                        "Departure_DateTime": "12/15/2024 15:20:00",
-                                                        "Destination": "DELHI (DEL) ",
-                                                        "Destination_City": null,
-                                                        "Destination_Terminal": "3",
-                                                        "Duration": "01:05",
-                                                        "Flight_Number": "2618",
-                                                        "Leg_Index": 0,
-                                                        "OperatedBy": null,
-                                                        "Origin": "DEHRADUN (DED) ",
-                                                        "Origin_City": null,
-                                                        "Origin_Terminal": "",
-                                                        "Return_Flight": false,
-                                                        "Segment_Id": 0,
-                                                        "Stop_Over": null
-                                                    }
-                                                ],
-                                                "TravelDate": "12/15/2024"
-                                            }
-                                        ],
-                                        "Gross_Amount": 6789,
-                                        "PAXTicketDetails": [
-                                            {
-                                                "Age": "0",
-                                                "DOB": "09-09-1990",
-                                                "Fares": [
-                                                    {
-                                                        "FareDetails": [
-                                                            {
-                                                                "AirportTax_Amount": 1501,
-                                                                "AirportTaxes": [
-                                                                    {
-                                                                        "Tax_Amount": 236,
-                                                                        "Tax_Code": "P2",
-                                                                        "Tax_Desc": "P2"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 268,
-                                                                        "Tax_Code": "K3",
-                                                                        "Tax_Desc": "K3"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 160,
-                                                                        "Tax_Code": "YR",
-                                                                        "Tax_Desc": "YR"
-                                                                    },
-                                                                    {
-                                                                        "Tax_Amount": 837,
-                                                                        "Tax_Code": "IN",
-                                                                        "Tax_Desc": "IN"
-                                                                    }
-                                                                ],
-                                                                "Basic_Amount": 5184,
-                                                                "CancellationCharges": [
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 0,
-                                                                        "DurationTo": 3,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 0,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "100",
-                                                                        "ValueType": 1
-                                                                    },
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 3,
-                                                                        "DurationTo": 365,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 1,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "4200.00",
-                                                                        "ValueType": 0
-                                                                    }
-                                                                ],
-                                                                "Currency_Code": "INR",
-                                                                "FareClasses": [
-                                                                    {
-                                                                        "Class_Code": "V",
-                                                                        "Class_Desc": "V",
-                                                                        "FareBasis": "VU1YXSII",
-                                                                        "Privileges": null,
-                                                                        "Segment_Id": 0
-                                                                    }
-                                                                ],
-                                                                "Free_Baggage": {
-                                                                    "Check_In_Baggage": "15 KG",
-                                                                    "Hand_Baggage": "5 KG"
-                                                                },
-                                                                "GST": 0,
-                                                                "Gross_Commission": 0,
-                                                                "Net_Commission": 0,
-                                                                "PAX_Type": 0,
-                                                                "Promo_Discount": 0,
-                                                                "RescheduleCharges": [
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 0,
-                                                                        "DurationTo": 3,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 0,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "100",
-                                                                        "ValueType": 1
-                                                                    },
-                                                                    {
-                                                                        "Applicablility": 1,
-                                                                        "DurationFrom": 3,
-                                                                        "DurationTo": 365,
-                                                                        "DurationTypeFrom": 0,
-                                                                        "DurationTypeTo": 1,
-                                                                        "OfflineServiceFee": 0,
-                                                                        "OnlineServiceFee": 0,
-                                                                        "PassengerType": 0,
-                                                                        "Remarks": "",
-                                                                        "Return_Flight": false,
-                                                                        "Value": "3150.00",
-                                                                        "ValueType": 0
-                                                                    }
-                                                                ],
-                                                                "Service_Fee_Amount": 0,
-                                                                "TDS": 0,
-                                                                "Total_Amount": 6789,
-                                                                "Trade_Markup_Amount": 0,
-                                                                "YQ_Amount": 0
-                                                            }
-                                                        ],
-                                                        "FareType": 0,
-                                                        "Fare_Id": null,
-                                                        "Fare_Key": null,
-                                                        "Food_onboard": "F",
-                                                        "GSTMandatory": false,
-                                                        "LastFewSeats": null,
-                                                        "ProductClass": "V",
-                                                        "PromptMessage": null,
-                                                        "Refundable": true,
-                                                        "Seats_Available": null,
-                                                        "Warning": ""
-                                                    }
-                                                ],
-                                                "First_Name": "MMR",
-                                                "FrequentFlyerDetails": null,
-                                                "Gender": 0,
-                                                "Last_Name": "Solutions",
-                                                "Nationality": "Indian",
-                                                "Passport_Expiry": "09-09-2030",
-                                                "Passport_Issuing_Country": "India",
-                                                "Passport_Number": "1234567891",
-                                                "Pax_Id": 1,
-                                                "Pax_type": 0,
-                                                "SSRDetails": [],
-                                                "TicketDetails": [
-                                                    {
-                                                        "Flight_Id": "5184186127799212463",
-                                                        "SegemtWiseChanges": [
-                                                            {
-                                                                "CancelRequestId": "0",
-                                                                "CancelStatus": "LIVE",
-                                                                "Destination": "DEL",
-                                                                "Origin": "DED",
-                                                                "RescheduleRequestId": "0",
-                                                                "RescheduleStatus": "LIVE",
-                                                                "Return_Flight": false,
-                                                                "Segement_Id": "0"
-                                                            }
-                                                        ],
-                                                        "SupPax_ID": null,
-                                                        "Ticket_Number": "0983420649446"
-                                                    }
-                                                ],
-                                                "TicketStatus": "Live",
-                                                "Title": "Mr"
-                                            }
-                                        ],
-                                        "Post_Markup": 0,
-                                        "Record_Locator": "",
-                                        "RetailerPostMarkup": 0,
-                                        "Supplier_RefNo": "1MK563",
-                                        "Ticket_Status_Desc": "Confirmed",
-                                        "Ticket_Status_Id": "4",
-                                        "TicketingDate": "10/09/2024 13:26:30"
-                                    }
-                                ],
-                                "Booking_DateTime": "09/10/2024 13:24:42",
-                                "Booking_RefNo": "TBB7V78R",
-                                "Booking_Type": 0,
-                                "Child_Count": 0,
-                                "Class_of_Travel": 0,
-                                "GST": false,
-                                "GSTIN": "",
-                                "Infant_Count": 0,
-                                "Invoice_Number": "DN/OCT-24/0807091",
-                                "PAX_EmailId": "adhikari@gmail.com",
-                                "PAX_Mobile": "9910179393",
-                                "Remark": "Test booking with PAX details",
-                                "Travel_Type": 0
-                            }
-                        },
-                        "transaction": []
-                    },
-                    "message": "Ticket details fetched successfully"
-                }
-            }';
+        // Assume successful response from the API
 
-            return response()->json(json_decode($response));
-            
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
-            ], 500);
-        }   
-    }
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'An error occurred',
+            'error' => $e->getMessage()
+        ], 500);
+    }   
+}
 
     public function Cancellation(Request $request)
     {
