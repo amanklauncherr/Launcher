@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\PhonePay;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Contracts\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +22,10 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return response()->json(['success'=>0,'message'=>'Unauthorized. Token Not available'],400);
 })->name('login');
+
+
+Route::post('/phonePay',[PhonePay::class,'PhonePay'])->name('phonepay');
+
+Route::get('/payment', function() {
+    return view('phonepay');
+});
