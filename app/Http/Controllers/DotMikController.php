@@ -934,7 +934,7 @@ public function RePrintTicket(Request $request)
     ];
 
     // API URL
-    // $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
 
     try {
          // Make the POST request using Laravel HTTP Client
