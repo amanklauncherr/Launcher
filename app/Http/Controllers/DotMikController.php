@@ -46,8 +46,8 @@ class DotMikController extends Controller
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -94,7 +94,11 @@ class DotMikController extends Controller
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);   
             }
             else
             {   
@@ -309,17 +313,16 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
         } catch (\Exception $e) {
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }    
     }
@@ -343,8 +346,8 @@ class DotMikController extends Controller
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -378,7 +381,11 @@ class DotMikController extends Controller
             $statusCode = $response->status();
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             }
             else{
                 if($response->successful())
@@ -391,9 +398,9 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             
@@ -402,8 +409,7 @@ class DotMikController extends Controller
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -428,8 +434,8 @@ class DotMikController extends Controller
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -466,7 +472,11 @@ class DotMikController extends Controller
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);   
             }
             else{
                 if($response->successful())
@@ -478,9 +488,9 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -488,28 +498,29 @@ class DotMikController extends Controller
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }
 
-    public function TemporaryBooking(Request $request){
+    public function TemporaryBooking(Request $request)
+    {
+
         $validator = Validator::make($request->all(), [
             'passenger_details.mobile' => 'required|string',
             'passenger_details.whatsApp' => 'required|string',
             'passenger_details.email' => 'required|string',
             'passenger_details.paxId' => 'required|integer',
             'passenger_details.paxType' => 'required|integer', // 0-ADT/1-CHD/2-INF
-            'passenger_details.title' => 'required|string',   // MR, MRS, MS; MSTR, MISS for child/infant
+            'passenger_details.title' => 'required|string', // MR, MRS, MS; MSTR, MISS for child/infant
             'passenger_details.firstName' => 'required|string',
             'passenger_details.lastName' => 'required|string',
             'passenger_details.age' => 'nullable|integer',
             'passenger_details.gender' => 'required|integer',  // 0-Male, 1-Female
             'passenger_details.dob' => 'required|date',
             'passenger_details.passportNumber' => 'nullable|string',
-            'passenger_details.passportIssuingAuthority' => 'required|string',
-            'passenger_details.passportExpire' => 'required|date',
+            'passenger_details.passportIssuingAuthority' => 'nullable|string',
+            'passenger_details.passportExpire' => 'nullable|date',
             'passenger_details.nationality' => 'required|string',
             'passenger_details.pancardNumber' => 'nullable|string',
             'passenger_details.frequentFlyerDetails' => 'nullable|string',
@@ -526,8 +537,8 @@ class DotMikController extends Controller
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
             return response()->json([
-                'success' => 0,
-                'error' => $errors[0] // Return the first error
+                'success' => false,
+                'message' => $errors[0] // Return the first error
             ], 422);
         }
         
@@ -608,7 +619,11 @@ class DotMikController extends Controller
             
 
             if ($result['status'] === false) {
-                return response()->json($result, $statusCode);
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             } else {
                 if ($response->successful()) {
                     return response()->json([
@@ -618,16 +633,15 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }        
     }
@@ -650,8 +664,8 @@ class DotMikController extends Controller
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -684,7 +698,11 @@ class DotMikController extends Controller
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             }
             else{
                 if($response->successful())
@@ -696,9 +714,9 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -706,98 +724,97 @@ class DotMikController extends Controller
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }   
     }
 
-    public function History(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-            "fromDate" => "required|string", //date in (MM/dd/YYYY)
-            "toDate" => "required|string",  //date in (MM/dd/YYYY)
-            "month" => "required|string", // Month of booking for July (eg: 07)
-            "year" => "required|string", //year of booking(eg:2024)
-            "type" => "required|string" //Possible values are 0 - BOOKING_DATE/ 1 - BOOKING_DATE_LIVE/ 2 - BOOKING_DATE_CANCELLED/ 3-BLOCKED
-        ]);     
+    // public function History(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(),[
+    //         'headersToken' => 'required|string',
+    //         'headersKey' => 'required|string',
+    //         "fromDate" => "required|string", //date in (MM/dd/YYYY)
+    //         "toDate" => "required|string",  //date in (MM/dd/YYYY)
+    //         "month" => "required|string", // Month of booking for July (eg: 07)
+    //         "year" => "required|string", //year of booking(eg:2024)
+    //         "type" => "required|string" //Possible values are 0 - BOOKING_DATE/ 1 - BOOKING_DATE_LIVE/ 2 - BOOKING_DATE_CANCELLED/ 3-BLOCKED
+    //     ]);     
 
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
+    //     if ($validator->fails()) {
+    //         $errors = $validator->errors()->all(); // Get all error messages
+    //         $formattedErrors = [];
     
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
+    //         foreach ($errors as $error) {
+    //             $formattedErrors[] = $error;
+    //         }
     
-            return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
-            ], 422);
-        }
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $formattedErrors[0]
+    //         ], 422);
+    //     }
         
-        $data=$validator->validated();
+    //     $data=$validator->validated();
 
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ],
-            "fromDate" => $data['fromDate'], //date in (MM/dd/YYYY)
-            "todate" => $data['toDate'],  //date in (MM/dd/YYYY)
-            "month" => $data['month'], // Month of booking for July (eg: 07)
-            "year" => $data['year'], //year of booking(eg:2024)
-            "type" => $data['type'] //
-        ];
+    //     $payload = [
+    //         "deviceInfo" => [
+    //             "ip" => "122.161.52.233",
+    //             "imeiNumber" => "12384659878976879887"
+    //         ],
+    //         "fromDate" => $data['fromDate'], //date in (MM/dd/YYYY)
+    //         "todate" => $data['toDate'],  //date in (MM/dd/YYYY)
+    //         "month" => $data['month'], // Month of booking for July (eg: 07)
+    //         "year" => $data['year'], //year of booking(eg:2024)
+    //         "type" => $data['type'] //
+    //     ];
         
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
+    //     // Headers
+    //     $headers = [
+    //         'D-SECRET-TOKEN' => $data['headersToken'],
+    //         'D-SECRET-KEY' => $data['headersKey'],
+    //         'CROP-CODE' => 'DOTMIK160614',
+    //         'Content-Type' => 'application/json',
+    //     ];
 
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/history';
+    //     // API URL
+    //     $url = 'https://api.dotmik.in/api/flightBooking/v1/history';
 
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
+    //     try {
+    //         // Make the POST request using Laravel HTTP Client
+    //         $response = Http::withHeaders($headers)->post($url, $payload);
+    //         $result=$response->json();
+    //         $statusCode = $response->status();
 
-            if($result['status'] === false)
-            {
-                return response()->json($result,$statusCode);   
-            }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
-            ], 500);
-        }   
-    }
+    //         if($result['status'] === false)
+    //         {
+    //             return response()->json($result,$statusCode);   
+    //         }
+    //         else{
+    //             if($response->successful())
+    //             {
+    //                 return response()->json([
+    //                     'success' => true,
+    //                     'data' => $result,
+    //                 ], 200);
+    //             } else {
+    //                 return response()->json([
+    //                     'success' => false,
+    //                     'message' => 'Failed to fetch flight data',
+    //                     'error' => $response->json()
+    //                 ], $response->status());
+    //             }
+    //         }
+    //         //code...
+    //     } catch  (\Exception $e) {
+    //         // Handle exception (e.g. network issues)
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }   
+    // }
 
     public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket,$ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration)
     {
@@ -910,8 +927,8 @@ public function RePrintTicket(Request $request)
     
     if ($validator->fails()) {
         return response()->json([
-            'success' => 0,
-            'error' => $validator->errors()->first()
+            'success' => false,
+            'message' => $validator->errors()->first()
         ], 422);
     }
     
@@ -942,9 +959,15 @@ public function RePrintTicket(Request $request)
             $result=$response->json();
             $statusCode = $response->status();
 
+            return response()->json($result,$statusCode);   
+            
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             }
             else{
                 if($response->successful())
@@ -1007,17 +1030,16 @@ public function RePrintTicket(Request $request)
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
         // Assume successful response from the API
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'An error occurred',
-            'error' => $e->getMessage()
+            'message' => $e->getMessage()
         ], 500);
     }   
 }
@@ -1047,8 +1069,8 @@ public function RePrintTicket(Request $request)
             }
         
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -1093,7 +1115,11 @@ public function RePrintTicket(Request $request)
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             }
             else{
                 if($response->successful())
@@ -1105,9 +1131,9 @@ public function RePrintTicket(Request $request)
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -1115,8 +1141,7 @@ public function RePrintTicket(Request $request)
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }   
     }
@@ -1142,7 +1167,7 @@ public function RePrintTicket(Request $request)
             }
     
             return response()->json([
-                'success' => 0,
+                'success' => false,
                 'error' => $formattedErrors[0]
             ], 422);
         }
@@ -1179,7 +1204,11 @@ public function RePrintTicket(Request $request)
     
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);   
             }
             else{
                 if($response->successful())
@@ -1191,9 +1220,9 @@ public function RePrintTicket(Request $request)
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -1201,8 +1230,7 @@ public function RePrintTicket(Request $request)
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }   
     }
@@ -1223,8 +1251,8 @@ public function RePrintTicket(Request $request)
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
@@ -1256,7 +1284,11 @@ public function RePrintTicket(Request $request)
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);   
             }
             else{
                 if($response->successful())
@@ -1268,9 +1300,9 @@ public function RePrintTicket(Request $request)
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -1278,13 +1310,11 @@ public function RePrintTicket(Request $request)
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }   
     }
 
-    
     public function ReleasePNR(Request $request)
     {
         $validator = Validator::make($request->all(),[
@@ -1311,8 +1341,8 @@ public function RePrintTicket(Request $request)
             }
     
             return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
+                'success' => false,
+                'messsage' => $formattedErrors[0]
             ], 422);
         }
         
@@ -1337,7 +1367,6 @@ public function RePrintTicket(Request $request)
             "classOfTravel" => $data['classOfTravel'],// This requires the class of Travel. Possible values: 0- ECONOMY/ 1- BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
         ];
 
-        
         // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
@@ -1357,7 +1386,11 @@ public function RePrintTicket(Request $request)
 
             if($result['status'] === false)
             {
-                return response()->json($result,$statusCode);   
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
             }
             else{
                 if($response->successful())
@@ -1369,9 +1402,9 @@ public function RePrintTicket(Request $request)
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Failed to fetch flight data',
-                        'error' => $response->json()
-                    ], $response->status());
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
                 }
             }
             //code...
@@ -1379,12 +1412,8 @@ public function RePrintTicket(Request $request)
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' =>  $e->getMessage()
             ], 500);
         }   
-    }
-    
-    
-
+    }   
 }
