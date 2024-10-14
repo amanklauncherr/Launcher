@@ -18776,37 +18776,50 @@ public function showIata()
 
 public function CheckVIAIATA(Request $request)
 {
-    $params = $request->query('iata');
+    $paramsOrigin = $request->query('Origin');
+    $paramsDestination = $request->query('Destination');
 
-    if(!$params)
+    if(!$paramsOrigin || !$paramsDestination)
     {
       return response()->json([
         'success' => 0,
-        'message' => 'Please Provide Iata'
+        'message' => 'Please Provide Origin and Destination Iata Both'
       ], 404);
     }
 
-    $IataExists = iatacode::where('iata_code',$params)->first();
+    $IataOriginExists = iatacode::where('iata_code',$paramsOrigin)->first();
 
-    if(!$IataExists)
+    $IataDestinationExists = iatacode::where('iata_code',$paramsDestination)->first();
+
+    if(!$IataOriginExists )
     {
       return response()->json([
         'success' => 0,
-        'message' => 'No Data Found'
+        'message' => 'Origin Iata Not Found'
       ], 404);
     }
+    if(!$IataDestinationExists )
+    {
+      return response()->json([
+        'success' => 0,
+        'message' => 'Destination Iata Not Found'
+      ], 404);
+    }
+    // return response()->json(['O'=>$IataOriginExists,'D'=>$IataDestinationExists]);
 
-    if($IataExists->country === 'India' )
+    if($IataOriginExists->country === 'India' && $IataDestinationExists->country === 'India' )
     {
       return response()->json([
         'success' => 1,
-        'data' => 'DOMESTIC'
+        'data' => '0'
       ], 200); 
     }
-    return response()->json([
-      'success' => 1,
-      'data' => 'INTERNATIONAL'
-    ], 200);
+    else{
+      return response()->json([
+        'success' => 1,
+        'data' => '1'
+      ], 200);
+    }
 }
 
 public function showAirport(Request $request)
