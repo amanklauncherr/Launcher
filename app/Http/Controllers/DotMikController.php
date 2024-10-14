@@ -521,7 +521,7 @@ class DotMikController extends Controller
             'passenger_details.passportNumber' => 'nullable|string',
             'passenger_details.passportIssuingAuthority' => 'nullable|string',
             'passenger_details.passportExpire' => 'nullable|date',
-            'passenger_details.nationality' => 'required|string',
+            'passenger_details.nationality' => 'nullable|string',
             'passenger_details.pancardNumber' => 'nullable|string',
             'passenger_details.frequentFlyerDetails' => 'nullable|string',
             'gst.isGst' => 'required|string',
