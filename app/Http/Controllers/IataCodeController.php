@@ -18800,20 +18800,19 @@ public function CheckVIAIATA(Request $request)
     {
       return response()->json([
         'success' => 1,
-        'data' => 'PHONEPAY'
+        'data' => 'DOMESTIC'
       ], 200); 
     }
     return response()->json([
       'success' => 1,
-      'data' => 'PAYPAL'
-    ], 200);   
+      'data' => 'INTERNATIONAL'
+    ], 200);
 }
 
 public function showAirport(Request $request)
 {
   try 
   {
-
     $query = $request->query('query');
     // $city = $request->query('city');
     
