@@ -815,77 +815,217 @@ class DotMikController extends Controller
     //     }   
     // }
 
-    public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket,$ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration)
+    public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket,$ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn, $gen, $Email,$Contact,$BaseFare, $TotalAmount,$CancelArray, $RescheduleChargesArray, $FlightNO,$AirlineCode, $Tax)
     {
-    // Define your HTML code
-    $htmlCode = "<!DOCTYPE html>
-    <html lang='en'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <title>E-Ticket</title>
-        <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
-        <style> 
-            body {
-                font-family: 'Roboto', sans-serif;
-                background-color: #F0F4F8;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-            }
-            .ticket-container {
-                background: #FFFFFF;
-                color: #333;
-                width: 700px;
-                border-radius: 10px;
-                overflow: hidden;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                border: 1px solid #DCDCDC;
-            }
-            /* Add your other styles */
-        </style>
-    </head>
-    <body>
-        <div class='ticket-container'>
-            <div class='header-container'>
-                <img src='https://via.placeholder.com/50' alt='Dummy Logo'>
-                <h1>Airline E-Ticket</h1>
-                <img src='https://via.placeholder.com/50' alt='Dummy Logo'>
-            </div>
+
+        $htmlCode = "<!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Flight Ticket</title>
+            <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
+            <style>
+                body {
+                    font-family: 'Roboto', sans-serif;
+                    background-color: #f0f2f5;
+                    margin: 0;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+                .container {
+                    max-width: 800px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                }
+                h2, h3 {
+                    text-align: center;
+                    color: #333;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                table, th, td {
+                    border: 1px solid #e0e0e0;
+                    padding: 15px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f7f7f7;
+                    color: #555;
+                    font-weight: bold;
+                }
+                td {
+                    color: #333;
+                }
+                .info-section {
+                    margin-bottom: 20px;
+                }
+                .fare-rules h4 {
+                    margin-top: 0;
+                    color: #555;
+                }
+                .fare-rules p {
+                    font-size: 0.9em;
+                    color: #777;
+                }
+                .badge {
+                    display: inline-block;
+                    padding: 5px 10px;
+                    background-color: #4caf50;
+                    color: white;
+                    border-radius: 5px;
+                    font-size: 0.85em;
+                }
+                .ticket-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #e0e0e0;
+                }
+                .ticket-header img {
+                    height: 50px;
+                }
+            </style>
+        </head>
+        <body>
+        <div class='container'>
             <div class='ticket-header'>
-                <h2>E-Ticket</h2>
-                <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Paytm_logo.svg/2560px-Paytm_logo.svg.png' alt='Paytm Logo'>
+                <h2>Flight Ticket</h2>
+                <img src='https://via.placeholder.com/100x50?text=Logo' alt='Airline Logo'>
             </div>
-            <div class='ticket-body'>
-                <div class='ticket-section'>
-                    <h3><img class='icons' src='https://via.placeholder.com/15' alt='Flight Icon'> Onward Flight Details</h3>
-                    <div class='ticket-segment'>
-                        <div>
-                            <p><strong>{$Origin_Code} {$DepartureTime}</strong></p>
-                            <p>{$ArrivalDate}</p>
-                            <p>{$Origin}, Terminal {$Origin_terminal}</p>
-                        </div>
-                        <div>
-                            <p>{$Duration}</p>
-                            <p>{$flight_type}</p>
-                        </div>
-                        <div>
-                            <p><strong>{$Destination_Code} {$ArrivalTime}</strong></p>
-                            <p>{$DepartureDate}</p>
-                                <p>{$Destination}, Terminal {$Destination_terminal}</p>
-                         </div>
-                    </div>
-                    <p>Traveller: {$first} {$last} | PNR: {$PNR} | Ticket: {$Ticket}</p>
-                </div>
-                <!-- Add your other sections -->
+            <div class='info-section'>
+                <table>
+                    <tr>
+                        <th>Flight</th>
+                        <td>{$AirlineCode}-{$FlightNO}</td>  
+                        <th>Class</th>
+                        <td>{$flight_type}</td>
+                    </tr>
+                    <tr>
+                        <th>Aircraft Type</th>
+                        <td>Airbus A{$Aircraft}</td>
+                    </tr>
+                </table>
+        
+                <table>
+                    <tr>
+                        <th>Depart</th>
+                        <td>{$Origin} ({$Origin_Code}) - {$DepartureTime}, {$DepartureDate}, Terminal {$Origin_terminal}</td>
+                        <th>Arrive</th>
+                        <td>{$Destination} ({$Destination_Code}) - {$ArrivalTime}, {$ArrivalDate}, Terminal {$Destination_terminal}</td>
+                    </tr>
+                    <tr>
+                        <th>Duration/Stops</th>
+                        <td>{$Duration}</td>
+                        <th>Status</th>
+                        <td><span class='badge'>Confirmed</span></td>
+                    </tr>
+                </table>
+            </div>
+        
+            <h3>Passenger Details</h3>
+            <div class='info-section'>
+                <table>
+                    <tr>
+                        <th>Ticket No.</th>
+                        <td>{$Ticket}</td>
+                        <th>Name</th>
+                        <td>{$first} {$last}</td>
+                    </tr>
+                    <tr>
+                        <th>Cabin</th>
+                        <td>{$Cabin}</td>
+                        <th>Check-In</th>
+                        <td>{$CheckIn}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>{$gen}</td>
+                        <th>Status</th>
+                        <td>Confirmed</td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td>{$Contact}</td>
+                        <th>Email</th>
+                        <td>{$Email}</td>
+                    </tr>
+                </table>
+            </div>
+        
+            <h3>Payment Details</h3>
+            <div class='info-section'>
+                <table>
+                    <tr>
+                        <th>Base Fare</th>
+                        <td>₹ {$BaseFare}</td>
+                    </tr>
+                    <tr>
+                        <th>Taxes and Fees</th>
+                        <td>₹ {$Tax}</td>
+                    </tr>
+                    <tr>
+                        <th>Gross Fare</th>
+                        <td>₹ {$TotalAmount}</td>
+                    </tr>
+                </table>
+            </div>
+        
+            <h3>Fare Rule - Onward Journey</h3>
+            <div class='fare-rules'>
+                <h4>Cancellation Charges Per Pax</h4>
+                <table>
+                    <tr>
+                        <th>Timeline</th>
+                        <th>Penalty (Airline Fee)</th>
+                    </tr>";
+        
+        foreach ($CancelArray as $cancel) {
+            $htmlCode .= "<tr>
+                              <td>{$cancel['DurationFrom']} Hours - {$cancel['DurationTo']} Hours</td>
+                              <td>" . ($cancel['value'] === 'Non Refundable' ? $cancel['value'] : '₹ ' . $cancel['value']) . "</td>
+                          </tr>";
+        }
+        
+        $htmlCode .= "</table>
+                <h4>Reschedule Charges Per Pax</h4>
+                <table>
+                    <tr>
+                        <th>Timeline</th>
+                        <th>Penalty (Airline Fee)</th>
+                    </tr>";
+        
+        foreach ($RescheduleChargesArray as $charges) {
+            $htmlCode .= "<tr>
+                              <td>{$charges['DurationFrom']} Hours - {$charges['DurationTo']} Hours</td>
+                              <td>" . ($charges['value'] === 'Non Refundable' ? $charges['value'] : '₹ ' . $charges['value'] . ' + Difference in Fare') . "</td>
+                          </tr>";
+        }
+        
+        $htmlCode .= "</table>
+        
+                <p>
+                    The above timeframe mentioned is the time till which cancellation/reschedule is permitted from the Airline side, and can be canceled by you when performing an online cancellation/reschedule. For any offline cancellation (to be done from our support office), we will need at least 6 hrs of buffer time to process the cancellation/reschedule offline.
+                </p>
+                <p>
+                    The above fare rules are just a guideline for your convenience and are subject to changes by the Airline from time to time. The agent does not guarantee the accuracy of cancel/rescheduling fees.
+                </p>
             </div>
         </div>
-    </body>
-    </html>";
-
-    // // Load HTML into PDF
+        </body>
+        </html>";
+        
+        // // Load HTML into PDF
     // $pdf = Pdf::loadHTML($htmlCode);
 
     // // Save the PDF temporarily to the storage
@@ -894,6 +1034,7 @@ class DotMikController extends Controller
 
     // // Return the saved file path to be used in the response
     // return $filePath;
+
     $directoryPath = storage_path('app/public/tickets');
     $fileName = 'ticket-' . uniqid() . '.pdf';
     $filePath = $directoryPath . '/' . $fileName;
@@ -906,9 +1047,7 @@ class DotMikController extends Controller
     // Load HTML into PDF and save it to the specified path
     $pdf = Pdf::loadHTML($htmlCode);
 
-
     // return response()->json($pdf);
-
     $pdf->save($filePath);
 
     // Return the saved file path
@@ -956,6 +1095,9 @@ public function RePrintTicket(Request $request)
          // Make the POST request using Laravel HTTP Client
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result=$response->json();
+
+        //    $result=json_decode($res,true);
+
             $statusCode = $response->status();
             
             if($result['status'] === false)
@@ -971,6 +1113,7 @@ public function RePrintTicket(Request $request)
                 if($response->successful())
                 {    
                     $PNR= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+                    $Aircraft= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Aircraft_Type'];
                     $Ticket= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['Ticket_Number'];
                     $Origin_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
                     $Destination_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
@@ -984,7 +1127,64 @@ public function RePrintTicket(Request $request)
                     $Destination_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
                     $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
                     $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
-        
+
+                    $Cabin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
+                    $CheckIn=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
+                    $Gender=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Gender'];
+                    $Contact=$result['payloads']['data']['rePrintTicket']['PAX_Mobile'];
+                    $Email=$result['payloads']['data']['rePrintTicket']['PAX_EmailId'];
+                    $BaseFare=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];
+                    
+                    $TotalAmount=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+
+                    $Cancellation=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
+
+                    $RescheduleCharges=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
+
+                    $FlightNO = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Flight_Number'];
+
+                    $AirlineCode = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Airline_Code'];
+
+                    $Tax= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
+                    
+
+                    // https://api.launcherr.co/api/show/Airline?code=AI
+
+                    $CancelArray=[];
+                    
+                    foreach($Cancellation as $cancel)
+                    {
+                        $value = [
+                            'DurationFrom' => $cancel['DurationFrom'],
+                            'DurationTo' => $cancel['DurationTo'],
+                            'value' => ($cancel['ValueType'] === 1) ? 'Non Refundable' : $cancel['Value'],
+                        ];
+                    
+                        $CancelArray[] = $value;
+                    }
+                    
+                    $RescheduleChargesArray=[];
+                   
+                    foreach($RescheduleCharges as $charges)
+                    {
+                        $value = [
+                            'DurationFrom' => $charges['DurationFrom'],
+                            'DurationTo' => $charges['DurationTo'],
+                            'value' => ($charges['ValueType'] === 1) ? 'Non Refundable' : $charges['Value'],
+                        ];
+                    
+                        $RescheduleChargesArray[] = $value;
+                    }
+                    
+                    if($Gender === 0)
+                    {
+                        $gen = 'Male';
+                    }
+                    elseif ($Gender === 1)
+                    {
+                        $gen = 'Female';
+                    }
+
                 if($type === 0)
                 {
                     $flight_type="Ecomony";
@@ -1017,7 +1217,7 @@ public function RePrintTicket(Request $request)
                 $Duration = $hours . 'h ' . $minutes . 'm';
         
                 // Generate the PDF
-                $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration);
+                $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$gen,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax);
         
                 return response()->json([
                     'success' => true,
