@@ -131,11 +131,20 @@ class PaymentController extends Controller
         // Use input instead of query for POST requests
         $price = $request->input('price');
         $BookingRef = $request->input('BookingRef');
+
+        if(!$price || !$BookingRef)
+        {
+            return response()->json(['success'=> 0, 'message'=>'Please provide both Amount and Booking Ref'],400);
+        }        
     
         // Create PayPal client and set API credentials
         $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
+
+        $final = $price/env('USD');
+
+        // return response()->json(Round($final,2));
     
         // Create PayPal order
         $response = $provider->createOrder([
@@ -149,7 +158,7 @@ class PaymentController extends Controller
                 [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => $price,
+                        "value" => Round($final,2),
                     ]
                 ]
             ]
