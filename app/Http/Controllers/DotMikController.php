@@ -14,6 +14,7 @@ class DotMikController extends Controller
     //
     public function SearchFlight(Request $request)
     {
+
         $validator=Validator::make($request->all(),[
             "origin" => "required|string",
             "destination" => "required|string",
@@ -503,9 +504,7 @@ class DotMikController extends Controller
         }
     }
 
-    public function TemporaryBooking(Request $request)
-    {
-
+    public function TemporaryBooking(Request $request){
         $validator = Validator::make($request->all(), [
             'passenger_details.mobile' => 'required|string',
             'passenger_details.whatsApp' => 'required|string',
@@ -958,8 +957,6 @@ public function RePrintTicket(Request $request)
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result=$response->json();
             $statusCode = $response->status();
-
-            return response()->json($result,$statusCode);   
             
             if($result['status'] === false)
             {
@@ -969,24 +966,24 @@ public function RePrintTicket(Request $request)
                     'error' => $result
                 ],$statusCode);
             }
-            else{
+            else
+            {
                 if($response->successful())
-                {                
-                $PNR= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
-                $Ticket= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['Ticket_Number'];
-                $Origin_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
-                $Destination_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
-                $first= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['First_Name'];
-                $last= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Last_Name'];
-                $Origin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
-                $Origin_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
-                $ArrivalDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Arrival_DateTime']);
-                $DepartureDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
-                $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
-                $Destination_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
-                $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
-                $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
-
+                {    
+                    $PNR= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+                    $Ticket= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['Ticket_Number'];
+                    $Origin_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
+                    $Destination_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
+                    $first= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['First_Name'];
+                    $last= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Last_Name'];
+                    $Origin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
+                    $Origin_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
+                    $ArrivalDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Arrival_DateTime']);
+                    $DepartureDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
+                    $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
+                    $Destination_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
+                    $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
+                    $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
         
                 if($type === 0)
                 {
@@ -1367,6 +1364,7 @@ public function RePrintTicket(Request $request)
             "classOfTravel" => $data['classOfTravel'],// This requires the class of Travel. Possible values: 0- ECONOMY/ 1- BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
         ];
 
+        
         // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
@@ -1387,7 +1385,7 @@ public function RePrintTicket(Request $request)
             if($result['status'] === false)
             {
                 return response()->json([
-                    'success' => false,
+                    'success' => 0,
                     'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
@@ -1417,3 +1415,296 @@ public function RePrintTicket(Request $request)
         }   
     }   
 }
+
+
+        // $validator = Validator::make($request->all(), [
+        //     'mobile' => 'required|string',
+        //     'whatsApp' => 'required|string',
+        //     'email' => 'required|string',
+        //     // 'passenger_details.paxId' => 'required|integer',
+        //     // 'passenger_details.paxType' => 'required|integer', // 0-ADT/1-CHD/2-INF
+        //     // 'passenger_details.title' => 'required|string',   // MR, MRS, MS; MSTR, MISS for child/infant
+        //     // 'passenger_details.firstName' => 'required|string',
+        //     // 'passenger_details.lastName' => 'required|string',
+        //     // 'passenger_details.age' => 'nullable|integer',
+        //     // 'passenger_details.gender' => 'required|integer',  // 0-Male, 1-Female
+        //     // 'passenger_details.dob' => 'required|date',
+        //     // 'passenger_details.passportNumber' => 'nullable|string',
+        //     // 'passenger_details.passportIssuingAuthority' => 'required|string',
+        //     // 'passenger_details.passportExpire' => 'required|date',
+        //     // 'passenger_details.nationality' => 'required|string',
+        //     // 'passenger_details.pancardNumber' => 'nullable|string',
+        //     // 'passenger_details.frequentFlyerDetails' => 'nullable|string',
+        //     'passenger_details' => 'required|array',  // Ensure it's an array
+        //     'passenger_details.*.paxId' => 'required|integer',
+        //     'passenger_details.*.paxType' => 'required|integer|in:0,1,2', // 0-ADT, 1-CHD, 2-INF
+        //     'passenger_details.*.title' => [
+        //         'required',
+        //         'string',
+        //         function($attribute, $value, $fail) {
+        //             $paxType = request()->input(str_replace('.title', '.paxType', $attribute));
+        //             if ($paxType == 0 && !in_array($value, ['Mr', 'Mrs', 'Ms'])) {
+        //                 $fail("The {$attribute} must be one of Mr, Mrs, or Ms for adults.");
+        //             } elseif (in_array($paxType, [1, 2]) && !in_array($value, ['MSTR', 'MISS'])) {
+        //                 $fail("The {$attribute} must be one of MSTR or MISS for children/infants.");
+        //             }
+        //         }
+        //     ],
+        //     'passenger_details.*.firstName' => 'required|string',
+        //     'passenger_details.*.lastName' => 'required|string',
+        //     'passenger_details.*.age' => 'nullable|integer',
+        //     'passenger_details.*.gender' => 'required|integer|in:0,1',  // 0-Male, 1-Female
+        //     'passenger_details.*.dob' => 'required|date',
+        //     'passenger_details.*.passportNumber' => 'nullable|string',
+        //     'passenger_details.*.passportIssuingAuthority' => 'required|string',
+        //     'passenger_details.*.passportExpire' => 'required|date',
+        //     'passenger_details.*.nationality' => 'required|string',
+        //     'passenger_details.*.pancardNumber' => 'nullable|string',
+        //     'passenger_details.*.frequentFlyerDetails' => 'nullable|string',
+        //     'gst.isGst' => 'required|string',
+        //     'gst.gstNumber' => 'nullable|string',
+        //     'gst.gstName' => 'nullable|string',
+        //     'gst.gstAddress' => 'nullable|string',
+        //     'searchKey' => 'required|string',
+        //     'FlightKey' => 'required|string',
+        //     'headersToken' => 'required|string',
+        //     'headersKey' => 'required|string'
+        // ]);
+        
+        // if ($validator->fails()) {
+        //     $errors = $validator->errors()->all();
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $errors[0] // Return the first error
+        //     ], 422);
+        // }
+        
+        // $data = $validator->validated();
+
+
+        // // return response()->json($data['passenger_details']['mobile']);
+
+        // $payload = [
+        //     "deviceInfo" => [
+        //         "ip" => "122.161.52.233",
+        //         "imeiNumber" => "12384659878976879887"
+        //     ],
+        //     "passengers" => [
+        //         "mobile" => $data['mobile'],
+        //         "whatsApp" => $data['whatsApp'],
+        //         "email" => $data['email'],
+        //         "paxDetails" => array_map(function ($passenger) {
+        //             return [
+        //                 "paxId" => $passenger['paxId'],
+        //                 "paxType" => $passenger['paxType'],
+        //                 "title" => $passenger['title'],
+        //                 "firstName" => $passenger['firstName'],
+        //                 "lastName" => $passenger['lastName'],
+        //                 "gender" => $passenger['gender'],
+        //                 "age" => $passenger['age'] ?? null,
+        //                 "dob" => $passenger['dob'],
+        //                 "passportNumber" => $passenger['passportNumber'],
+        //                 "passportIssuingAuthority" => $passenger['passportIssuingAuthority'],
+        //                 "passportExpire" => $passenger['passportExpire'],
+        //                 "nationality" => $passenger['nationality'],
+        //                 "pancardNumber" => $passenger['pancardNumber'] ?? null,
+        //                 "frequentFlyerDetails" => $passenger['frequentFlyerDetails'] ?? null
+        //             ];
+        //         }, $data['passenger_details']) // map each passenger
+        //     ],
+        //     "gst" => [
+        //         "isGst" => $data['gst']['isGst'],
+        //         "gstNumber" => $data['gst']['gstNumber'],
+        //         "gstName" => $data['gst']['gstName'],
+        //         "gstAddress" => $data['gst']['gstAddress']
+        //     ],
+        //     "flightDetails" => [
+        //         [
+        //             "searchKey" => $data['searchKey'],
+        //             "flightKey" => $data['FlightKey'],
+        //             "ssrDetails" => [] // Empty SSR details
+        //         ]
+        //     ],
+        //     "costCenterId" => 0,
+        //     "projectId" => 0,
+        //     "bookingRemark" => "Test booking with PAX details",
+        //     "corporateStatus" => 0,
+        //     "corporatePaymentMode" => 0,
+        //     "missedSavingReason" => null,
+        //     "corpTripType" => null,
+        //     "corpTripSubType" => null,
+        //     "tripRequestId" => null,
+        //     "bookingAlertIds" => null
+        // ];
+        
+        // // Headers
+        // $headers = [
+        //     'D-SECRET-TOKEN' => $data['headersToken'],
+        //     'D-SECRET-KEY' => $data['headersKey'],
+        //     'CROP-CODE' => 'DOTMIK160614',
+        //     'Content-Type' => 'application/json',
+        // ];
+        
+        // // API URL
+        // $url = 'https://api.dotmik.in/api/flightBooking/v1/tempBooking';
+        
+        // try {
+        //     // Make POST request
+        //     $response = Http::withHeaders($headers)->post($url, $payload);
+        //     $result = $response->json();
+        //     $statusCode = $response->status();
+            
+
+        //     if ($result['status'] === false) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => $result['message'],
+        //             'error' => $result
+        //         ],$statusCode);
+        //     } else {
+        //         if ($response->successful()) {
+        //             return response()->json([
+        //                 'success' => true,
+        //                 'data' => $result,
+        //             ], $statusCode);
+        //         } else {
+        //             return response()->json([
+        //                 'success' => false,
+        //                 'message' => $result['message'],
+        //                 'error' => $result
+        //             ],$statusCode);
+        //         }
+        //     }
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $e->getMessage()
+        //     ], 500);
+        // }        
+
+
+
+// $validator = Validator::make($request->all(), [
+//     "origin" => "required|string",
+//     "destination" => "required|string",
+//     "travelDate" => "required|date_format:m/d/Y", // Date format should be MM/DD/YYYY
+//     "returnTravelDate" => "nullable|date_format:m/d/Y", // New field for return date
+//     "travelType" => "required|in:0,1", // 0 for domestic and 1 for international
+//     "bookingType" => "required|in:0,1", // 0 for one way, 1 for round trip
+//     "adultCount" => "required|integer|min:0", // Change to integer for counts
+//     "childCount" => "required|integer|min:0",
+//     "infantCount" => "required|integer|min:0",
+//     "classOfTravel" => "required|in:0,1,2,3", // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+//     "airlineCode" => "nullable|string",
+
+//     // for Header  
+//     "headersToken" => "required|string",
+//     "headersKey" => "required|string",
+
+//     // for Filter
+//     "Refundable" => "nullable|boolean",
+//     'Arrival' => 'nullable|string',
+//     'Departure' => 'nullable|string',
+// ]);
+
+// // Custom validation rules based on bookingType
+
+
+// $validator->after(function ($validator) use ($request) {
+
+//     $bookingType = $request->input('bookingType');
+
+//     // return response()->json($boo);
+
+// //             if ($bookingType === "0") {
+// //                 // Additional validation for bookingType 0
+// // /            }
+// //  else
+// if ($bookingType == "1") {
+//         // Additional validation for bookingType 1
+//         // $tripInfo = $request->input('tripInfo');
+//         // if (is_array($tripInfo)) {
+//         //     foreach ($tripInfo as $key => $trip) {
+//         //         if (!isset($trip['origin']) || !isset($trip['destination']) || !isset($trip['travelDate']) || !isset($trip['tripId'])) {
+//         //             $validator->errors()->add("tripInfo.$key", 'Each trip in tripInfo must have origin, destination, travelDate, and tripId.');
+//         //         }
+//         //     }
+//         //     if (!$request->has('returnTravelDate')) {
+//         //         $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+//         //     }
+//         // } else {
+//         // if()
+//         //     $validator->errors()->add('tripInfo must be an array for bookingType 1.');
+//         // }
+//         if (!$request->has('returnTravelDate')) {
+//             $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+//         }
+//     }
+// });
+
+// if ($validator->fails()) {
+//     $errors = $validator->errors()->all(); // Get all error messages
+//     $formattedErrors = [];
+
+//     foreach ($errors as $error) {
+//         $formattedErrors[] = $error;
+//     }
+
+//     return response()->json([
+//         'success' => false,
+//         'message' => $formattedErrors[0]
+//     ], 422);
+// }
+
+// $data = $validator->validated();
+
+// // Prepare the payload based on bookingType
+// $payload = [
+//     "deviceInfo" => [
+//         "ip" => "122.161.52.233",
+//         "imeiNumber" => "12384659878976879888"
+//     ],
+//     "travelType" => $data['travelType'], // 0 for domestic, 1 for international
+//     "bookingType" => $data['bookingType'], // 0 for one way, 1 for round trip
+//     "tripInfo" => $data['bookingType'] === "1" ? [
+//         [
+//             "origin" => $data['origin'],
+//             "destination" => $data['destination'],
+//             "travelDate" => $data['travelDate'],
+//             "tripId" => "0" // For the first trip
+//         ],
+//         [
+//             "origin" => $data['destination'], // Reverse trip
+//             "destination" => $data['origin'],
+//             "travelDate" => $data['returnTravelDate'], // Use return date if provided
+//             "tripId" => "1" // For return trip
+//         ]
+//     ] : [
+//             "origin" => $data['origin'],
+//             "destination" => $data['destination'],
+//             "travelDate" => $data['travelDate'],
+//             "tripId" => "0" // Ongoing trip
+//     ],
+//     "adultCount" => $data['adultCount'],
+//     "childCount" => $data['childCount'],
+//     "infantCount" => $data['infantCount'],
+//     "classOfTravel" => $data['classOfTravel'], // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+//     "filteredAirLine" => [
+//         "airlineCode" => $data['airlineCode'] ?? ''
+//     ]
+// ];
+
+// // return response()->json($payload);
+
+
+// // Headers
+// $headers = [
+//     'D-SECRET-TOKEN' => $data['headersToken'],
+//     'D-SECRET-KEY' => $data['headersKey'],
+//     'CROP-CODE' => 'DOTMIK160614',
+//     'Content-Type' => 'application/json',
+// ];
+
+
+// // API URL
+// $url = 'https://staging.dotmik.in/api/flightBooking/v1/searchFlight';
