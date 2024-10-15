@@ -5,85 +5,217 @@ namespace App\Http\Controllers\Payment;
 use App\Http\Controllers\Controller;
 use App\Models\CartDetails;
 use GuzzleHttp\Client;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Ixudra\Curl\Facades\Curl;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaymentController extends Controller
 {
     
+    // public function paypal(Request $request)
+    // {
+    //     // Validate price input
+    //     $request->validate([
+    //         'price' => 'required|numeric|min:1',
+    //     ]);
+    
+    //     // Create PayPal client and set API credentials
+    //     $provider = new PayPalClient();
+    //     $provider->setApiCredentials(config('paypal'));
+    //     $paypalToken = $provider->getAccessToken();
+    
+    //     // Create PayPal order
+    //     $response = $provider->createOrder([
+    //         "intent" => "CAPTURE",
+    //         "application_context" => [
+    //             "return_url" => secure_url(route('success')),
+    //             "cancel_url" => secure_url(route('cancel')),
+    //         ],
+    //         "purchase_units" => [
+    //             [
+    //                 "amount" => [
+    //                     "currency_code" => "USD",
+    //                     "value" => $request->price,
+    //                 ]
+    //             ]
+    //         ]
+    //     ]);
+    
+    //     // Check for successful order creation
+    //     if (isset($response['id']) && $response['id'] != null) {
+    //         // Look for the approval link to redirect user
+    //         foreach ($response['links'] as $link) {
+    //             if ($link['rel'] === 'approve') {
+    //                 // Save payment details in the database
+    //                 Payment::create([
+    //                     'paypal_order_id' => $response['id'],
+    //                     'amount' => $request->price,
+    //                     'status' => 'PENDING',  
+    //                     'user_id' => auth()->id(),
+    //                 ]);
+    
+    //                 return response()->json(['approve_link' => $link['href']]);
+    //             }
+    //         }
+    //     } else {
+    //         // Log error and return a failure response
+    //         Log::error('PayPal Order Creation Failed', ['response' => $response]);
+    //         return response()->json(['error' => 'Failed to create PayPal order. Please try again later.'], 500);
+    //     }
+    // }
+    
+
+    // public function success(Request $request)
+    // {
+    //     try {
+    //         // Validate the presence of token
+    //         if (!$request->has('token')) {
+    //             return response()->json(['success' => false, 'message' => 'Invalid token'], 400);
+    //         }
+    
+    //         // Create PayPal client and set API credentials
+    //         $provider = new PayPalClient();
+    //         $provider->setApiCredentials(config('paypal'));
+    //         $paypalToken = $provider->getAccessToken();
+    
+    //         // Capture payment order
+    //         $response = $provider->capturePaymentOrder($request->token);
+    
+    //         // Check if payment is completed
+    //         if ($response['status'] === 'COMPLETED') {
+    //             // Check if payment has already been processed
+    //             if ($this->isPaymentAlreadyProcessed($response['id'])) {
+    //                 return response()->json(['success' => false, 'message' => 'Payment already processed'], 400);
+    //             }
+    
+    //             // Store payment status in database (if needed) and return success response
+    //             Payment::where('paypal_order_id', $response['id'])->update([
+    //                 'status' => 'COMPLETED',
+    //                 'transaction_id' => $response['id'],
+    //             ]);
+    
+    //             return response()->json(['success' => true, 'message' => 'Payment Successful', 'link' => 'https://launcherr.co/paymentSuccess', 'data' => $response], 200);
+    //         } else {
+    //             Log::error('PayPal Payment Capture Failed', ['response' => $response]);
+    //             return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure', 'error' => $response], 500);
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error('PayPal Payment Capture Error', ['exception' => $e]);
+    //         return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure', 'error' => $e->getMessage()], 500);
+    //     }
+    // }
+    
+    // public function cancel()
+    // {
+    //     return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure'], 500);
+    // }
+    
+    // // New Function: Check if payment is already processed
+    // protected function isPaymentAlreadyProcessed($paypalOrderId)
+    // {
+    //     // Query the database for a payment with this PayPal order ID
+    //     $payment = Payment::where('paypal_order_id', $paypalOrderId)->first();
+    
+    //     // If payment exists and its status is completed, it means it's already processed
+    //     if ($payment && $payment->status === 'COMPLETED') {
+    //         return true;  // Payment already processed
+    //     }
+    
+    //     return false;  // Payment not processed yet
+    // }
+    
     public function paypal(Request $request)
     {
-
-        $provider = new PayPalClient;
+        // Validate price input
+        $request->validate([
+            'price' => 'required|numeric|min:1',
+            'BookingRef' => 'required|string',
+        ]);
+    
+        // Create PayPal client and set API credentials
+        $provider = new PayPalClient();
         $provider->setApiCredentials(config('paypal'));
-        $paypalToken=$provider->getAccessToken();
-        
+        $paypalToken = $provider->getAccessToken();
+    
+        // Create PayPal order
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
-            "application_context"=> [
-                "return_url" => route('success'),
-                "cancel_url" => route('cancel'),
+            "application_context" => [
+                // Append BookingRef to the success URL
+                "return_url" => secure_url(route('success', ['BookingRef' => $request->BookingRef])),
+                "cancel_url" => secure_url(route('cancel')),
             ],
             "purchase_units" => [
-               [
-                  "amount" => [
-                    "currency_code" => "USD",
-                    "value" => $request->price,
+                [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $request->price,
                     ]
-               ]
+                ]
             ]
         ]);
-
-        // return response()->json($response);
-        if(isset($response['id']) && $response['id'] !=null){
-             foreach($response['links'] as $link)
-             {
-                if($link['rel'] === 'approve')
-                {
+    
+        if (isset($response['id']) && $response['id'] != null) {
+            foreach ($response['links'] as $link) {
+                if ($link['rel'] === 'approve') {
                     return response()->json($link['href']);
                 }
-             }
-        }
-        else{
-            // return route('cancel');
-
+            }
+        } else {
             Log::error('PayPal Order Creation Failed', ['response' => $response]);
-
-            // Return an error message
             return response()->json(['error' => 'Failed to create PayPal order. Please try again later.'], 500);
         }
     }
-
+    
     public function success(Request $request)
     {
         try {
             $provider = new PayPalClient();
             $provider->setApiCredentials(config('paypal'));
             $paypalToken = $provider->getAccessToken();
-
+    
             $response = $provider->capturePaymentOrder($request->token);
-
+    
             if ($response['status'] === 'COMPLETED') 
             {
-                return response()->json(['success' => true, 'message' => 'Payment Successful' ,'link' => 'https://launcherr.co/paymentSuccess', 'data' => $response], 200);
+                // Get the BookingRef from the request
+                $bookingRef = $request->query('BookingRef'); 
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment Successful',
+                    // Append BookingRef to the success URL
+                    'link' => 'https://launcherr.co/flightSuccess?BookingRef=' . urlencode($bookingRef),
+                    'data' => $response
+                ], 200);
             } else {
                 Log::error('PayPal Payment Capture Failed', ['response' => $response]);
-                return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure', 'error' => $response], 500);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment Failure',
+                    'link' => 'https://launcherr.co/paymentFailure',
+                    'error' => $response
+                ], 500);
             }
         } catch (\Exception $e) {
             Log::error('PayPal Payment Capture Error', ['exception' => $e]);
-            // return response()->json(['success' => false, 'message' => 'An error occurred', 'error' => $e->getMessage()], 500);
-            return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment Failure',
+                'link' => 'https://launcherr.co/paymentFailure',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+    
 
     public function cancel()
     {
         return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure'], 500); 
     }
+
     // public function success(Request $request){
     //     $provider= new PayPalClient();
     //     $provider->setApiCredentials(config('paypal'));
