@@ -128,11 +128,9 @@ class PaymentController extends Controller
     
     public function paypal(Request $request)
     {
-        // Validate price input
-        $request->validate([
-            'price' => 'required|numeric|min:1',
-            'BookingRef' => 'required|string',
-        ]);
+        // Use input instead of query for POST requests
+        $price = $request->input('price');
+        $BookingRef = $request->input('BookingRef');
     
         // Create PayPal client and set API credentials
         $provider = new PayPalClient();
@@ -144,14 +142,14 @@ class PaymentController extends Controller
             "intent" => "CAPTURE",
             "application_context" => [
                 // Append BookingRef to the success URL
-                "return_url" => secure_url(route('success', ['BookingRef' => $request->BookingRef])),
+                "return_url" => secure_url(route('success', ['BookingRef' => $BookingRef])),
                 "cancel_url" => secure_url(route('cancel')),
             ],
             "purchase_units" => [
                 [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => $request->price,
+                        "value" => $price,
                     ]
                 ]
             ]
