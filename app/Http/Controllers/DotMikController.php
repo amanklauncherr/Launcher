@@ -20,7 +20,7 @@ class DotMikController extends Controller
             "travelDate" => "required|date_format:m/d/Y", // Date format should be MM/DD/YYYY
             "returnTravelDate" => "nullable|date_format:m/d/Y", // New field for return date
             "travelType" => "required|in:0,1", // 0 for domestic and 1 for international
-            "bookingType" => "required|in:0,1", // 0 for one way, 1 for round trip
+            "bookingType" => "required|in:0,1,2", // 0 for one way, 1 for round trip
             "adultCount" => "required|integer|min:0", // Change to integer for counts
             "childCount" => "required|integer|min:0",
             "infantCount" => "required|integer|min:0",
@@ -37,55 +37,6 @@ class DotMikController extends Controller
             'Departure' => 'nullable|string',
         ]);
 
-        // Custom validation rules based on bookingType
-
-
-        // $validator->after(function ($validator) use ($request) {
-
-            $bookingType = $request->input('bookingType');
-
-            // return response()->json($boo);
-
-        //             if ($bookingType === "0") {
-        //                 // Additional validation for bookingType 0
-        // /            }
-        //  else
-            // if ($bookingType == "1") {
-                // Additional validation for bookingType 1
-                // $tripInfo = $request->input('tripInfo');
-                // if (is_array($tripInfo)) {
-                //     foreach ($tripInfo as $key => $trip) {
-                //         if (!isset($trip['origin']) || !isset($trip['destination']) || !isset($trip['travelDate']) || !isset($trip['tripId'])) {
-                //             $validator->errors()->add("tripInfo.$key", 'Each trip in tripInfo must have origin, destination, travelDate, and tripId.');
-                //         }
-                //     }
-                //     if (!$request->has('returnTravelDate')) {
-                //         $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
-                //     }
-                // } else {
-                // if()
-                //     $validator->errors()->add('tripInfo must be an array for bookingType 1.');
-                // }
-            //     if (!$request->has('returnTravelDate')) {
-            //         $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
-            //     }
-
-            //     $message = 'Round Trip Search Flights';
-            // }
-        // });
-
-        // $bookingType = $request->input('bookingType');
-        if ($request->input('bookingType') === "1") {
-            if (!$request->input('returnTravelDate')) {
-                // $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Please Provide returnTravelDate'
-                ], 422);
-            }
-            $message = 'Round Trip Search Flights';
-        }
-
         if ($validator->fails()) {
             $errors = $validator->errors()->all(); // Get all error messages
             $formattedErrors = [];
@@ -99,8 +50,19 @@ class DotMikController extends Controller
                 'message' => $formattedErrors[0]
             ], 422);
         }
-
+        
         $data = $validator->validated();
+
+        if ($data['bookingType'] === "1") {
+            if (!$request->input('returnTravelDate')) {
+                // $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please Provide returnTravelDate'
+                ], 422);
+            }
+            $message = 'Round Trip Search Flights';
+        }
 
         $payload = [
             "deviceInfo" => [
@@ -490,7 +452,10 @@ class DotMikController extends Controller
             'FlightKey' => 'required|string',
             'CustomerContact' => "required|string|min:10|max:10",
             'headersToken' => 'required|string',
-            'headersKey' => 'required|string'
+            'headersKey' => 'required|string',
+            'adultCount' => 'required|string',
+            'childCount' => 'required|string',
+            'infantCount' => 'required|string'
         ]);     
 
         if ($validator->fails()) {
@@ -515,11 +480,18 @@ class DotMikController extends Controller
                 "imeiNumber" => "12384659878976879888"
             ],
             "searchKey" => $data['SearchKey'],
-            "fareId" => $data['FareID'],
-            "flightKey" => $data['FlightKey'],
+            "reprice" => [
+                [
+                "Fare_Id" => $data['FareID'],
+                "Flight_Key" => $data['FlightKey'],    
+                ]
+            ],
             "customerMobile" => $data['CustomerContact'],
             "GSTIN" => ""
         ];
+
+        // return response()->json($PAX);
+
 
         // Headers
         $headers = [
@@ -549,8 +521,35 @@ class DotMikController extends Controller
             else{
                 if($response->successful())
                 {
+                    $PAX= $result['payloads']['data']['rePrice'][0]['Flight']['Fares'][0]['FareDetails'];
+
+                    // return response()->json($PAX);
+
+                    foreach($PAX as $pax)
+                    {
+                        if($pax['PAX_Type'] === 0)
+                        {
+                            $adultAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['adultCount'];
+                        }
+                        else if($pax['PAX_Type'] === 1)
+                        {
+
+                            $childAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['childCount'];
+                        }
+                        else if($pax['PAX_Type'] === 2)
+                        {
+                            $infantAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['infantCount'];
+                        }
+                    }
+
+                    $TotalAmount = $adultAmount + $childAmount + $infantAmount;
+                   
                     return response()->json([
                         'success' => true,
+                        'adultAmount' => $adultAmount,
+                        'childAmount' => $childAmount,
+                        'infantAmount' => $infantAmount,
+                        'totalAmount'=>$TotalAmount,
                         'data' => $result,
                     ], $statusCode);
                 } else {
@@ -572,24 +571,26 @@ class DotMikController extends Controller
     }
 
     public function TemporaryBooking(Request $request){
-        $validator = Validator::make($request->all(), [
-            'passenger_details.mobile' => 'required|string',
-            'passenger_details.whatsApp' => 'required|string',
-            'passenger_details.email' => 'required|string',
-            'passenger_details.paxId' => 'required|integer',
-            'passenger_details.paxType' => 'required|integer', // 0-ADT/1-CHD/2-INF
-            'passenger_details.title' => 'required|string', // MR, MRS, MS; MSTR, MISS for child/infant
-            'passenger_details.firstName' => 'required|string',
-            'passenger_details.lastName' => 'required|string',
-            'passenger_details.age' => 'nullable|integer',
-            'passenger_details.gender' => 'required|integer',  // 0-Male, 1-Female
-            'passenger_details.dob' => 'required|date',
-            'passenger_details.passportNumber' => 'nullable|string',
-            'passenger_details.passportIssuingAuthority' => 'nullable|string',
-            'passenger_details.passportExpire' => 'nullable|date',
-            'passenger_details.nationality' => 'nullable|string',
-            'passenger_details.pancardNumber' => 'nullable|string',
-            'passenger_details.frequentFlyerDetails' => 'nullable|string',
+        // Validation
+        $validator = Validator::make($request->all(),[
+            'totalCount' => 'required|string',
+            'mobile' => 'required|string|max:10|min:10',
+            'whatsApp' => 'required|string|max:10|min:10',
+            'email' => 'required|string|email',
+            // 'passenger_details.*.paxId' => 'required|integer',
+            'passenger_details.*.paxType' => 'required|integer|in:0,1,2', // 0-ADT/1-CHD/2-INF
+            'passenger_details.*.title' => 'required|string|in:Mr,Mrs,Ms,Mstr,Miss', // MR, MRS, MS; MSTR, MISS for child/infant
+            'passenger_details.*.firstName' => 'required|string',
+            'passenger_details.*.lastName' => 'required|string',
+            'passenger_details.*.age' => 'nullable|integer',
+            'passenger_details.*.gender' => 'required|integer|in:0,1',  // 0-Male, 1-Female
+            'passenger_details.*.dob' => 'required|date',
+            'passenger_details.*.passportNumber' => 'nullable|string',
+            'passenger_details.*.passportIssuingAuthority' => 'nullable|string',
+            'passenger_details.*.passportExpire' => 'nullable|date',
+            'passenger_details.*.nationality' => 'nullable|string',
+            'passenger_details.*.pancardNumber' => 'nullable|string',
+            'passenger_details.*.frequentFlyerDetails' => 'nullable|string',
             'gst.isGst' => 'required|string',
             'gst.gstNumber' => 'nullable|string',
             'gst.gstName' => 'nullable|string',
@@ -598,74 +599,96 @@ class DotMikController extends Controller
             'FlightKey' => 'required|string',
             'headersToken' => 'required|string',
             'headersKey' => 'required|string'
-        ]);
-        
+        ]);     
+
         if ($validator->fails()) {
-            $errors = $validator->errors()->all();
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+    
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
+    
             return response()->json([
                 'success' => false,
-                'message' => $errors[0] // Return the first error
+                'message' => $formattedErrors[0]
             ], 422);
         }
         
-        $data = $validator->validated();
+        $data=$validator->validated();
 
+        // Initialize paxDetails array
+        $paxDetails = [];
 
-        // return response()->json($data['passenger_details']['mobile']);
+        $padID=1;
 
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ],
-            "passengers" => [
-                "mobile" => $data['passenger_details']['mobile'],
-                "whatsApp" => $data['passenger_details']['whatsApp'],
-                "email" => $data['passenger_details']['email'],
-                "paxDetails" => [
-                    [
-                        "paxId" => $data['passenger_details']['paxId'],
-                        "paxType" => $data['passenger_details']['paxType'],
-                        "title" => $data['passenger_details']['title'],
-                        "firstName" => $data['passenger_details']['firstName'],
-                        "lastName" => $data['passenger_details']['lastName'],
-                        "gender" => $data['passenger_details']['gender'],
-                        "age" => $data['passenger_details']['age'] ?? null,
-                        "dob" => $data['passenger_details']['dob'],
-                        "passportNumber" => $data['passenger_details']['passportNumber'],
-                        "passportIssuingAuthority" => $data['passenger_details']['passportIssuingAuthority'],
-                        "passportExpire" => $data['passenger_details']['passportExpire'],
-                        "nationality" => $data['passenger_details']['nationality'],
-                        "pancardNumber" => $data['passenger_details']['pancardNumber'] ?? null,
-                        "frequentFlyerDetails" => $data['passenger_details']['frequentFlyerDetails'] ?? null
-                    ]
-                ]
-            ],
-            "gst" => [
-                "isGst" => $data['gst']['isGst'],
-                "gstNumber" => $data['gst']['gstNumber'],
-                "gstName" => $data['gst']['gstName'],
-                "gstAddress" => $data['gst']['gstAddress']
-            ],
-            "flightDetails" => [
-                [
-                    "searchKey" => $data['searchKey'],
-                    "flightKey" => $data['FlightKey'],
-                    "ssrDetails" => [] // Empty SSR details
-                ]
-            ],
-            "costCenterId" => 0,
-            "projectId" => 0,
-            "bookingRemark" => "Test booking with PAX details",
-            "corporateStatus" => 0,
-            "corporatePaymentMode" => 0,
-            "missedSavingReason" => null,
-            "corpTripType" => null,
-            "corpTripSubType" => null,
-            "tripRequestId" => null,
-            "bookingAlertIds" => null
+        for ($i = 0; $i < $data['totalCount']; $i++) {
+        $paxDetails[] = [
+            "paxId" => $padID++,
+            "paxType" => $data['passenger_details'][$i]['paxType'],
+            "title" => $data['passenger_details'][$i]['title'],
+            "firstName" => $data['passenger_details'][$i]['firstName'],
+            "lastName" => $data['passenger_details'][$i]['lastName'],
+            "gender" => $data['passenger_details'][$i]['gender'],
+            "age" => $data['passenger_details'][$i]['age'] ?? null,
+            "dob" => $data['passenger_details'][$i]['dob'],
+            "passportNumber" => $data['passenger_details'][$i]['passportNumber'] ?? null,
+            "passportIssuingAuthority" => $data['passenger_details'][$i]['passportIssuingAuthority'] ?? null,
+            "passportExpire" => $data['passenger_details'][$i]['passportExpire'] ?? null,
+            "nationality" => $data['passenger_details'][$i]['nationality'] ?? null,
+            "pancardNumber" => $data['passenger_details'][$i]['pancardNumber'] ?? null,
+            "frequentFlyerDetails" => $data['passenger_details'][$i]['frequentFlyerDetails'] ?? null,
         ];
+        }
+
+        $passportNumbers = array_column($paxDetails, 'passportNumber');
+
+        if (count($passportNumbers) !== count(array_unique($passportNumbers))) {
+            return response()->json([
+                'success' => false,
+                'message' => "Passport numbers must be unique within the passenger details.",
+            ], 400);
+        }
         
+        // Payload creation
+        $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "passengers" => [
+            "mobile" => $data['mobile'],
+            "whatsApp" => $data['whatsApp'],
+            "email" => $data['email'],
+            "paxDetails" => $paxDetails
+        ],
+        "gst" => [
+            "isGst" => $data['gst']['isGst'],
+            "gstNumber" => $data['gst']['gstNumber'] ?? null,
+            "gstName" => $data['gst']['gstName'] ?? null,
+            "gstAddress" => $data['gst']['gstAddress'] ?? null
+        ],
+        "flightDetails" => [
+            [
+                "searchKey" => $data['searchKey'],
+                "flightKey" => $data['FlightKey'],
+                "ssrDetails" => [] // Empty SSR details
+            ]
+        ],
+        "costCenterId" => 0,
+        "projectId" => 0,
+        "bookingRemark" => "Test booking with PAX details",
+        "corporateStatus" => 0,
+        "corporatePaymentMode" => 0,
+        "missedSavingReason" => null,
+        "corpTripType" => null,
+        "corpTripSubType" => null,
+        "tripRequestId" => null,
+        "bookingAlertIds" => null
+        ];
+
+        // return response()->json($payload);
+
         // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
@@ -683,11 +706,10 @@ class DotMikController extends Controller
             $result = $response->json();
             $statusCode = $response->status();
             
-
             if ($result['status'] === false) {
                 return response()->json([
                     'success' => false,
-                    'message' => $result['message'],
+                    'message' => $result['payloads']['data']['tempBooking']['innerException'],
                     'error' => $result
                 ],$statusCode);
             } else {
@@ -699,7 +721,7 @@ class DotMikController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => $result['message'],
+                        'message' => $result['payloads']['data']['tempBooking']['innerException'],
                         'error' => $result
                     ],$statusCode);
                 }
@@ -2164,3 +2186,46 @@ public function RePrintTicket(Request $request)
 //         'message' => $e->getMessage()
 //     ], 500);
 // }    
+
+
+        // Custom validation rules based on bookingType
+
+
+        // $validator->after(function ($validator) use ($request) {
+
+            // $bookingType = $request->input('bookingType');
+
+            // return response()->json($boo);
+
+        //             if ($bookingType === "0") {
+        //                 // Additional validation for bookingType 0
+        // /            }
+        //  else
+            // if ($bookingType == "1") {
+                // Additional validation for bookingType 1
+                // $tripInfo = $request->input('tripInfo');
+                // if (is_array($tripInfo)) {
+                //     foreach ($tripInfo as $key => $trip) {
+                //         if (!isset($trip['origin']) || !isset($trip['destination']) || !isset($trip['travelDate']) || !isset($trip['tripId'])) {
+                //             $validator->errors()->add("tripInfo.$key", 'Each trip in tripInfo must have origin, destination, travelDate, and tripId.');
+                //         }
+                //     }
+                //     if (!$request->has('returnTravelDate')) {
+                //         $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+                //     }
+                // } else {
+                // if()
+                //     $validator->errors()->add('tripInfo must be an array for bookingType 1.');
+                // }
+            //     if (!$request->has('returnTravelDate')) {
+            //         $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+            //     }
+
+            //     $message = 'Round Trip Search Flights';
+            // }
+        // });
+
+        // $bookingType = $request->input('bookingType');
+       
+
+
