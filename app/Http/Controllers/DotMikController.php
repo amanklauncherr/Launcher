@@ -11,99 +11,120 @@ use DateTime;
 
 class DotMikController extends Controller
 {
-    //
     public function SearchFlight(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "origin" => "required|string",
-            "destination" => "required|string",
-            "travelDate" => "required|date_format:m/d/Y", // Date format should be MM/DD/YYYY
-            "returnTravelDate" => "nullable|date_format:m/d/Y", // New field for return date
-            "travelType" => "required|in:0,1", // 0 for domestic and 1 for international
-            "bookingType" => "required|in:0,1,2", // 0 for one way, 1 for round trip
-            "adultCount" => "required|integer|min:0", // Change to integer for counts
-            "childCount" => "required|integer|min:0",
-            "infantCount" => "required|integer|min:0",
-            "classOfTravel" => "required|in:0,1,2,3", // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+            "TYPE" => "required|string|in:ONEWAY,ROUNDTRIP,MULTISTATE",
+            "tripInfo" => "required|array",
+            "tripInfo.*.origin" => "required|string",
+            "tripInfo.*.destination" => "required|string",
+            "tripInfo.*.travelDate" => "required|date_format:m/d/Y",
+            "tripInfo.*.tripId" => "nullable|string|in:0,1", 
+            "travelType" => "required|string|in:0,1", // 0 for domestic, 1 for international
+            "bookingType" => "required|string|in:0,1,2,3", // 0 for one way, 1 for round trip
+            "adultCount" => "required|string",
+            "childCount" => "required|string", 
+            "infantCount" => "required|string",
+            "classOfTravel" => "required|in:0,1,2,3",         
             "airlineCode" => "nullable|string",
-
-            // for Header  
-            "headersToken" => "required|string",
+            "Arrival" => "nullable|string",
+            "Departure" => "nullable|string",
+            "Refundable" => "nullable|boolean",    
+            "headersToken" => "required|string", 
             "headersKey" => "required|string",
-
-            // for Filter
-            "Refundable" => "nullable|boolean",
-            'Arrival' => 'nullable|string',
-            'Departure' => 'nullable|string',
         ]);
-
+        
+        // Check if validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-
+            // Get all the error messages
+            $errors = $validator->errors()->all(); // Capture all error messages
             return response()->json([
                 'success' => false,
-                'message' => $formattedErrors[0]
+                'message' => $errors[0], // Return the first error message
             ], 422);
         }
         
+        // If validation succeeds, continue with the validated data
         $data = $validator->validated();
 
-        if ($data['bookingType'] === "1") {
-            if (!$request->input('returnTravelDate')) {
-                // $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Please Provide returnTravelDate'
-                ], 422);
+        $tripInfo=[];
+
+        $i=0;
+        foreach ($data['tripInfo'] as $trip) {
+            if (empty($trip['tripId'])) {
+                $trip['tripId'] = "{$i}"; // Set default value
             }
-            $message = 'Round Trip Search Flights';
+            $tripInfo[]=$trip;
+            $i++;
+        }   
+
+        $count=count($data['tripInfo']);
+        // $message = ($count === 1) ? 'One Way Trip Data' : 
+        // (($count === 2) ? 'Round Trip Data' : (($count > 2) ? 'Multi State Data' : 'Unknown Trip Data'));   
+
+        if($data['TYPE'] === "ONEWAY")
+        {
+            if($data['bookingType'] != "0")        
+            {
+                return response()->json(['success'=>false,'message'=> 'For One Way bookingType field Should be 0'],400); 
+            }
+            if($count !=1)
+            {
+                return response()->json(['success'=>false,'message'=>'tripInfo should have 1 objects for One Way'],400);
+            }
+            $message = 'One Way Trip Flight Data';
+        }
+        else if($data['TYPE'] === "ROUNDTRIP")
+        {
+            if($data['bookingType'] != "2")        
+            {
+                return response()->json(['success'=>false,'message'=> 'For Round Trip bookingType field Should be 2'],400); 
+            }
+            if($data['bookingType'] === "2")
+            {
+                if($count != 2)
+                {
+                    return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
+                }
+            }
+            $message = 'Round Trip Flight Data';
+        }
+        else if($data['TYPE'] === "MULTISTATE")
+        {
+            if($data['bookingType'] != "3")        
+            {
+                return response()->json(['success'=>false,'message'=> 'For Multi State bookingType field Should be 3'],400); 
+            }
+            if($data['bookingType'] === "3")
+            {
+                if($count < 2)
+                {
+                    return response()->json(['success'=>false,'message'=>'tripInfo should have 2 or More objects'],400);
+                }
+            }
+            $message = 'Multi State Flight Data';
         }
 
+        $data['tripInfo']=$tripInfo;
+        // Return the validated 'tripInfo' data
+        
         $payload = [
             "deviceInfo" => [
                 "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879888"
+                "imeiNumber" => "12384659878976879887"
             ],
-            "travelType" => $data['travelType'], // 0 for domestic, 1 for international
-            "bookingType" => $data['bookingType'], // 0 for one way, 1 for round trip
-            "tripInfo" => $data['bookingType'] === "1" ? [
-                [
-                    "origin" => $data['origin'],
-                    "destination" => $data['destination'],
-                    "travelDate" => $data['travelDate'],
-                    "tripId" => "0" // For the first trip
-                ],
-                [
-                    "origin" => $data['destination'], // Reverse trip
-                    "destination" => $data['origin'],
-                    "travelDate" => $data['returnTravelDate'], // Use return date if provided
-                    "tripId" => "1" // For return trip
-                ]
-            ] : [
-                   [ "origin" => $data['origin'],
-                    "destination" => $data['destination'],
-                    "travelDate" => $data['travelDate'],
-                    "tripId" => "0" // Ongoing trip
-                   ]
-            ],
+            "travelType" => $data['travelType'],
+            "bookingType" => $data['bookingType'], 
+            "tripInfo" => $data['tripInfo'],
             "adultCount" => $data['adultCount'],
             "childCount" => $data['childCount'],
             "infantCount" => $data['infantCount'],
-            "classOfTravel" => $data['classOfTravel'], // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+            "classOfTravel" => $data['classOfTravel'],
             "filteredAirLine" => [
                 "airlineCode" => $data['airlineCode'] ?? ''
             ]
         ];
 
-        // return response()->json($payload);
-
-
-        // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
             'D-SECRET-KEY' => $data['headersKey'],
@@ -111,14 +132,15 @@ class DotMikController extends Controller
             'Content-Type' => 'application/json',
         ];
 
-        // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/searchFlight';
 
     try {
-    // Make the POST request using Laravel HTTP Client
-        $response = Http::withHeaders($headers)->post($url, $payload);
+        $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
         $result=$response->json();
         $statusCode = $response->status();
+
+        // return response()->json($result);
+
 
         if($result['status'] === false)
         {
@@ -135,180 +157,203 @@ class DotMikController extends Controller
 
                 $dataa = $result['payloads']['data']['tripDetails'];
                 
-                // return response()->json($dataa);
-
-                $flights = $dataa[0]['Flights']; // Flights is already an array
+                $Flights = $dataa[0]['Flights']; 
                 
                 // Filter flights based on Departure and Arrival times
-                if(isset($data['Arrival']) && isset($data['Departure']))
-                {
+                // if(isset($data['Arrival']) && isset($data['Departure']))
+                // {
+                //     $Filtered=[];
+
+                //     if($data['Arrival'] === '12AM6AM')
+                //     {  
+                //         $arrivalDateTimeLow = "00:00";
+                //         $arrivalDateTimeHigh = "06:00";
+                //     }
+                //     else if($data['Arrival'] === '6AM12PM')
+                //     {  
+                //         $arrivalDateTimeLow = "06:00";
+                //         $arrivalDateTimeHigh = "12:00";
+                //     }
+                //     else if($data['Arrival'] === '12PM6PM')
+                //     {   
+                //         $arrivalDateTimeLow = "12:00";
+                //         $arrivalDateTimeHigh = "18:00";
+                //     }
+                //     else if($data['Arrival'] === '6PM12AM')
+                //     {
+                //         $arrivalDateTimeLow = "18:00";
+                //         $arrivalDateTimeHigh = "24:00";
+                //     }
+                //     else{
+                //         return response()->json('Invalid Arrival time or condition.', 400);
+                //     }
+            
+                //     if($data['Departure'] === '12AM6AM')
+                //     {
+                //         $departureDateTimeLow = "00:00";
+                //         $departureDateTimeHigh = "06:00";
+                //     }
+                //     else if($data['Departure'] === '6AM12PM')
+                //     {
+                        
+                //         $departureDateTimeLow = "06:00";
+                //         $departureDateTimeHigh = "12:00";
+                //     }
+                //     else if($data['Departure'] === '12PM6PM')
+                //     {   
+                //         $departureDateTimeLow = "12:00";
+                //         $departureDateTimeHigh = "18:00";
+                //     }
+                //     else if($data['Departure'] === '6PM12AM')
+                //     {
+                //         $departureDateTimeLow = "18:00";
+                //         $departureDateTimeHigh = "24:00";
+                //     }
+                //     else{
+                //         return response()->json('Invalid Arrival time or condition.', 400);
+                //     }
+                    
+                //     foreach ($Flights as $filteration) {   
+                //         // $lastSegmentDeparture = reset($filteration['Segments']);
+                //         // $lastSegmentArrival = end($filteration['Segments']); // 
+            
+                //         $Departuredatetime = $lastSegmentDeparture['Departure_DateTime'];
+                //         $dateObjD = new DateTime($Departuredatetime);
+                //         $Dtime = $dateObjD->format('H:i');
+            
+                //         $Arrivaldatetime = $lastSegmentArrival['Arrival_DateTime'];
+                //         $dateObjA = new DateTime($Arrivaldatetime);
+                //         $Atime = $dateObjA->format('H:i');
+                //         // return response()->json($time);
+                //         if( $Dtime > $departureDateTimeLow && $Dtime < $departureDateTimeHigh && $Atime >  $arrivalDateTimeLow && $Atime < $arrivalDateTimeHigh  )
+                //         {
+                //             $Filtered[]=$filteration;
+                //         }
+                //     }
+                //     $Flights=$Filtered;
+             
+                // }
+                // else 
+                if (isset($data['Arrival'])) 
+                {        
+                    $Filtered=[];
 
                     if($data['Arrival'] === '12AM6AM')
-                    {  
-                        $arrivalDateTimeLow = "{$data['travelDate']} 00:00";
+                    {
+                        $arrivalDateTimeLow = "00:00";
                         // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 06:00";
+                        $arrivalDateTimeHigh = "06:00";
                     }
                     else if($data['Arrival'] === '6AM12PM')
-                    {  
-                        $arrivalDateTimeLow = "{$data['travelDate']} 06:00";
+                    {
+                        
+                        $arrivalDateTimeLow = "06:00";
                         // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 12:00";
+                        $arrivalDateTimeHigh = "12:00";
                     }
                     else if($data['Arrival'] === '12PM6PM')
                     {   
-                        $arrivalDateTimeLow = "{$data['travelDate']} 12:00";
+                        $arrivalDateTimeLow = "12:00";
                         // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 18:00";
+                        $arrivalDateTimeHigh = "18:00";
                     }
                     else if($data['Arrival'] === '6PM12AM')
                     {
-                        $arrivalDateTimeLow = "{$data['travelDate']} 18:00";
+                        $arrivalDateTimeLow = "18:00";
                         // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 24:00";
+                        $arrivalDateTimeHigh = "24:00";
                     }
                     else{
                         return response()->json('Invalid Arrival time or condition.', 400);
                     }
+            
+                    //                     $filteredSegments = collect($flights)->filter(function ($flight) use ( $departureDateTimeLow,$departureDateTimeHigh) {
+//                     return $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow && $departureDateTimeHigh >= $flight['Segments'][0]['Departure_DateTime'];
+//                     });
+
+                    foreach ($Flights as $filteration) {                
+                        // $departure= array_filter();
+                        foreach($filteration['Segments'] as $Segment)
+                        {
+                            if($data['tripInfo'][0]['destination'] === $Segment['Destination'])
+                            {
+                                $datetime = $Segment['Arrival_DateTime'];
+                                $dateObj = new DateTime($datetime);
+                                $time = $dateObj->format('H:i');
+                                // return response()->json($time);
+                                if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                        }
+                    }
+                    $Flights=$Filtered;                    
+                }
+                
+                if (isset($data['Departure'])) 
+                {        
+
+                    $Filtered=[];
 
                     if($data['Departure'] === '12AM6AM')
                     {
-                        $departureDateTimeLow = "{$data['travelDate']} 00:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 06:00";
+                        $departureDateTimeLow = "00:00";
+                        $departureDateTimeHigh = "06:00";
                     }
                     else if($data['Departure'] === '6AM12PM')
-                    {
-                        
-                        $departureDateTimeLow = "{$data['travelDate']} 06:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 12:00";
+                    {                        
+                        $departureDateTimeLow = "06:00";
+                        $departureDateTimeHigh = "12:00";
                     }
                     else if($data['Departure'] === '12PM6PM')
                     {   
-                        $departureDateTimeLow = "{$data['travelDate']} 12:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 18:00";
+                        $departureDateTimeLow = "12:00";
+                        $departureDateTimeHigh = "18:00";
                     }
                     else if($data['Departure'] === '6PM12AM')
                     {
-                        $departureDateTimeLow = "{$data['travelDate']} 18:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 24:00";
+                        $departureDateTimeLow = "18:00";
+                        $departureDateTimeHigh = "24:00";
                     }
                     else{
                         return response()->json('Invalid Arrival time or condition.', 400);
                     }
                     
-                    $filteredSegments = collect($flights)->filter(function ($flight) use ( $arrivalDateTimeLow,$arrivalDateTimeHigh,$departureDateTimeLow,$departureDateTimeHigh) {
-                        return $flight['Segments'][0]['Arrival_DateTime'] >= $arrivalDateTimeLow && $arrivalDateTimeHigh >= $flight['Segments'][0]['Arrival_DateTime'] &&  $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow &&  $flight['Segments'][0]['Departure_DateTime'] <= $departureDateTimeHigh;
-                    });
-
-                    $filteredFlights = $filteredSegments->all();
-
-                    $filteredFlights = array_values($filteredFlights); 
+                    foreach ($Flights as $filteration) {                
+                        foreach($filteration['Segments'] as $Segment)
+                        {
+                            // return response()->json($Segment['Origin']);
+                            if($data['tripInfo'][0]['origin'] === $Segment['Origin'])
+                            {
+                                // return response()->json($Segment);
+                                $datetime = $Segment['Departure_DateTime'];
+                                $dateObj = new DateTime($datetime);
+                                $time = $dateObj->format('H:i');
+                                if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                        }
                 }
-                else if (isset($data['Arrival'])) 
-                {                       
-                    if($data['Arrival'] === '12AM6AM')
-                    {
-                        $arrivalDateTimeLow = "{$data['travelDate']} 00:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 06:00";
-                    }
-                    else if($data['Arrival'] === '6AM12PM')
-                    {
-                        
-                        $arrivalDateTimeLow = "{$data['travelDate']} 06:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 12:00";
-                    }
-                    else if($data['Arrival'] === '12PM6PM')
-                    {   
-                        $arrivalDateTimeLow = "{$data['travelDate']} 12:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 18:00";
-                    }
-                    else if($data['Arrival'] === '6PM12AM')
-                    {
-                        $arrivalDateTimeLow = "{$data['travelDate']} 18:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $arrivalDateTimeHigh = "{$data['travelDate']} 24:00";
-                    }
-                    else{
-                        return response()->json('Invalid Arrival time or condition.', 400);
-                    }
+                $Flights=$Filtered;
+            }
 
-                    $filteredSegments = collect($flights)->filter(function ($flight) use ( $arrivalDateTimeLow,$arrivalDateTimeHigh) {
-                    return $flight['Segments'][0]['Arrival_DateTime'] >= $arrivalDateTimeLow && $arrivalDateTimeHigh >= $flight['Segments'][0]['Arrival_DateTime'];
-                    });
-
-                    $filteredFlights = $filteredSegments->all();
-
-                    $filteredFlights=array_values($filteredFlights);                    
-                }
-                else if (isset($data['Departure'])) 
-                {                       
-                    if($data['Departure'] === '12AM6AM')
-                    {
-                        $departureDateTimeLow = "{$data['travelDate']} 00:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 06:00";
-                    }
-                    else if($data['Departure'] === '6AM12PM')
-                    {
-                        
-                        $departureDateTimeLow = "{$data['travelDate']} 06:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 12:00";
-                    }
-                    else if($data['Departure'] === '12PM6PM')
-                    {   
-                        $departureDateTimeLow = "{$data['travelDate']} 12:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 18:00";
-                    }
-                    else if($data['Departure'] === '6PM12AM')
-                    {
-                        $departureDateTimeLow = "{$data['travelDate']} 18:00";
-                        // return response()->json($arrivalDateTimeLow, 400);
-                        $departureDateTimeHigh = "{$data['travelDate']} 24:00";
-                    }
-                    else{
-                        return response()->json('Invalid Arrival time or condition.', 400);
-                    }
-
-                    $filteredSegments = collect($flights)->filter(function ($flight) use ( $departureDateTimeLow,$departureDateTimeHigh) {
-                    return $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow && $departureDateTimeHigh >= $flight['Segments'][0]['Departure_DateTime'];
-                    });
-
-                    $filteredFlights = $filteredSegments->all();
-                    $filteredFlights=array_values($filteredFlights);
-
-                } 
-                else {
-                    $filteredFlights = $flights; // No filter, return all flights
-                    // return response()->json($filteredFlights[0]['Fares'][0]['Refundable'],400);
-                }
-
-                if(isset($data['Refundable']))
-                {
-                    // return response()->json($filteredFlights['Fare']);
-                    $refundable = $data['Refundable'];
-                    $filtered = array_filter($filteredFlights, function($flight) use($refundable) {
-                        return $flight['Fares'][0]['Refundable'] === $refundable ;
-                    });
-                    $filtered=array_values($filtered);
-                }
-                else{
-                    // return response()->json('Helloji');
-                    $filtered = $filteredFlights;
-                }
-
+            if(isset($data['Refundable']))
+            {
+                // return response()->json($filteredFlights['Fare']);
+                $refundable = $data['Refundable'];
+                $filtered = array_filter($Flights, function($flight) use($refundable) {
+                    return $flight['Fares'][0]['Refundable'] === $refundable ;
+                });
+                $Flights=array_values($filtered);
+            }
+            
                 // Extract distinct airline codes
                 $airlineCodes = array_map(function($flight) {
                     return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
-                }, $filtered);
+                }, $Flights);
 
                 // Remove null values and get distinct airline codes
                 $distinctAirlineCodes = array_unique(array_filter($airlineCodes));
@@ -316,14 +361,14 @@ class DotMikController extends Controller
                 // Re-index array to remove numeric keys
                 $distinctAirlineCodes = array_values($distinctAirlineCodes);
 
-                $count = count($filtered);
+                $count = count($Flights);
 
                 $payloads = [
                         'errors' => [],
                         'data' => [
                             'tripDetails' => [
                                 [
-                                    'Flights' => $filtered
+                                    'Flights' => $Flights
                                 ]
                             ]
                         ]
@@ -331,7 +376,7 @@ class DotMikController extends Controller
                 
                 return response()->json([
                     'status' => true,
-                    'message' => $message ?? 'One Way Flight Search',
+                    'message' => $message,
                     'count' => $count,
                     'status_code' => $result['status_code'],
                     'request_id' => $result['request_id'],
@@ -357,8 +402,285 @@ class DotMikController extends Controller
 
 }
 
-    public function fareRule(Request $request)
-    {
+
+// public function Filter(Request $request)
+// {
+//     $validator = Validator::make($request->all(),[
+//         'DATA' => "required|array",
+//         'Refundable' => "nullable|boolean",
+//         'Arrival' => 'nullable|string',
+//         'Stop' => 'nullable|string',
+//         'Departure' => 'nullable|string',
+//         'Airline' => 'nullable|string'
+//     ]);   
+
+//     if ($validator->fails()) {
+//         $errors = $validator->errors()->all(); // Get all error messages
+//         $formattedErrors = [];
+
+//         foreach ($errors as $error) {
+//             $formattedErrors[] = $error;
+//         }
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => $formattedErrors[0]
+//         ], 422);
+//     }
+    
+//     $data=$validator->validated();
+
+//     $FilteredFlights=$data['DATA'];
+
+//     if(isset($data['Stop']))
+//     {
+//         $Filtered=[];
+
+//         if($data['Stop'] === "0")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+  
+//               $count = count($filteration['Segments']); // 
+//               if($count === 1)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }
+//         else if($data['Stop'] === "1")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+//               $count = count($filteration['Segments']); // 
+//               if($count === 2)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }
+//         else if($data['Stop'] === "2")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+//               $count = count($filteration['Segments']); // 
+//               if($count > 2)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }  
+//     }
+
+
+//     if(isset($data['Arrival']) && isset($data['Departure']))
+//     {
+//         $Filtered=[];
+
+//         if($data['Arrival'] === '12AM6AM')
+//         {  
+//             $arrivalDateTimeLow = "00:00";
+//             $arrivalDateTimeHigh = "06:00";
+//         }
+//         else if($data['Arrival'] === '6AM12PM')
+//         {  
+//             $arrivalDateTimeLow = "06:00";
+//             $arrivalDateTimeHigh = "12:00";
+//         }
+//         else if($data['Arrival'] === '12PM6PM')
+//         {   
+//             $arrivalDateTimeLow = "12:00";
+//             $arrivalDateTimeHigh = "18:00";
+//         }
+//         else if($data['Arrival'] === '6PM12AM')
+//         {
+//             $arrivalDateTimeLow = "18:00";
+//             $arrivalDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         if($data['Departure'] === '12AM6AM')
+//         {
+//             $departureDateTimeLow = "00:00";
+//             $departureDateTimeHigh = "06:00";
+//         }
+//         else if($data['Departure'] === '6AM12PM')
+//         {
+            
+//             $departureDateTimeLow = "06:00";
+//             $departureDateTimeHigh = "12:00";
+//         }
+//         else if($data['Departure'] === '12PM6PM')
+//         {   
+//             $departureDateTimeLow = "12:00";
+//             $departureDateTimeHigh = "18:00";
+//         }
+//         else if($data['Departure'] === '6PM12AM')
+//         {
+//             $departureDateTimeLow = "18:00";
+//             $departureDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+        
+//         foreach ($FilteredFlights as $filteration) {   
+//             $lastSegmentDeparture = reset($filteration['Segments']);
+//             $lastSegmentArrival = end($filteration['Segments']); // 
+
+//             $Departuredatetime = $lastSegmentDeparture['Departure_DateTime'];
+//             $dateObjD = new DateTime($Departuredatetime);
+//             $Dtime = $dateObjD->format('H:i');
+
+//             $Arrivaldatetime = $lastSegmentArrival['Arrival_DateTime'];
+//             $dateObjA = new DateTime($Arrivaldatetime);
+//             $Atime = $dateObjA->format('H:i');
+//             // return response()->json($time);
+//             if( $Dtime > $departureDateTimeLow && $Dtime < $departureDateTimeHigh && $Atime >  $arrivalDateTimeLow && $Atime < $arrivalDateTimeHigh  )
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+//         $FilteredFlights=$Filtered;
+
+//     }
+//     else if (isset($data['Arrival'])) 
+//     {     
+//         $Filtered=[];
+
+//         if($data['Arrival'] === '12AM6AM')
+//         {
+//             $arrivalDateTimeLow = "00:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "06:00";
+//         }
+//         else if($data['Arrival'] === '6AM12PM')
+//         {
+            
+//             $arrivalDateTimeLow = "06:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "12:00";
+//         }
+//         else if($data['Arrival'] === '12PM6PM')
+//         {   
+//             $arrivalDateTimeLow = "12:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "18:00";
+//         }
+//         else if($data['Arrival'] === '6PM12AM')
+//         {
+//             $arrivalDateTimeLow = "18:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         foreach ($FilteredFlights as $filteration) {                
+//             $lastSegment = end($filteration['Segments']); // 
+//             $datetime = $lastSegment['Arrival_DateTime'];
+//             $dateObj = new DateTime($datetime);
+//             $time = $dateObj->format('H:i');
+//             // return response()->json($time);
+//             if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+
+//         $FilteredFlights=$Filtered;        
+//         //   return response()->json($filtered);
+
+//     }
+//     else if (isset($data['Departure'])) 
+//     {       
+//         $Filtered=[];
+                
+//         if($data['Departure'] === '12AM6AM')
+//         {
+//             $departureDateTimeLow = "00:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "06:00";
+//         }
+//         else if($data['Departure'] === '6AM12PM')
+//         {
+            
+//             $departureDateTimeLow = "06:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "12:00";
+//         }
+//         else if($data['Departure'] === '12PM6PM')
+//         {   
+//             $departureDateTimeLow = "12:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "18:00";
+//         }
+//         else if($data['Departure'] === '6PM12AM')
+//         {
+//             $departureDateTimeLow = "18:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         foreach ($FilteredFlights as $filteration) {                
+//             $firstSegment = reset($filteration['Segments']); // 
+//             $datetime = $firstSegment['Departure_DateTime'];
+//             $dateObj = new DateTime($datetime);
+//             $time = $dateObj->format('H:i');
+//             // return response()->json($time);
+//             if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+//         $FilteredFlights=$Filtered;
+//     } 
+    
+
+//     if(isset($data['Refundable']))
+//     {
+//         $Filtered=[];
+//         // return response()->json($filteredFlights['Fare']);
+//         $refundable = $data['Refundable'];
+//         $filtered = array_filter($FilteredFlights, function($flight) use($refundable) {
+//             return $flight['Fares'][0]['Refundable'] === $refundable ;
+//         });
+//         $FilteredFlights=array_values($filtered);
+//     }
+
+//     // Extract distinct airline codes
+//     $airlineCodes = array_map(function($flight) {
+//         return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+//     }, $FilteredFlights);
+
+//     // Remove null values and get distinct airline codes
+//     $distinctAirlineCodes = array_unique($airlineCodes);
+
+//     // Re-index array to remove numeric keys
+//     $distinctAirlineCodes = array_values($distinctAirlineCodes);
+
+//     $count=count($FilteredFlights);
+
+//     return response()->json(
+//         [
+//             'success' => true,
+//             'count' => $count,
+//             'AirlineCode' =>  $distinctAirlineCodes,
+//             'Flights' => $FilteredFlights
+//         ],
+//         200
+//     );
+// }
+    
+
+public function fareRule(Request $request)
+{
         $validator = Validator::make($request->all(),[
             'SearchKey' => 'required|string',
             'FareID' => 'required|string',
@@ -421,7 +743,6 @@ class DotMikController extends Controller
                 if($response->successful())
                 {
                     return response()->json([
-
                         'success' => true,
                         'data' => $result,
                     ], 200);
@@ -641,14 +962,14 @@ class DotMikController extends Controller
         ];
         }
 
-        $passportNumbers = array_column($paxDetails, 'passportNumber');
+        // $passportNumbers = array_column($paxDetails, 'passportNumber');
 
-        if (count($passportNumbers) !== count(array_unique($passportNumbers))) {
-            return response()->json([
-                'success' => false,
-                'message' => "Passport numbers must be unique within the passenger details.",
-            ], 400);
-        }
+        // if (count($passportNumbers) !== count(array_unique($passportNumbers))) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => "Passport numbers must be unique within the passenger details.",
+        //     ], 400);
+        // }
         
         // Payload creation
         $payload = [
@@ -2229,3 +2550,530 @@ public function RePrintTicket(Request $request)
        
 
 
+    //     public function SearchFlight(Request $request)
+    //     {
+    //         $validator = Validator::make($request->all(), [
+    
+    //             "tripInfo" => "required|array",
+    //             // Trip Information Validation
+    //             "tripInfo.*.origin" => "required|string",
+    //             "tripInfo.*.destination" => "required|string",
+    //             "tripInfo.*.travelDate" => "required|date_format:m/d/Y",
+    //             "tripInfo.*.tripId" => "nullable|string|in:0,1", 
+    //             "travelType" => "required|string|in:0,1", // 0 for domestic, 1 for international
+    //             "bookingType" => "required|string|in:0,1", // 0 for one way, 1 for round trip
+    //             "adultCount" => "required|string",
+    //             "childCount" => "required|string", 
+    //             "infantCount" => "required|string",
+    //             "classOfTravel" => "required|in:0,1,2,3",         
+    //             "airlineCode" => "nullable|string",         
+    //             "headersToken" => "required|string", 
+    //             "headersKey" => "required|string",
+    //         ]);
+            
+    //         // Check if validation fails
+    //         if ($validator->fails()) {
+    //             // Get all the error messages
+    //             $errors = $validator->errors()->all(); // Capture all error messages
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => $errors[0], // Return the first error message
+    //             ], 422);
+    //         }
+            
+    //         // If validation succeeds, continue with the validated data
+    //         $data = $validator->validated();
+    
+    //         $tripInfo=[];
+    
+    //         foreach ($data['tripInfo'] as $trip) {
+    //             if (empty($trip['tripId'])) {
+    //                 $trip['tripId'] = "0"; // Set default value
+    //             }
+    //             $tripInfo[]=$trip;
+    //         }        
+    
+    //         $count=count($data['tripInfo']);
+    //         $message = ($count === 1) ? 'One Way Trip Data' : 
+    //         (($count === 2) ? 'Round Trip Data' : (($count > 2) ? 'Multi State Data' : 'Unknown Trip Data'));   
+    
+    //         if($data['bookingType'] === "1")
+    //         {
+    
+    //             if($count != 2)
+    //             {
+    //                 return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for bookingType 1'],400);
+    //             }
+    //             $tripInfo[1]['tripId'] = "1";
+    //         }
+            
+    //         $data['tripInfo']=$tripInfo;
+    //         // Return the validated 'tripInfo' data
+            
+    //         $payload = [
+    //             "deviceInfo" => [
+    //                 "ip" => "122.161.52.233",
+    //                 "imeiNumber" => "12384659878976879887"
+    //             ],
+    //             "travelType" => $data['travelType'], // 0 for domestic, 1 for international
+    //             "bookingType" => $data['bookingType'], // 0 for one way, 1 for round trip
+    //             "tripInfo" => $data['tripInfo'],
+    //             "adultCount" => $data['adultCount'],
+    //             "childCount" => $data['childCount'],
+    //             "infantCount" => $data['infantCount'],
+    //             "classOfTravel" => $data['classOfTravel'], // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+    //             "filteredAirLine" => [
+    //                 "airlineCode" => $data['airlineCode'] ?? ''
+    //             ]
+    //         ];
+    
+    //         // return response()->json($payload);
+    
+    
+    //         // Headers
+    //         $headers = [
+    //             'D-SECRET-TOKEN' => $data['headersToken'],
+    //             'D-SECRET-KEY' => $data['headersKey'],
+    //             'CROP-CODE' => 'DOTMIK160614',
+    //             'Content-Type' => 'application/json',
+    //         ];
+    
+    //         // API URL
+    //         $url = 'https://api.dotmik.in/api/flightBooking/v1/searchFlight';
+    
+    //     try {
+    //     // Make the POST request using Laravel HTTP Client
+    //         $response = Http::withHeaders($headers)->post($url, $payload);
+    //         $result=$response->json();
+    //         $statusCode = $response->status();
+    
+    //         // return response()->json($result);
+    
+    
+    //         if($result['status'] === false)
+    //         {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => $result['message'],
+    //                 'error' => $result
+    //             ],$statusCode);   
+    //         }
+    //         else
+    //         {   
+    //             if ($response->successful()) 
+    //             {
+    //                 $dataa = $result['payloads']['data']['tripDetails'];
+    //                 $payloads = [];  // Initialize an empty array for flights
+    //                 $i = 1;  // Initialize the counter variable
+                    
+    //                 if($count > 2)
+    //                 {
+    //                     $dataa = $result['payloads']['data']['tripDetails'][0]['Flights'];
+    
+    //                     foreach($data['tripInfo'] as $trip)
+    //                     {
+    //                         $DATA=[];
+    //                         $flightVar = "Flight" . $i;  
+    
+    //                         foreach($dataa as $flight)
+    //                         {
+    //                             if($trip['destination'] === $flight['Destination'])
+    //                             {
+    //                                 $DATA[]= $flight;
+    //                             }
+    //                         }
+    //                         $payloads[$flightVar] = $DATA;  
+    //                         $i++; 
+    //                     }
+    //                 }
+    //                 else 
+    //                 {
+    //                     foreach($dataa as $data) {
+    //                         $flightVar = "Flight" . $i;  
+    //                         $payloads[$flightVar] = $data['Flights'];  
+    //                         $i++;
+    //                     }    
+    //                 }
+                    
+                    
+    //                 return response()->json([
+    //                     'status' => true,
+    //                     'message' => $message,
+    //                     // 'count' => $count,
+    //                     'status_code' => $result['status_code'],
+    //                     'request_id' => $result['request_id'],
+    //                     'SearchKey' => $result['payloads']['data']['searchKey'],
+    //                     'payloads' => $payloads,
+    //                 ], 200);
+     
+    //                 // return response()->json([
+    //                 //     'status' => true,
+    //                 //     'message' => 'Search Flight data',
+    
+    //                 //     'data' => $result
+    //                 // ], 200);
+    
+    //             } else {
+    //                 return response()->json([
+    //                     'success' => false,
+    //                     'message' => $result['message'],
+    //                     'error' => $result
+    //                 ],$statusCode);
+    //             }
+    //     }
+    // } catch (\Exception $e) {
+    //     // Handle exception (e.g. network issues)
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => $e->getMessage()
+    //     ], 500);
+    // }
+    
+    // }
+
+
+
+//     public function SearchFlight(Request $request)
+//     {
+//         $validator = Validator::make($request->all(), [
+//             "origin" => "required|string",
+//             "destination" => "required|string",
+//             "travelDate" => "required|date_format:m/d/Y", // Date format should be MM/DD/YYYY
+//             "returnTravelDate" => "nullable|date_format:m/d/Y", // New field for return date
+//             "travelType" => "required|in:0,1", // 0 for domestic and 1 for international
+//             "bookingType" => "required|in:0,1,2", // 0 for one way, 1 for round trip
+//             "adultCount" => "required|integer|min:0", // Change to integer for counts
+//             "childCount" => "required|integer|min:0",
+//             "infantCount" => "required|integer|min:0",
+//             "classOfTravel" => "required|in:0,1,2,3", // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+//             "airlineCode" => "nullable|string",
+
+//             // for Header  
+//             "headersToken" => "required|string",
+//             "headersKey" => "required|string",
+
+//             // for Filter
+//             "Refundable" => "nullable|boolean",
+//             'Arrival' => 'nullable|string',
+//             'Departure' => 'nullable|string',
+//         ]);
+
+//         if ($validator->fails()) {
+//             $errors = $validator->errors()->all(); // Get all error messages
+//             $formattedErrors = [];
+
+//             foreach ($errors as $error) {
+//                 $formattedErrors[] = $error;
+//             }
+
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => $formattedErrors[0]
+//             ], 422);
+//         }
+        
+//         $data = $validator->validated();
+
+//         if ($data['bookingType'] === "1") {
+//             if (!$request->input('returnTravelDate')) {
+//                 // $validator->errors()->add('returnTravelDate', 'returnTravelDate is required for bookingType 1.');
+//                 return response()->json([
+//                     'success' => false,
+//                     'message' => 'Please Provide returnTravelDate'
+//                 ], 422);
+//             }
+//             $message = 'Round Trip Search Flights';
+//         }
+
+//         $payload = [
+//             "deviceInfo" => [
+//                 "ip" => "122.161.52.233",
+//                 "imeiNumber" => "12384659878976879888"
+//             ],
+//             "travelType" => $data['travelType'], // 0 for domestic, 1 for international
+//             "bookingType" => $data['bookingType'], // 0 for one way, 1 for round trip
+//             "tripInfo" => $data['bookingType'] === "1" ? [
+//                 [
+//                     "origin" => $data['origin'],
+//                     "destination" => $data['destination'],
+//                     "travelDate" => $data['travelDate'],
+//                     "tripId" => "0" // For the first trip
+//                 ],
+//                 [
+//                     "origin" => $data['destination'], // Reverse trip
+//                     "destination" => $data['origin'],
+//                     "travelDate" => $data['returnTravelDate'], // Use return date if provided
+//                     "tripId" => "1" // For return trip
+//                 ]
+//             ] : [
+//                    [ "origin" => $data['origin'],
+//                     "destination" => $data['destination'],
+//                     "travelDate" => $data['travelDate'],
+//                     "tripId" => "0" // Ongoing trip
+//                    ]
+//             ],
+//             "adultCount" => $data['adultCount'],
+//             "childCount" => $data['childCount'],
+//             "infantCount" => $data['infantCount'],
+//             "classOfTravel" => $data['classOfTravel'], // Possible values: 0-ECONOMY/1-BUSINESS/2-FIRST/3-PREMIUM_ECONOMY
+//             "filteredAirLine" => [
+//                 "airlineCode" => $data['airlineCode'] ?? ''
+//             ]
+//         ];
+
+//         // return response()->json($payload);
+
+
+//         // Headers
+//         $headers = [
+//             'D-SECRET-TOKEN' => $data['headersToken'],
+//             'D-SECRET-KEY' => $data['headersKey'],
+//             'CROP-CODE' => 'DOTMIK160614',
+//             'Content-Type' => 'application/json',
+//         ];
+
+//         // API URL
+//         $url = 'https://api.dotmik.in/api/flightBooking/v1/searchFlight';
+
+//     try {
+//     // Make the POST request using Laravel HTTP Client
+//         $response = Http::withHeaders($headers)->post($url, $payload);
+//         $result=$response->json();
+//         $statusCode = $response->status();
+
+//         if($result['status'] === false)
+//         {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => $result['message'],
+//                 'error' => $result
+//             ],$statusCode);   
+//         }
+//         else
+//         {   
+//             if ($response->successful()) 
+//             {
+
+//                 $dataa = $result['payloads']['data']['tripDetails'];
+                
+//                 // return response()->json($dataa);
+
+//                 $flights = $dataa[0]['Flights']; // Flights is already an array
+                
+//                 // Filter flights based on Departure and Arrival times
+//                 if(isset($data['Arrival']) && isset($data['Departure']))
+//                 {
+
+//                     if($data['Arrival'] === '12AM6AM')
+//                     {  
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 00:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 06:00";
+//                     }
+//                     else if($data['Arrival'] === '6AM12PM')
+//                     {  
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 06:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 12:00";
+//                     }
+//                     else if($data['Arrival'] === '12PM6PM')
+//                     {   
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 12:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 18:00";
+//                     }
+//                     else if($data['Arrival'] === '6PM12AM')
+//                     {
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 18:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 24:00";
+//                     }
+//                     else{
+//                         return response()->json('Invalid Arrival time or condition.', 400);
+//                     }
+
+//                     if($data['Departure'] === '12AM6AM')
+//                     {
+//                         $departureDateTimeLow = "{$data['travelDate']} 00:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 06:00";
+//                     }
+//                     else if($data['Departure'] === '6AM12PM')
+//                     {
+                        
+//                         $departureDateTimeLow = "{$data['travelDate']} 06:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 12:00";
+//                     }
+//                     else if($data['Departure'] === '12PM6PM')
+//                     {   
+//                         $departureDateTimeLow = "{$data['travelDate']} 12:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 18:00";
+//                     }
+//                     else if($data['Departure'] === '6PM12AM')
+//                     {
+//                         $departureDateTimeLow = "{$data['travelDate']} 18:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 24:00";
+//                     }
+//                     else{
+//                         return response()->json('Invalid Arrival time or condition.', 400);
+//                     }
+                    
+//                     $filteredSegments = collect($flights)->filter(function ($flight) use ( $arrivalDateTimeLow,$arrivalDateTimeHigh,$departureDateTimeLow,$departureDateTimeHigh) {
+//                         return $flight['Segments'][0]['Arrival_DateTime'] >= $arrivalDateTimeLow && $arrivalDateTimeHigh >= $flight['Segments'][0]['Arrival_DateTime'] &&  $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow &&  $flight['Segments'][0]['Departure_DateTime'] <= $departureDateTimeHigh;
+//                     });
+
+//                     $filteredFlights = $filteredSegments->all();
+
+//                     $filteredFlights = array_values($filteredFlights); 
+//                 }
+//                 else if (isset($data['Arrival'])) 
+//                 {                       
+//                     if($data['Arrival'] === '12AM6AM')
+//                     {
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 00:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 06:00";
+//                     }
+//                     else if($data['Arrival'] === '6AM12PM')
+//                     {
+                        
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 06:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 12:00";
+//                     }
+//                     else if($data['Arrival'] === '12PM6PM')
+//                     {   
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 12:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 18:00";
+//                     }
+//                     else if($data['Arrival'] === '6PM12AM')
+//                     {
+//                         $arrivalDateTimeLow = "{$data['travelDate']} 18:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $arrivalDateTimeHigh = "{$data['travelDate']} 24:00";
+//                     }
+//                     else{
+//                         return response()->json('Invalid Arrival time or condition.', 400);
+//                     }
+
+//                     $filteredSegments = collect($flights)->filter(function ($flight) use ( $arrivalDateTimeLow,$arrivalDateTimeHigh) {
+//                     return $flight['Segments'][0]['Arrival_DateTime'] >= $arrivalDateTimeLow && $arrivalDateTimeHigh >= $flight['Segments'][0]['Arrival_DateTime'];
+//                     });
+
+//                     $filteredFlights = $filteredSegments->all();
+
+//                     $filteredFlights=array_values($filteredFlights);                    
+//                 }
+//                 else if (isset($data['Departure'])) 
+//                 {                       
+//                     if($data['Departure'] === '12AM6AM')
+//                     {
+//                         $departureDateTimeLow = "{$data['travelDate']} 00:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 06:00";
+//                     }
+//                     else if($data['Departure'] === '6AM12PM')
+//                     {
+                        
+//                         $departureDateTimeLow = "{$data['travelDate']} 06:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 12:00";
+//                     }
+//                     else if($data['Departure'] === '12PM6PM')
+//                     {   
+//                         $departureDateTimeLow = "{$data['travelDate']} 12:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 18:00";
+//                     }
+//                     else if($data['Departure'] === '6PM12AM')
+//                     {
+//                         $departureDateTimeLow = "{$data['travelDate']} 18:00";
+//                         // return response()->json($arrivalDateTimeLow, 400);
+//                         $departureDateTimeHigh = "{$data['travelDate']} 24:00";
+//                     }
+//                     else{
+//                         return response()->json('Invalid Arrival time or condition.', 400);
+//                     }
+
+//                     $filteredSegments = collect($flights)->filter(function ($flight) use ( $departureDateTimeLow,$departureDateTimeHigh) {
+//                     return $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow && $departureDateTimeHigh >= $flight['Segments'][0]['Departure_DateTime'];
+//                     });
+
+//                     $filteredFlights = $filteredSegments->all();
+//                     $filteredFlights=array_values($filteredFlights);
+
+//                 } 
+//                 else {
+//                     $filteredFlights = $flights; // No filter, return all flights
+//                     // return response()->json($filteredFlights[0]['Fares'][0]['Refundable'],400);
+//                 }
+
+//                 if(isset($data['Refundable']))
+//                 {
+//                     // return response()->json($filteredFlights['Fare']);
+//                     $refundable = $data['Refundable'];
+//                     $filtered = array_filter($filteredFlights, function($flight) use($refundable) {
+//                         return $flight['Fares'][0]['Refundable'] === $refundable ;
+//                     });
+//                     $filtered=array_values($filtered);
+//                 }
+//                 else{
+//                     // return response()->json('Helloji');
+//                     $filtered = $filteredFlights;
+//                 }
+
+//                 // Extract distinct airline codes
+//                 $airlineCodes = array_map(function($flight) {
+//                     return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+//                 }, $filtered);
+
+//                 // Remove null values and get distinct airline codes
+//                 $distinctAirlineCodes = array_unique(array_filter($airlineCodes));
+
+//                 // Re-index array to remove numeric keys
+//                 $distinctAirlineCodes = array_values($distinctAirlineCodes);
+
+//                 $count = count($filtered);
+
+//                 $payloads = [
+//                         'errors' => [],
+//                         'data' => [
+//                             'tripDetails' => [
+//                                 [
+//                                     'Flights' => $filtered
+//                                 ]
+//                             ]
+//                         ]
+//                 ];
+                
+//                 return response()->json([
+//                     'status' => true,
+//                     'message' => $message ?? 'One Way Flight Search',
+//                     'count' => $count,
+//                     'status_code' => $result['status_code'],
+//                     'request_id' => $result['request_id'],
+//                     'SearchKey' => $result['payloads']['data']['searchKey'],
+//                     'AirlineCodes' =>  $distinctAirlineCodes,
+//                     'payloads' => $payloads,
+//                 ], 200);
+//             } else {
+//                 return response()->json([
+//                     'success' => false,
+//                     'message' => $result['message'],
+//                     'error' => $result
+//                 ],$statusCode);
+//             }
+//     }
+// } catch (\Exception $e) {
+//     // Handle exception (e.g. network issues)
+//     return response()->json([
+//         'success' => false,
+//         'message' => $e->getMessage()
+//     ], 500);
+// }
+
+// }
