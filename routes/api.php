@@ -157,6 +157,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     // Add to cart
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
+    
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
     
     // Add User Subscription
@@ -164,17 +165,17 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 });
 
-Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
+// Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
 
-Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
+// Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
 
- // payment
- Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
- Route::get('/payment-redirect', function () 
- {
-     // Handle the redirect after payment
-     return response()->json(['message' => 'Redirect after payment']);
- });
+//  // payment
+//  Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
+//  Route::get('/payment-redirect', function () 
+//  {
+//      // Handle the redirect after payment
+//      return response()->json(['message' => 'Redirect after payment']);
+//  });
 
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
@@ -252,17 +253,16 @@ Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
 Route::post('/paypal',[PaymentController::class,'paypal']);
 
 Route::get('/success',[PaymentController::class,'success'])->name('success');
- // payment
 
- Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
+Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 
 // });
-
-
 
 Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
 
 Route::post('/Search/Flight',[DotMikController::class,'SearchFlight']);
+
+Route::post('/Filter/Flight',[DotMikController::class,'Filter']);
 
 Route::post('/Fare/Rule',[DotMikController::class,'fareRule']);
 
@@ -272,7 +272,7 @@ Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
 
 Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
 
-Route::post('/History',[DotMikController::class,'History']);
+Route::post('/Check/Wallet',[DotMikController::class,'CheckWallet']);
 
 Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
 
@@ -284,4 +284,15 @@ Route::post('/Sector/Avalability',[DotMikController::class,'SectorAvalability'])
 
 Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
 
+
+// Bus 
+
 Route::get('/Get/Source/Cities',[DotMikBusController::class,'GetSourceCities']);
+
+Route::post('/Avaliable/Trip',[DotMikBusController::class,'AvaliableTrip']);
+
+Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrrentTripDetails']);
+
+Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointsDetails']);
+
+Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
