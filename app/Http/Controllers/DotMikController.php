@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\AirlineCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -121,7 +122,7 @@ class DotMikController extends Controller
             "infantCount" => $data['infantCount'],
             "classOfTravel" => $data['classOfTravel'],
             "filteredAirLine" => [
-                "airlineCode" => $data['airlineCode'] ?? ''
+                "airlineCode" => ''
             ]
         ];
 
@@ -143,7 +144,6 @@ class DotMikController extends Controller
 
         // return response()->json($result);
 
-
         if($result['status'] === false)
         {
             return response()->json([
@@ -156,10 +156,9 @@ class DotMikController extends Controller
         {   
             if ($response->successful()) 
             {
-
                 $dataa = $result['payloads']['data']['tripDetails'];
-                
-                $Flights = $dataa[0]['Flights']; 
+                $AC = $result['payloads']['data']['tripDetails'][0]['Flights'];
+                $Flights = $dataa[0]['Flights'];
                 
                 // Filter flights based on Departure and Arrival times
                 // if(isset($data['Arrival']) && isset($data['Departure']))
@@ -268,10 +267,6 @@ class DotMikController extends Controller
                     else{
                         return response()->json('Invalid Arrival time or condition.', 400);
                     }
-            
-                    //                     $filteredSegments = collect($flights)->filter(function ($flight) use ( $departureDateTimeLow,$departureDateTimeHigh) {
-//                     return $flight['Segments'][0]['Departure_DateTime'] >= $departureDateTimeLow && $departureDateTimeHigh >= $flight['Segments'][0]['Departure_DateTime'];
-//                     });
 
                     foreach ($Flights as $filteration) {                
                         // $departure= array_filter();
@@ -325,10 +320,8 @@ class DotMikController extends Controller
                     foreach ($Flights as $filteration) {                
                         foreach($filteration['Segments'] as $Segment)
                         {
-                            // return response()->json($Segment['Origin']);
                             if($data['tripInfo'][0]['origin'] === $Segment['Origin'])
                             {
-                                // return response()->json($Segment);
                                 $datetime = $Segment['Departure_DateTime'];
                                 $dateObj = new DateTime($datetime);
                                 $time = $dateObj->format('H:i');
@@ -338,30 +331,65 @@ class DotMikController extends Controller
                                 }
                             }
                         }
+                     }
+                      $Flights=$Filtered;
                 }
-                $Flights=$Filtered;
-            }
 
             if(isset($data['Refundable']))
             {
-                // return response()->json($filteredFlights['Fare']);
+                
                 $refundable = $data['Refundable'];
                 $filtered = array_filter($Flights, function($flight) use($refundable) {
                     return $flight['Fares'][0]['Refundable'] === $refundable ;
                 });
                 $Flights=array_values($filtered);
             }
+
+            if(isset($data['airlineCode']))
+            {
+                
+                $airlineCode = $data['airlineCode'];
+                $filtered = array_filter($Flights, function($flight) use($airlineCode) {
+                    return $flight['Airline_Code'] === $airlineCode;
+                });
+                $Flights=array_values($filtered);
+            }
+            
             
                 // Extract distinct airline codes
-                $airlineCodes = array_map(function($flight) {
-                    return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
-                }, $Flights);
+            $airlineCodes = array_map(function($flight) {
+                return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+            }, $AC);
 
-                // Remove null values and get distinct airline codes
-                $distinctAirlineCodes = array_unique(array_filter($airlineCodes));
+            $distinctAirlineCodes = array_values(array_unique(array_filter($airlineCodes)));
 
-                // Re-index array to remove numeric keys
-                $distinctAirlineCodes = array_values($distinctAirlineCodes);
+            // foreach($distinctAirlineCodes as $DAC)
+            // {
+            //     $airport = AirlineCode::where('carrier_code', $DAC)->get();
+
+            //     $ACName[]=
+            //     [
+            //         'AirlineCode' => $airport[0]['carrier_code'],
+            //         'AirlineName' => $airport[0]['airline_name'],
+            //         'AirlineLogo' => $airport[0]['logo']
+            //     ];
+            // }
+            $airlines = AirlineCode::whereIn('carrier_code', $distinctAirlineCodes)
+            ->get(['carrier_code', 'airline_name', 'logo'])
+            ->keyBy('carrier_code'); 
+
+            $ACName = array_map(function($code) use ($airlines) {
+                if (isset($airlines[$code])) {
+                    return [
+                        'AirlineCode' => $airlines[$code]->carrier_code,
+                        'AirlineName' => $airlines[$code]->airline_name,
+                        'AirlineLogo' => $airlines[$code]->logo
+                    ];
+                }
+                return null; // Handle cases where airline code is not found
+            }, $distinctAirlineCodes);
+
+            $ACName = array_filter($ACName);
 
                 $count = count($Flights);
 
@@ -383,7 +411,7 @@ class DotMikController extends Controller
                     'status_code' => $result['status_code'],
                     'request_id' => $result['request_id'],
                     'SearchKey' => $result['payloads']['data']['searchKey'],
-                    'AirlineCodes' =>  $distinctAirlineCodes,
+                    'AirlineCodes' => $ACName,
                     'payloads' => $payloads,
                 ], 200);
             } else {
