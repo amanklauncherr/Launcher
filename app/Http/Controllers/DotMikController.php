@@ -21,7 +21,7 @@ class DotMikController extends Controller
             "tripInfo.*.travelDate" => "required|date_format:m/d/Y",
             "tripInfo.*.tripId" => "nullable|string|in:0,1", 
             "travelType" => "required|string|in:0,1", // 0 for domestic, 1 for international
-            "bookingType" => "required|string|in:0,1,2,3", // 0 for one way, 1 for round trip
+            // "bookingType" => "required|string|in:0,1,2,3", // 0 for one way, 1 for round trip
             "adultCount" => "required|string",
             "childCount" => "required|string", 
             "infantCount" => "required|string",
@@ -64,10 +64,9 @@ class DotMikController extends Controller
 
         if($data['TYPE'] === "ONEWAY")
         {
-            if($data['bookingType'] != "0")        
-            {
-                return response()->json(['success'=>false,'message'=> 'For One Way bookingType field Should be 0'],400); 
-            }
+
+            $bookingType = "0";     
+
             if($count !=1)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 1 objects for One Way'],400);
@@ -76,31 +75,23 @@ class DotMikController extends Controller
         }
         else if($data['TYPE'] === "ROUNDTRIP")
         {
-            if($data['bookingType'] != "2")        
+            $bookingType = "2";     
+
+            if($count != 2)
             {
-                return response()->json(['success'=>false,'message'=> 'For Round Trip bookingType field Should be 2'],400); 
+                return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
             }
-            if($data['bookingType'] === "2")
-            {
-                if($count != 2)
-                {
-                    return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
-                }
-            }
+
             $message = 'Round Trip Flight Data';
         }
         else if($data['TYPE'] === "MULTISTATE")
         {
-            if($data['bookingType'] != "3")        
+
+            $bookingType = "3";     
+
+            if($count < 2)
             {
-                return response()->json(['success'=>false,'message'=> 'For Multi State bookingType field Should be 3'],400); 
-            }
-            if($data['bookingType'] === "3")
-            {
-                if($count < 2)
-                {
-                    return response()->json(['success'=>false,'message'=>'tripInfo should have 2 or More objects'],400);
-                }
+                return response()->json(['success'=>false,'message'=>'tripInfo should have 2 or More objects'],400);
             }
             $message = 'Multi State Flight Data';
         }
@@ -114,7 +105,7 @@ class DotMikController extends Controller
                 "imeiNumber" => "12384659878976879887"
             ],
             "travelType" => $data['travelType'],
-            "bookingType" => $data['bookingType'], 
+            "bookingType" => $bookingType, 
             "tripInfo" => $data['tripInfo'],
             "adultCount" => $data['adultCount'],
             "childCount" => $data['childCount'],
@@ -124,6 +115,8 @@ class DotMikController extends Controller
                 "airlineCode" => $data['airlineCode'] ?? ''
             ]
         ];
+
+        // return response()->json($payload);
 
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
