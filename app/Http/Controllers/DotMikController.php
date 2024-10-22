@@ -923,11 +923,11 @@ public function RePrice(Request $request)
                 'message' => $e->getMessage()
             ], 500);
         }
-    }
+}
 
-    public function TemporaryBooking(Request $request){
+public function TemporaryBooking(Request $request){
         // Validation
-        $validator = Validator::make($request->all(),[
+    $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
             'mobile' => 'required|string|max:10|min:10',
             'whatsApp' => 'required|string|max:10|min:10',
@@ -1086,90 +1086,176 @@ public function RePrice(Request $request)
                 'message' => $e->getMessage()
             ], 500);
         }        
+}
+
+
+public function CheckWallet(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'BookingRef' => 'required|string',
+        "UserRef" => "required|string",
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string'
+    ]);     
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
+
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $formattedErrors[0]
+        ], 422);
     }
-
-    public function Ticketing(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'BookingRef' => 'required|string',
-            "TicketingType" => "required|string",
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string'
-        ]);     
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
     
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
+    $data=$validator->validated();
+
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "bookingRef" => $data['BookingRef'],
+        "userRef" => $data['UserRef']
+    ];
     
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    $url = 'https://staging.dotmik.in/api/flightBooking/v1/checkWallet';
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
             return response()->json([
                 'success' => false,
-                'message' => $formattedErrors[0]
-            ], 422);
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);
         }
-        
-        $data=$validator->validated();
-
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ],
-            "bookingRef" => $data['BookingRef'],
-            "ticketingType" => $data['TicketingType']
-        ];
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
-
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
-
-            if($result['status'] === false)
+        else{
+            if($response->successful())
             {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], $statusCode);
+            } else {
                 return response()->json([
                     'success' => false,
                     'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
             }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], $statusCode);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
+        }
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }   
+}
+
+public function Ticketing(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'BookingRef' => 'required|string',
+        "TicketingType" => "required|string",
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string'
+    ]);     
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
+
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $formattedErrors[0]
+        ], 422);
+    }
+    
+    $data=$validator->validated();
+
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "bookingRef" => $data['BookingRef'],
+        "ticketingType" => $data['TicketingType']
+    ];
+    
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }   
-    }
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);
+        }
+        else{
+            if($response->successful())
+            {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], $statusCode);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
+            }
+        }
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }   
+}
+
+    // public function 
 
     // public function History(Request $request)
     // {
@@ -1497,6 +1583,8 @@ public function RePrice(Request $request)
     return 'tickets/' . $fileName; 
 }
 
+
+
 public function RePrintTicket(Request $request)
 {
     $validator = Validator::make($request->all(), [
@@ -1684,379 +1772,379 @@ public function RePrintTicket(Request $request)
     }   
 }
 
-    public function Cancellation(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-            "bookingRef" => "required|string", 
-            "pnr" => "required|string",
-            "FlightId" => "required|string",
-            "PassengerId" => "required|string",
-            "SegmentId" => "required|string",
-            "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
-            "cancelCode" => "required|string",
-            "remark" => "required|string"
-                
-        ]);     
-        
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
+public function Cancellation(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string',
+        "bookingRef" => "required|string", 
+        "pnr" => "required|string",
+        "FlightId" => "required|string",
+        "PassengerId" => "required|string",
+        "SegmentId" => "required|string",
+        "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
+        "cancelCode" => "required|string",
+        "remark" => "required|string"
             
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
+    ]);     
+    
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
         
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+    
+        return response()->json([
+            'success' => false,
+            'message' => $formattedErrors[0]
+        ], 422);
+    }
+    
+    $data = $validator->validated();
+    
+    $payload = [
+        "deviceInfo"=> [
+            "ip"=> "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "ticketCancelDetails" => [
+            [
+                "FlightId" => $data['FlightId'],
+                "PassengerId" => $data["PassengerId"],
+                "SegmentId" => $data["SegmentId"]
+            ]
+        ],
+        "pnr" => $data["pnr"],
+        "bookingRef" => $data["bookingRef"],
+        "cancelType" => $data["cancelType"], //0-Normal Cancel, 1-Full Refund, 2-No Show
+        "cancelCode" => $data["cancelCode"],
+        "remark" => $data["remark"]
+        
+    ];
+    
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'] ?? '', // Use null coalescing to avoid issues
+        'D-SECRET-KEY' => $data['headersKey'] ?? '', // Same for the key
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+            
+    // API URL
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/cancellation';
+
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
             return response()->json([
                 'success' => false,
-                'message' => $formattedErrors[0]
-            ], 422);
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);
         }
-        
-        $data = $validator->validated();
-        
-        $payload = [
-            "deviceInfo"=> [
-              "ip"=> "122.161.52.233",
-              "imeiNumber" => "12384659878976879887"
-            ],
-            "ticketCancelDetails" => [
-              [
-                  "FlightId" => $data['FlightId'],
-                  "PassengerId" => $data["PassengerId"],
-                  "SegmentId" => $data["SegmentId"]
-              ]
-            ],
-            "pnr" => $data["pnr"],
-            "bookingRef" => $data["bookingRef"],
-            "cancelType" => $data["cancelType"], //0-Normal Cancel, 1-Full Refund, 2-No Show
-            "cancelCode" => $data["cancelCode"],
-            "remark" => $data["remark"]
-            
-        ];
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'] ?? '', // Use null coalescing to avoid issues
-            'D-SECRET-KEY' => $data['headersKey'] ?? '', // Same for the key
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
-               
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/cancellation';
-
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
-
-            if($result['status'] === false)
+        else{
+            if($response->successful())
             {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], $statusCode);
+            } else {
                 return response()->json([
                     'success' => false,
                     'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
             }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], $statusCode);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }   
-    }
-
-
-    public function LowFare(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-             "origin" => "required|string",
-            "destination" => "required|string",
-            "month" => "required|string",
-            "year" => "required|string",
-        ]);     
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-    
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-    
-            return response()->json([
-                'success' => false,
-                'error' => $formattedErrors[0]
-            ], 422);
         }
-        
-        $data=$validator->validated();
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }   
+}
 
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ],
+public function LowFare(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string',
+            "origin" => "required|string",
+        "destination" => "required|string",
+        "month" => "required|string",
+        "year" => "required|string",
+    ]);     
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
+
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+
+        return response()->json([
+            'success' => false,
+            'error' => $formattedErrors[0]
+        ], 422);
+    }
+    
+    $data=$validator->validated();
+
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "origin" => $data['origin'],
+        "destination" => $data['destination'],
+        "month" => $data["month"],
+        "year" => $data["year"]
+    ];
+    
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/lowFare';
+
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);   
+        }
+        else{
+            if($response->successful())
+            {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], $statusCode);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
+            }
+        }
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }   
+}
+
+public function SectorAvalability(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string',
+    ]);     
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
+
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => $formattedErrors[0]
+        ], 422);
+    }
+    
+    $data=$validator->validated();
+
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ]
+    ];
+    
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/sectorAvailabilityPi';
+
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);   
+        }
+        else{
+            if($response->successful())
+            {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
+            }
+        }
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }   
+}
+
+public function ReleasePNR(Request $request)
+{
+    $validator = Validator::make($request->all(),[
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string',
+        "travelType" => "required|string",
+        "bookingType" => "required|string",
+        "origin" => "required|string",
+        "destination" => "required|string",
+        "travelDate" => "required|date",
+        "tripId" => "required|string",
+        "adultCount" => "required|string",
+        "childCount" => "required|string",
+        "infantCount" => "required|string",
+        "classOfTravel" => "required|string",
+    ]);     
+
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all(); // Get all error messages
+        $formattedErrors = [];
+
+        foreach ($errors as $error) {
+            $formattedErrors[] = $error;
+        }
+
+        return response()->json([
+            'success' => false,
+            'messsage' => $formattedErrors[0]
+        ], 422);
+    }
+    
+    $data=$validator->validated();
+
+    $payload = [
+        "deviceInfo" => [
+            "ip" => "122.161.52.233",
+            "imeiNumber" => "12384659878976879887"
+        ],
+        "travelType" => $data['travelType'], // Domestic or International
+        "bookingType" => $data['bookingType'], // One way
+        "tripInfo" => [
             "origin" => $data['origin'],
             "destination" => $data['destination'],
-            "month" => $data["month"],
-            "year" => $data["year"]
-        ];
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
+            "travelDate" => $data['travelDate'], // MM/DD/YYYY
+            "tripId" => $data['tripId'] // Ongoing trip
+        ],
+        "adultCount" => $data['adultCount'],
+        "childCount" => $data['childCount'],
+        "infantCount" => $data['infantCount'],
+        "classOfTravel" => $data['classOfTravel'],// This requires the class of Travel. Possible values: 0- ECONOMY/ 1- BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+    ];
 
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/lowFare';
-
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
     
-            if($result['status'] === false)
+    // Headers
+    $headers = [
+        'D-SECRET-TOKEN' => $data['headersToken'],
+        'D-SECRET-KEY' => $data['headersKey'],
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    // API URL
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/releasePnr';
+
+    try {
+        // Make the POST request using Laravel HTTP Client
+        $response = Http::withHeaders($headers)->post($url, $payload);
+        $result=$response->json();
+        $statusCode = $response->status();
+
+        if($result['status'] === false)
+        {
+            return response()->json([
+                'success' => 0,
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);
+        }
+        else{
+            if($response->successful())
             {
+                return response()->json([
+                    'success' => true,
+                    'data' => $result,
+                ], 200);
+            } else {
                 return response()->json([
                     'success' => false,
-                    'message' => $result['message'],
-                    'error' => $result
-                ],$statusCode);   
-            }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], $statusCode);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }   
-    }
-
-    public function SectorAvalability(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-        ]);     
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-    
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-    
-            return response()->json([
-                'success' => false,
-                'message' => $formattedErrors[0]
-            ], 422);
-        }
-        
-        $data=$validator->validated();
-
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ]
-        ];
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
-
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/sectorAvailabilityPi';
-
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
-
-            if($result['status'] === false)
-            {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message'],
-                    'error' => $result
-                ],$statusCode);   
-            }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }   
-    }
-
-    public function ReleasePNR(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string',
-            "travelType" => "required|string",
-            "bookingType" => "required|string",
-            "origin" => "required|string",
-            "destination" => "required|string",
-            "travelDate" => "required|date",
-            "tripId" => "required|string",
-            "adultCount" => "required|string",
-            "childCount" => "required|string",
-            "infantCount" => "required|string",
-            "classOfTravel" => "required|string",
-        ]);     
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-    
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-    
-            return response()->json([
-                'success' => false,
-                'messsage' => $formattedErrors[0]
-            ], 422);
-        }
-        
-        $data=$validator->validated();
-
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879887"
-            ],
-            "travelType" => $data['travelType'], // Domestic or International
-            "bookingType" => $data['bookingType'], // One way
-            "tripInfo" => [
-                "origin" => $data['origin'],
-                "destination" => $data['destination'],
-                "travelDate" => $data['travelDate'], // MM/DD/YYYY
-                "tripId" => $data['tripId'] // Ongoing trip
-            ],
-            "adultCount" => $data['adultCount'],
-            "childCount" => $data['childCount'],
-            "infantCount" => $data['infantCount'],
-            "classOfTravel" => $data['classOfTravel'],// This requires the class of Travel. Possible values: 0- ECONOMY/ 1- BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
-        ];
-
-        
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
-
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/releasePnr';
-
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
-            $statusCode = $response->status();
-
-            if($result['status'] === false)
-            {
-                return response()->json([
-                    'success' => 0,
                     'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
             }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            //code...
-        } catch  (\Exception $e) {
-            // Handle exception (e.g. network issues)
-            return response()->json([
-                'success' => false,
-                'message' =>  $e->getMessage()
-            ], 500);
-        }   
+        }
+        //code...
+    } catch  (\Exception $e) {
+        // Handle exception (e.g. network issues)
+        return response()->json([
+            'success' => false,
+            'message' =>  $e->getMessage()
+        ], 500);
     }   
+}
+
 }
 
 
