@@ -793,9 +793,9 @@ public function fareRule(Request $request)
                 'message' => $e->getMessage()
             ], 500);
         }
-    }
+}
 
-    public function RePrice(Request $request)
+public function RePrice(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'SearchKey' => 'required|string',
@@ -841,9 +841,6 @@ public function fareRule(Request $request)
             "GSTIN" => ""
         ];
 
-        // return response()->json($PAX);
-
-
         // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
@@ -872,28 +869,35 @@ public function fareRule(Request $request)
             else{
                 if($response->successful())
                 {
+
+                    // return response()->json($result);
+
                     $PAX= $result['payloads']['data']['rePrice'][0]['Flight']['Fares'][0]['FareDetails'];
 
                     // return response()->json($PAX);
 
-                    foreach($PAX as $pax)
-                    {
-                        if($pax['PAX_Type'] === 0)
-                        {
-                            $adultAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['adultCount'];
-                        }
-                        else if($pax['PAX_Type'] === 1)
-                        {
+                    $adultAmount = 0;
+                    $childAmount = 0;
+                    $infantAmount = 0;
 
-                            $childAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['childCount'];
-                        }
-                        else if($pax['PAX_Type'] === 2)
-                        {
-                            $infantAmount = ($pax['Total_Amount'] + $pax['Trade_Markup_Amount']) * $data['infantCount'];
+                    foreach($PAX as $pax) {
+                        $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
+
+                        switch ($pax['PAX_Type']) {
+                            case 0: // Adult
+                                $adultAmount += $total * $data['adultCount'];
+                                break;
+                            case 1: // Child
+                                $childAmount += $total * $data['childCount'];
+                                break;
+                            case 2: // Infant
+                                $infantAmount += $total * $data['infantCount'];
+                                break;
                         }
                     }
 
                     $TotalAmount = $adultAmount + $childAmount + $infantAmount;
+
                    
                     return response()->json([
                         'success' => true,
@@ -928,7 +932,6 @@ public function fareRule(Request $request)
             'mobile' => 'required|string|max:10|min:10',
             'whatsApp' => 'required|string|max:10|min:10',
             'email' => 'required|string|email',
-            // 'passenger_details.*.paxId' => 'required|integer',
             'passenger_details.*.paxType' => 'required|integer|in:0,1,2', // 0-ADT/1-CHD/2-INF
             'passenger_details.*.title' => 'required|string|in:Mr,Mrs,Ms,Mstr,Miss', // MR, MRS, MS; MSTR, MISS for child/infant
             'passenger_details.*.firstName' => 'required|string',
