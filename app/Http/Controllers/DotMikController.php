@@ -75,12 +75,21 @@ class DotMikController extends Controller
         }
         else if($data['TYPE'] === "ROUNDTRIP")
         {
-            $bookingType = "2";     
+            $bookingType = "2";
 
             if($count != 2)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
             }
+            else if($data['tripInfo'][0]['origin'] != $data['tripInfo'][1]['destination'])
+            {
+                return response()->json(['success'=>false,'message'=>'Origin in first Object and Destination in second object should be same for ROUNDTRIP'],400);
+            }
+            else if($data['tripInfo'][0]['destination'] != $data['tripInfo'][1]['origin'])
+            {
+                return response()->json(['success'=>false,'message'=>'Destination in first Object and Origin in second object should be same for ROUNDTRIP'],400);
+            }
+
 
             $message = 'Round Trip Flight Data';
         }
