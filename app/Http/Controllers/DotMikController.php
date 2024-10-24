@@ -1551,7 +1551,7 @@ public function RePrintTicket(Request $request)
     $validator = Validator::make($request->all(), [
         'headersToken' => 'required|string',
         'headersKey' => 'required|string',
-        "bookingRef" => "required|string", 
+        "bookingRef" => "nullable|string", 
         "pnr" => "nullable|string"
     ]);     
     
@@ -1563,6 +1563,14 @@ public function RePrintTicket(Request $request)
     }
     
     $data = $validator->validated();
+
+    if(!$data['bookingRef'] && !$data['pnr'])
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Provide Either Bookin Ref or PNR'
+        ], 400);
+    }
     
     $payload = [
         "deviceInfo" => [
