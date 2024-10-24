@@ -31,7 +31,7 @@ class DotMikController extends Controller
             "Arrival" => "nullable|string",
             "Departure" => "nullable|string",
             "Refundable" => "nullable|boolean",    
-            "Stops" => "nullable|string",
+            "Stops" => "nullable|string|in:0,1,2",
             "headersToken" => "required|string", 
             "headersKey" => "required|string",
         ]);
@@ -52,6 +52,7 @@ class DotMikController extends Controller
         $tripInfo=[];
 
         $i=0;
+
         foreach ($data['tripInfo'] as $trip) {
             if (empty($trip['tripId'])) {
                 $trip['tripId'] = "{$i}"; // Set default value
@@ -64,9 +65,7 @@ class DotMikController extends Controller
 
         if($data['TYPE'] === "ONEWAY")
         {
-
             $bookingType = "0";     
-
             if($count !=1)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 1 objects for One Way'],400);
@@ -76,7 +75,6 @@ class DotMikController extends Controller
         else if($data['TYPE'] === "ROUNDTRIP")
         {
             $bookingType = "2";
-
             if($count != 2)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
@@ -94,9 +92,7 @@ class DotMikController extends Controller
         }
         else if($data['TYPE'] === "MULTISTATE")
         {
-
-            $bookingType = "3";     
-
+            $bookingType = "3";
             if($count < 2)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 2 or More objects'],400);
@@ -170,21 +166,47 @@ class DotMikController extends Controller
                 // }
 
 
-                // if(isset($data['Stops'])){
+                if(isset($data['Stops'])){
 
-                //     $Filtered=[];
+                    $Filtered=[];
 
-                    // foreach ($Flights as $filteration) {                
-                    //     // $departure= array_filter();
-                    //     foreach($filteration['Segments'] as $Segment)
-                    //     {
-                    //         if($Segment['Origin'] ===  && $Segment['Destination'])
-                    //         {
-                    //         }
-                    //     }
-                    // }
-
-                // }
+                    if($data['Stops'] === "0")
+                    {
+                        foreach ($Flights as $filteration) {              
+                            if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
+                            {
+                                $Filtered[]=$filteration;
+                            }
+                        }
+                        $Flights=$Filtered;
+                    }
+                    else if($data['Stops'] === "1")
+                    {
+                        foreach ($Flights as $filteration) {        
+                            if(count($filteration['Segments']) > 1)
+                            {
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }        
+                        }
+                        $Flights=$Filtered;
+                    }
+                    else if($data['Stops'] === "2")
+                    {
+                        foreach ($Flights as $filteration) {        
+                            if(count($filteration['Segments']) > 1)
+                            {
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] != $data['tripInfo'][0]['destination']  && $filteration['Segments'][1]['Destination'] != $data['tripInfo'][0]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }        
+                        }
+                        $Flights=$Filtered;
+                    }
+                }
                
                 if (isset($data['Arrival'])) 
                 {        
