@@ -828,8 +828,14 @@ public function RePrice(Request $request)
                     // return response()->json($PAX);
 
                     $adultAmount = 0;
+                    $adultservice = 0;
+                    $adultAirportFee=0;
                     $childAmount = 0;
+                    $childservice = 0;
+                    $childAirportFee=0;
                     $infantAmount = 0;
+                    $infantservice = 0;
+                    $infantAirportFee=0;
 
                     foreach($PAX as $pax) {
                         $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
@@ -837,17 +843,28 @@ public function RePrice(Request $request)
                         switch ($pax['PAX_Type']) {
                             case 0: // Adult
                                 $adultAmount += $total * $data['adultCount'];
+                                $adultservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
+                                $adultAirportFee += $pax['AirportTax_Amount']  * $data['adultCount'];
                                 break;
                             case 1: // Child
                                 $childAmount += $total * $data['childCount'];
+                                $childservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
+                                $childAirportFee += $pax['AirportTax_Amount']  * $data['childCount'];
                                 break;
                             case 2: // Infant
                                 $infantAmount += $total * $data['infantCount'];
+                                $infantservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
+                                $infantAirportFee += $pax['AirportTax_Amount']  * $data['infantCount'];
                                 break;
                         }
                     }
 
                     $TotalAmount = $adultAmount + $childAmount + $infantAmount;
+
+                    $Totalservice = $adultservice + $childservice + $infantservice;
+
+                    $TotalAirportFee = $adultAirportFee + $childAirportFee + $infantAirportFee;
+
 
                    
                     return response()->json([
@@ -855,7 +872,9 @@ public function RePrice(Request $request)
                         'adultAmount' => $adultAmount,
                         'childAmount' => $childAmount,
                         'infantAmount' => $infantAmount,
-                        'totalAmount'=>$TotalAmount,
+                        'totalAmount'=> $TotalAmount,
+                        'servicefee' => $Totalservice,
+                        'airportTaxes' => $TotalAirportFee,
                         'data' => $result,
                     ], $statusCode);
                 } else {
