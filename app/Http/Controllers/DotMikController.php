@@ -32,6 +32,7 @@ class DotMikController extends Controller
             "Departure" => "nullable|string",
             "Refundable" => "nullable|boolean",    
             "Stops" => "nullable|string|in:0,1,2",
+            "Price" => "nullable|integer",
             "headersToken" => "required|string", 
             "headersKey" => "required|string",
         ]);
@@ -154,17 +155,46 @@ class DotMikController extends Controller
                 $AC = $result['payloads']['data']['tripDetails'][0]['Flights'];
                 $Flights = $dataa[0]['Flights'];
 
+                $transformedTripDetails = [];
+                foreach ($dataa as $trip) 
+                {
+                    $trip['Flights'] = array_reduce($trip['Flights'], function ($carry,$flight) 
+                    {
+                        if (count($flight['Fares']) > 1) 
+                        {
+                            foreach ($flight['Fares'] as $fare) 
+                            {
+                                $clonedFlight = $flight; // Clone flight details
+                                $clonedFlight['Fares'] = [$fare]; // Assign only this fare
+                                $carry[] = $clonedFlight; // Add to the result array
+                            }
+                        } else 
+                        {
+                         // If there's only one fare, return the flight as it is
+                         $carry[] = $flight;
+                        }
+                       return $carry;
+                    }, []);
+                    $transformedTripDetails[] = $trip;
+                }
 
-                // foreach($Flights as $Flight)
-                // {
-                //     $Fares=$Flight['Fares'];
-                //     foreach($Fares as $Fare)
-                //     {
+                $Flights=$transformedTripDetails[0]['Flights'];
 
-                //         $single=$Flight[''] 
-                //     }
-                // }
+                $minTotalAmount = PHP_INT_MAX;
+                
+                $maxTotalAmount = PHP_INT_MIN;
 
+                foreach($Flights as $Flight)
+                {
+                    $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                    if ($amount < $minTotalAmount) {
+                        $minTotalAmount = $amount;
+                    }
+                    if ($amount > $maxTotalAmount) {
+                        $maxTotalAmount = $amount;
+                    }
+                }
 
                 if(isset($data['Stops'])){
 
@@ -308,79 +338,100 @@ class DotMikController extends Controller
                       $Flights=$Filtered;
                 }
 
-            if(isset($data['Refundable']))
-            {
-                
-                $refundable = $data['Refundable'];
-                $filtered = array_filter($Flights, function($flight) use($refundable) {
-                    return $flight['Fares'][0]['Refundable'] === $refundable ;
-                });
-                $Flights=array_values($filtered);
-            }
-
-            if(isset($data['airlineCode']))
-            {
-                
-                $airlineCode = $data['airlineCode'];
-                $filtered = array_filter($Flights, function($flight) use($airlineCode) {
-                    return $flight['Airline_Code'] === $airlineCode;
-                });
-                $Flights=array_values($filtered);
-            }
-            
-            
-                // Extract distinct airline codes
-            $airlineCodes = array_map(function($flight) {
-                return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
-            }, $AC);
-
-            $distinctAirlineCodes = array_values(array_unique(array_filter($airlineCodes)));
-
-            // foreach($distinctAirlineCodes as $DAC)
-            // {
-            //     $airport = AirlineCode::where('carrier_code', $DAC)->get();
-
-            //     $ACName[]=
-            //     [
-            //         'AirlineCode' => $airport[0]['carrier_code'],
-            //         'AirlineName' => $airport[0]['airline_name'],
-            //         'AirlineLogo' => $airport[0]['logo']
-            //     ];
-            // }
-            $airlines = AirlineCode::whereIn('carrier_code', $distinctAirlineCodes)
-            ->get(['carrier_code', 'airline_name', 'logo'])
-            ->keyBy('carrier_code'); 
-
-            $ACName = array_map(function($code) use ($airlines) {
-                if (isset($airlines[$code])) {
-                    return [
-                        'AirlineCode' => $airlines[$code]->carrier_code,
-                        'AirlineName' => $airlines[$code]->airline_name,
-                        'AirlineLogo' => $airlines[$code]->logo
-                    ];
+                if(isset($data['Refundable']))
+                {       
+                    $refundable = $data['Refundable'];
+                    $filtered = array_filter($Flights, function($flight) use($refundable) {
+                        return $flight['Fares'][0]['Refundable'] === $refundable ;
+                    });
+                    $Flights=array_values($filtered);
                 }
-                return null; // Handle cases where airline code is not found
-            }, $distinctAirlineCodes);
 
-            $ACName = array_filter($ACName);
+                if(isset($data['Price']))
+                {
+                    $Filtered=[];
+                    foreach($Flights as $Flight)
+                    {
+                        $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                        if($amount <= $data['Price'])
+                        {
+                            $Filtered[] = $Flight;
+                        }
+                    }
+                    $Flights=$Filtered;
+                }
 
-            $count = count($Flights);
+                if(isset($data['airlineCode']))
+                {         
+                    $airlineCode = $data['airlineCode'];
+                    $filtered = array_filter($Flights, function($flight) use($airlineCode) {
+                        return $flight['Airline_Code'] === $airlineCode;
+                    });
+                    $Flights=array_values($filtered);
+                }
+                
+                // Extract distinct airline codes
+                $airlineCodes = array_map(function($flight) {
+                    return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+                }, $AC);
 
-            $payloads = [
-                    'errors' => [],
-                    'data' => [
-                        'tripDetails' => [
-                            [
-                                'Flights' => $Flights
+                $distinctAirlineCodes = array_values(array_unique(array_filter($airlineCodes)));
+
+                // foreach($distinctAirlineCodes as $DAC)
+                // {
+                //     $airport = AirlineCode::where('carrier_code', $DAC)->get();
+
+                //     $ACName[]=
+                //     [
+                //         'AirlineCode' => $airport[0]['carrier_code'],
+                //         'AirlineName' => $airport[0]['airline_name'],
+                //         'AirlineLogo' => $airport[0]['logo']
+                //     ];
+                // }
+                
+                $airlines = AirlineCode::whereIn('carrier_code', $distinctAirlineCodes)
+                ->get(['carrier_code', 'airline_name', 'logo'])
+                ->keyBy('carrier_code'); 
+
+                $ACName = array_map(function($code) use ($airlines) {
+                    if (isset($airlines[$code])) {
+                        return [
+                            'AirlineCode' => $airlines[$code]->carrier_code,
+                            'AirlineName' => $airlines[$code]->airline_name,
+                            'AirlineLogo' => $airlines[$code]->logo
+                        ];
+                    }
+                    return null; // Handle cases where airline code is not found
+                }, $distinctAirlineCodes);
+
+                $ACName = array_filter($ACName);
+
+                $count = count($Flights);
+
+                $payloads = [
+                        'errors' => [],
+                        'data' => [
+                            'tripDetails' => [
+                                [
+                                    'Flights' => $Flights
+                                ]
                             ]
                         ]
-                    ]
-            ];
-                
+                ];
+
+                if($count === 0)
+                {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "No Flights Found",
+                    ],$statusCode);
+                }
                 return response()->json([
                     'status' => true,
                     'message' => $message,
                     'count' => $count,
+                    'minPrice' => $minTotalAmount,
+                    'maxPrice' => $maxTotalAmount,
                     'status_code' => $result['status_code'],
                     'request_id' => $result['request_id'],
                     'SearchKey' => $result['payloads']['data']['searchKey'],
