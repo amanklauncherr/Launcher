@@ -27,6 +27,7 @@ use App\Http\Controllers\CountryCodeController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\DotMikBusController;
 use App\Http\Controllers\DotMikController;
+use App\Http\Controllers\DotMitSourceCitiesController;
 // use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\JoinOfferController;
 use App\Http\Controllers\SubscriptionCardController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\Payment\PaymentController;
 use App\Models\Destination;
 use App\Models\SubscriptionDetail;
 use App\Http\Middleware\CheckBearerToken;
+use App\Models\DotMitSourceCities;
 
 /*
 |--------------------------------------------------------------------------
@@ -284,15 +286,15 @@ Route::post('/Sector/Avalability',[DotMikController::class,'SectorAvalability'])
 
 Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
 
-
 // Bus 
+Route::post('/Source',[DotMitSourceCitiesController::class,'SourceCity']);
 
 Route::get('/Get/Source/Cities',[DotMikBusController::class,'GetSourceCities']);
 
 Route::post('/Avaliable/Trip',[DotMikBusController::class,'AvaliableTrip']);
 
-Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrrentTripDetails']);
+Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrentTripDetails']);
 
-Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointsDetails']);
+Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointDetails']);
 
 Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
