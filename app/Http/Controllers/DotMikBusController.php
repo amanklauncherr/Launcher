@@ -13,32 +13,36 @@ class DotMikBusController extends Controller
 {
     public function GetSourceCities(Request $request)
     {
-        $validator= Validator::make($request->all(),[      
-            'state' => 'nullable|string',
-            'city' => 'nullable|string'
-        ]);
+
+        $state=$request->query('state');
+        $city=$request->query('city');
+
+        // $validator= Validator::make($request->all(),[      
+        //     'state' => 'nullable|string',
+        //     'city' => 'nullable|string'
+        // ]);
         
-        if($validator->fails())
-        {
-            $errors=$validator->errors()->all();
-            $formattedErrors = [];
+        // if($validator->fails())
+        // {
+        //     $errors=$validator->errors()->all();
+        //     $formattedErrors = [];
 
-            foreach($errors as $error)
-            {
-                $formattedErrors[] = $error;
-            }
+        //     foreach($errors as $error)
+        //     {
+        //         $formattedErrors[] = $error;
+        //     }
 
-            return response()->json([
-                'success' => 0,
-                'error' => $formattedErrors[0]
-            ],422);
-        }
+        //     return response()->json([
+        //         'success' => 0,
+        //         'error' => $formattedErrors[0]
+        //     ],422);
+        // }
 
-        $data= $validator->validated();
+        // $data= $validator->validated();
       
         try 
         {
-            if(!isset($data['state']) && !isset($data['city']))
+            if(!isset($state) && !isset($city))
             {
                 return response()->json([
                     'success' => 0,
@@ -46,17 +50,17 @@ class DotMikBusController extends Controller
                 ],400);
             }
 
-            if(isset($data['city']))
+            if(isset($city))
             {
-                $result=DotMitSourceCities::where('City_Name',$data['city'])->get();   
+                $result=DotMitSourceCities::where('City_Name',$city)->get();   
                  return response()->json([
                     'success' => true,
                     'data' => $result,
                 ],200);
             }
-            if(isset($data['state']))
+            if(isset($state))
             {
-                $result=DotMitSourceCities::where('State_Name',$data['state'])->get();   
+                $result=DotMitSourceCities::where('State_Name',$state)->get();   
                 return response()->json([
                    'success' => true,
                    'data' => $result,
@@ -645,8 +649,8 @@ class DotMikBusController extends Controller
         'Content-Type' => 'application/json',
     ];
 
-    // API URL
-    $url="https://api.dotmik.in/api/busBooking/v1/bookTicket";
+    // API URL // dotmik
+    $url="https://staging.dotmik.in/api/busBooking/v1/bookTicket";
 
     try {
         // Make the POST request using Laravel HTTP Client
