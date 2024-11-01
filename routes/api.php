@@ -298,3 +298,13 @@ Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrentTripDeta
 Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointDetails']);
 
 Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
+
+Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
+
+Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
+
+Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
+
+Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
+
+Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
