@@ -303,8 +303,6 @@ Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
 
 Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
 
-Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
-
-Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
-
 Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
+
+Route::post('/Get/Cancel/Ticket',[DotMikBusController::class,'CancelTicket']);
