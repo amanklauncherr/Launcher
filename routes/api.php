@@ -38,6 +38,7 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserSubscriptionController;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\TravelHistoryController;
 
 use App\Models\Destination;
 use App\Models\SubscriptionDetail;
@@ -165,6 +166,27 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     // Add User Subscription
     Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
+
+    
+    // Flight
+    Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
+
+    Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
+
+
+    Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
+
+    // Bus   
+    Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
+
+    Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
+
+    Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
+
+    //History
+    // GetTravelHistory
+    Route::post('/History',[TravelHistoryController::class,'GetTravelHistory']);
+
 });
 
 // Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
@@ -270,13 +292,9 @@ Route::post('/Fare/Rule',[DotMikController::class,'fareRule']);
 
 Route::post('/Re/Price',[DotMikController::class,'RePrice']);
 
-Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
-
-Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
 
 Route::post('/Check/Wallet',[DotMikController::class,'CheckWallet']);
 
-Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
 
 Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
 
@@ -297,11 +315,11 @@ Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrentTripDeta
 
 Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointDetails']);
 
-Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
 
-Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
 
-Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
+
+
+
 
 Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
 
