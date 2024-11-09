@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\AirlineCode;
+use App\Models\TravelHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+
 use DateTime;
 
 class DotMikController extends Controller
@@ -102,7 +105,7 @@ class DotMikController extends Controller
         }
 
         $data['tripInfo']=$tripInfo;
-        // Return the validated 'tripInfo' data
+        
         
         $payload = [
             "deviceInfo" => [
@@ -132,7 +135,8 @@ class DotMikController extends Controller
 
         $url = 'https://api.dotmik.in/api/flightBooking/v1/searchFlight';
 
-    try {
+        try 
+        {
         $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
         $result=$response->json();
         $statusCode = $response->status();
@@ -168,7 +172,7 @@ class DotMikController extends Controller
                                 $clonedFlight['Fares'] = [$fare]; // Assign only this fare
                                 $carry[] = $clonedFlight; // Add to the result array
                             }
-                        } else 
+                        } else
                         {
                          // If there's only one fare, return the flight as it is
                          $carry[] = $flight;
@@ -196,47 +200,118 @@ class DotMikController extends Controller
                     }
                 }
 
-                if(isset($data['Stops'])){
+                if(isset($data['Stops']))
+                {
 
                     $Filtered=[];
 
                     if($data['Stops'] === "0")
                     {
-                        foreach ($Flights as $filteration) {              
-                            if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
-                            {
-                                $Filtered[]=$filteration;
+                        if($data['TYPE'] === 'ONEWAY')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
                             }
+                            $Flights=$Filtered;
                         }
-                        $Flights=$Filtered;
+                        else if($data['TYPE'] === 'ROUNDTRIP')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                        else if($data['TYPE'] === 'MULTISTATE')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'] && $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][2]['Destination'] === $data['tripInfo'][2]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
                     }
                     else if($data['Stops'] === "1")
                     {
-                        foreach ($Flights as $filteration) {        
-                            if(count($filteration['Segments']) > 1)
-                            {
-                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination'])
+                        if($data['TYPE'] === 'ONEWAY')
+                        {
+                            foreach ($Flights as $filteration) 
+                            {        
+                                if(count($filteration['Segments']) > 1)
+                                {
+                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] || $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] || $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                                    {
+                                        $Filtered[]=$filteration;
+                                    }
+                                }        
+                            }
+                            $Flights=$Filtered; 
+                        }
+                        else if($data['TYPE'] === 'ROUNDTRIP')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if(
+                                    (
+                                        $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                                    ) 
+                                    || 
+                                    (
+                                        $filteration['Segments'][1]['Origin'] === $data['tripInfo'][2]['origin'] &&
+                                        $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination'])
+                                    )
+
                                 {
                                     $Filtered[]=$filteration;
                                 }
-                            }        
+                            }
+                            $Flights=$Filtered;
                         }
-                        $Flights=$Filtered;
-                    }
-                    else if($data['Stops'] === "2")
-                    {
-                        foreach ($Flights as $filteration) {        
-                            if(count($filteration['Segments']) > 1)
-                            {
-                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] != $data['tripInfo'][0]['destination']  && $filteration['Segments'][1]['Destination'] != $data['tripInfo'][0]['destination'])
+                        else if($data['TYPE'] === 'MULTISTATE')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if
+                                (
+                                    (
+                                        $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                                    ) 
+                                    || 
+                                    (
+                                        $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] &&
+                                        $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination']
+                                    )
+                                    ||
+                                    (
+                                        $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][3]['Destination'] === $data['tripInfo'][2]['destination']
+                                    ) 
+                                )
                                 {
                                     $Filtered[]=$filteration;
                                 }
-                            }        
+                            }
+                            $Flights=$Filtered;
                         }
-                        $Flights=$Filtered;
                     }
                 }
+                    // else if($data['Stops'] === "2")
+                    // {
+                    //     foreach ($Flights as $filteration) {        
+                    //         if(count($filteration['Segments']) > 1)
+                    //         {
+                    //             if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] != $data['tripInfo'][0]['destination']  && $filteration['Segments'][1]['Destination'] != $data['tripInfo'][0]['destination'])
+                    //             {
+                    //                 $Filtered[]=$filteration;
+                    //             }
+                    //         }        
+                    //     }
+                    //     $Flights=$Filtered;
+                    // }
                
                 if (isset($data['Arrival'])) 
                 {        
@@ -445,381 +520,105 @@ class DotMikController extends Controller
                     'error' => $result
                 ],$statusCode);
             }
-    }
-} catch (\Exception $e) {
-    // Handle exception (e.g. network issues)
-    return response()->json([
-        'success' => false,
-        'message' => $e->getMessage()
-    ], 500);
-}
-
-}
-
-
-// public function Filter(Request $request)
-// {
-//     $validator = Validator::make($request->all(),[
-//         'DATA' => "required|array",
-//         'Refundable' => "nullable|boolean",
-//         'Arrival' => 'nullable|string',
-//         'Stop' => 'nullable|string',
-//         'Departure' => 'nullable|string',
-//         'Airline' => 'nullable|string'
-//     ]);   
-
-//     if ($validator->fails()) {
-//         $errors = $validator->errors()->all(); // Get all error messages
-//         $formattedErrors = [];
-
-//         foreach ($errors as $error) {
-//             $formattedErrors[] = $error;
-//         }
-
-//         return response()->json([
-//             'success' => false,
-//             'message' => $formattedErrors[0]
-//         ], 422);
-//     }
-    
-//     $data=$validator->validated();
-
-//     $FilteredFlights=$data['DATA'];
-
-//     if(isset($data['Stop']))
-//     {
-//         $Filtered=[];
-
-//         if($data['Stop'] === "0")
-//         {
-//           foreach ($FilteredFlights as $filteration) {                
-  
-//               $count = count($filteration['Segments']); // 
-//               if($count === 1)
-//               {
-//                   $Filtered[]=$filteration; 
-//               }
-//           }
-//           $FilteredFlights=$Filtered;
-//         }
-//         else if($data['Stop'] === "1")
-//         {
-//           foreach ($FilteredFlights as $filteration) {                
-//               $count = count($filteration['Segments']); // 
-//               if($count === 2)
-//               {
-//                   $Filtered[]=$filteration; 
-//               }
-//           }
-//           $FilteredFlights=$Filtered;
-//         }
-//         else if($data['Stop'] === "2")
-//         {
-//           foreach ($FilteredFlights as $filteration) {                
-//               $count = count($filteration['Segments']); // 
-//               if($count > 2)
-//               {
-//                   $Filtered[]=$filteration; 
-//               }
-//           }
-//           $FilteredFlights=$Filtered;
-//         }  
-//     }
-
-
-//     if(isset($data['Arrival']) && isset($data['Departure']))
-//     {
-//         $Filtered=[];
-
-//         if($data['Arrival'] === '12AM6AM')
-//         {  
-//             $arrivalDateTimeLow = "00:00";
-//             $arrivalDateTimeHigh = "06:00";
-//         }
-//         else if($data['Arrival'] === '6AM12PM')
-//         {  
-//             $arrivalDateTimeLow = "06:00";
-//             $arrivalDateTimeHigh = "12:00";
-//         }
-//         else if($data['Arrival'] === '12PM6PM')
-//         {   
-//             $arrivalDateTimeLow = "12:00";
-//             $arrivalDateTimeHigh = "18:00";
-//         }
-//         else if($data['Arrival'] === '6PM12AM')
-//         {
-//             $arrivalDateTimeLow = "18:00";
-//             $arrivalDateTimeHigh = "24:00";
-//         }
-//         else{
-//             return response()->json('Invalid Arrival time or condition.', 400);
-//         }
-
-//         if($data['Departure'] === '12AM6AM')
-//         {
-//             $departureDateTimeLow = "00:00";
-//             $departureDateTimeHigh = "06:00";
-//         }
-//         else if($data['Departure'] === '6AM12PM')
-//         {
-            
-//             $departureDateTimeLow = "06:00";
-//             $departureDateTimeHigh = "12:00";
-//         }
-//         else if($data['Departure'] === '12PM6PM')
-//         {   
-//             $departureDateTimeLow = "12:00";
-//             $departureDateTimeHigh = "18:00";
-//         }
-//         else if($data['Departure'] === '6PM12AM')
-//         {
-//             $departureDateTimeLow = "18:00";
-//             $departureDateTimeHigh = "24:00";
-//         }
-//         else{
-//             return response()->json('Invalid Arrival time or condition.', 400);
-//         }
-        
-//         foreach ($FilteredFlights as $filteration) {   
-//             $lastSegmentDeparture = reset($filteration['Segments']);
-//             $lastSegmentArrival = end($filteration['Segments']); // 
-
-//             $Departuredatetime = $lastSegmentDeparture['Departure_DateTime'];
-//             $dateObjD = new DateTime($Departuredatetime);
-//             $Dtime = $dateObjD->format('H:i');
-
-//             $Arrivaldatetime = $lastSegmentArrival['Arrival_DateTime'];
-//             $dateObjA = new DateTime($Arrivaldatetime);
-//             $Atime = $dateObjA->format('H:i');
-//             // return response()->json($time);
-//             if( $Dtime > $departureDateTimeLow && $Dtime < $departureDateTimeHigh && $Atime >  $arrivalDateTimeLow && $Atime < $arrivalDateTimeHigh  )
-//             {
-//                 $Filtered[]=$filteration;
-//             }
-//         }
-//         $FilteredFlights=$Filtered;
-
-//     }
-//     else if (isset($data['Arrival'])) 
-//     {     
-//         $Filtered=[];
-
-//         if($data['Arrival'] === '12AM6AM')
-//         {
-//             $arrivalDateTimeLow = "00:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $arrivalDateTimeHigh = "06:00";
-//         }
-//         else if($data['Arrival'] === '6AM12PM')
-//         {
-            
-//             $arrivalDateTimeLow = "06:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $arrivalDateTimeHigh = "12:00";
-//         }
-//         else if($data['Arrival'] === '12PM6PM')
-//         {   
-//             $arrivalDateTimeLow = "12:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $arrivalDateTimeHigh = "18:00";
-//         }
-//         else if($data['Arrival'] === '6PM12AM')
-//         {
-//             $arrivalDateTimeLow = "18:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $arrivalDateTimeHigh = "24:00";
-//         }
-//         else{
-//             return response()->json('Invalid Arrival time or condition.', 400);
-//         }
-
-//         foreach ($FilteredFlights as $filteration) {                
-//             $lastSegment = end($filteration['Segments']); // 
-//             $datetime = $lastSegment['Arrival_DateTime'];
-//             $dateObj = new DateTime($datetime);
-//             $time = $dateObj->format('H:i');
-//             // return response()->json($time);
-//             if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
-//             {
-//                 $Filtered[]=$filteration;
-//             }
-//         }
-
-//         $FilteredFlights=$Filtered;        
-//         //   return response()->json($filtered);
-
-//     }
-//     else if (isset($data['Departure'])) 
-//     {       
-//         $Filtered=[];
-                
-//         if($data['Departure'] === '12AM6AM')
-//         {
-//             $departureDateTimeLow = "00:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $departureDateTimeHigh = "06:00";
-//         }
-//         else if($data['Departure'] === '6AM12PM')
-//         {
-            
-//             $departureDateTimeLow = "06:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $departureDateTimeHigh = "12:00";
-//         }
-//         else if($data['Departure'] === '12PM6PM')
-//         {   
-//             $departureDateTimeLow = "12:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $departureDateTimeHigh = "18:00";
-//         }
-//         else if($data['Departure'] === '6PM12AM')
-//         {
-//             $departureDateTimeLow = "18:00";
-//             // return response()->json($arrivalDateTimeLow, 400);
-//             $departureDateTimeHigh = "24:00";
-//         }
-//         else{
-//             return response()->json('Invalid Arrival time or condition.', 400);
-//         }
-
-//         foreach ($FilteredFlights as $filteration) {                
-//             $firstSegment = reset($filteration['Segments']); // 
-//             $datetime = $firstSegment['Departure_DateTime'];
-//             $dateObj = new DateTime($datetime);
-//             $time = $dateObj->format('H:i');
-//             // return response()->json($time);
-//             if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
-//             {
-//                 $Filtered[]=$filteration;
-//             }
-//         }
-//         $FilteredFlights=$Filtered;
-//     } 
-    
-
-//     if(isset($data['Refundable']))
-//     {
-//         $Filtered=[];
-//         // return response()->json($filteredFlights['Fare']);
-//         $refundable = $data['Refundable'];
-//         $filtered = array_filter($FilteredFlights, function($flight) use($refundable) {
-//             return $flight['Fares'][0]['Refundable'] === $refundable ;
-//         });
-//         $FilteredFlights=array_values($filtered);
-//     }
-
-//     // Extract distinct airline codes
-//     $airlineCodes = array_map(function($flight) {
-//         return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
-//     }, $FilteredFlights);
-
-//     // Remove null values and get distinct airline codes
-//     $distinctAirlineCodes = array_unique($airlineCodes);
-
-//     // Re-index array to remove numeric keys
-//     $distinctAirlineCodes = array_values($distinctAirlineCodes);
-
-//     $count=count($FilteredFlights);
-
-//     return response()->json(
-//         [
-//             'success' => true,
-//             'count' => $count,
-//             'AirlineCode' =>  $distinctAirlineCodes,
-//             'Flights' => $FilteredFlights
-//         ],
-//         200
-//     );
-// }
-    
-
-public function fareRule(Request $request)
-{
-        $validator = Validator::make($request->all(),[
-            'SearchKey' => 'required|string',
-            'FareID' => 'required|string',
-            'FlightKey' => 'required|string',
-            'headersToken' => 'required|string',
-            'headersKey' => 'required|string'
-        ]);     
-
-        if ($validator->fails()) {
-            $errors = $validator->errors()->all(); // Get all error messages
-            $formattedErrors = [];
-    
-            foreach ($errors as $error) {
-                $formattedErrors[] = $error;
-            }
-    
-            return response()->json([
-                'success' => false,
-                'message' => $formattedErrors[0]
-            ], 422);
-        }
-        
-        $data=$validator->validated();
-
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879888"
-            ],
-            "searchKey" => $data['SearchKey'],
-            "fareId" => $data['FareID'],
-            "flightKey" => $data['FlightKey']            
-        ];
-
-        // Headers
-        $headers = [
-            'D-SECRET-TOKEN' => $data['headersToken'],
-            'D-SECRET-KEY' => $data['headersKey'],
-            'CROP-CODE' => 'DOTMIK160614',
-            'Content-Type' => 'application/json',
-        ];
-
-        // API URL
-        $url = 'https://api.dotmik.in/api/flightBooking/v1/fareRule';
-
-        try {
-            // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result = $response->json();            
-            $statusCode = $response->status();
-            if($result['status'] === false)
-            {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message'],
-                    'error' => $result
-                ],$statusCode);
-            }
-            else{
-                if($response->successful())
-                {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $result,
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
-            
-            //code...
-        } catch  (\Exception $e) {
+     }
+        } catch (\Exception $e) {
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
         }
-}
 
-public function RePrice(Request $request)
+    }
+    
+
+    public function fareRule(Request $request)
+    {
+            $validator = Validator::make($request->all(),[
+                'SearchKey' => 'required|string',
+                'FareID' => 'required|string',
+                'FlightKey' => 'required|string',
+                'headersToken' => 'required|string',
+                'headersKey' => 'required|string'
+            ]);     
+
+            if ($validator->fails()) {
+                $errors = $validator->errors()->all(); // Get all error messages
+                $formattedErrors = [];
+        
+                foreach ($errors as $error) {
+                    $formattedErrors[] = $error;
+                }
+        
+                return response()->json([
+                    'success' => false,
+                    'message' => $formattedErrors[0]
+                ], 422);
+            }
+            
+            $data=$validator->validated();
+
+            $payload = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879888"
+                ],
+                "searchKey" => $data['SearchKey'],
+                "fareId" => $data['FareID'],
+                "flightKey" => $data['FlightKey']            
+            ];
+
+            // Headers
+            $headers = [
+                'D-SECRET-TOKEN' => $data['headersToken'],
+                'D-SECRET-KEY' => $data['headersKey'],
+                'CROP-CODE' => 'DOTMIK160614',
+                'Content-Type' => 'application/json',
+            ];
+
+            // API URL
+            $url = 'https://api.dotmik.in/api/flightBooking/v1/fareRule';
+
+            try {
+                // Make the POST request using Laravel HTTP Client
+                $response = Http::withHeaders($headers)->post($url, $payload);
+                $result = $response->json();            
+                $statusCode = $response->status();
+                if($result['status'] === false)
+                {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
+                }
+                else{
+                    if($response->successful())
+                    {
+                        return response()->json([
+                            'success' => true,
+                            'data' => $result,
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $result['message'],
+                            'error' => $result
+                        ],$statusCode);
+                    }
+                }
+                
+                //code...
+            } catch  (\Exception $e) {
+                // Handle exception (e.g. network issues)
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+    }
+
+   public function RePrice(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'SearchKey' => 'required|string',
@@ -966,11 +765,12 @@ public function RePrice(Request $request)
                 'message' => $e->getMessage()
             ], 500);
         }
-}
+    }
 
-public function TemporaryBooking(Request $request){
+    public function TemporaryBooking(Request $request)
+    {
         // Validation
-    $validator = Validator::make($request->all(),[
+      $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
             'mobile' => 'required|string|max:10|min:10',
             'whatsApp' => 'required|string|max:10|min:10',
@@ -1111,6 +911,11 @@ public function TemporaryBooking(Request $request){
                 ],$statusCode);
             } else {
                 if ($response->successful()) {
+                    TravelHistory::create([
+                        'userID' => Auth::guard('api')->id(),
+                        'BookingType' => 'FLIGHT',
+                        'BookingRef' => $result['payloads']['data']['bookingRef'],
+                    ]);
                     return response()->json([
                         'success' => true,
                         'data' => $result,
@@ -1129,494 +934,404 @@ public function TemporaryBooking(Request $request){
                 'message' => $e->getMessage()
             ], 500);
         }        
-}
-
-
-public function CheckWallet(Request $request)
-{
-    $validator = Validator::make($request->all(),[
-        'BookingRef' => 'required|string',
-        "UserRef" => "required|string",
-        'headersToken' => 'required|string',
-        'headersKey' => 'required|string'
-    ]);     
-
-    if ($validator->fails()) {
-        $errors = $validator->errors()->all(); // Get all error messages
-        $formattedErrors = [];
-
-        foreach ($errors as $error) {
-            $formattedErrors[] = $error;
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => $formattedErrors[0]
-        ], 422);
     }
-    
-    $data=$validator->validated();
 
-    $payload = [
-        "deviceInfo" => [
-            "ip" => "122.161.52.233",
-            "imeiNumber" => "12384659878976879887"
-        ],
-        "bookingRef" => $data['BookingRef'],
-        "userRef" => $data['UserRef']
-    ];
-    
-    // Headers
-    $headers = [
-        'D-SECRET-TOKEN' => $data['headersToken'],
-        'D-SECRET-KEY' => $data['headersKey'],
-        'CROP-CODE' => 'DOTMIK160614',
-        'Content-Type' => 'application/json',
-    ];
 
-    // API URL
-    $url = 'https://staging.dotmik.in/api/flightBooking/v1/checkWallet';
-    try {
-        // Make the POST request using Laravel HTTP Client
-        $response = Http::withHeaders($headers)->post($url, $payload);
-        $result=$response->json();
-        $statusCode = $response->status();
+    public function CheckWallet(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'BookingRef' => 'required|string',
+            "UserRef" => "required|string",
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
+        ]);     
 
-        if($result['status'] === false)
-        {
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all(); // Get all error messages
+            $formattedErrors = [];
+
+            foreach ($errors as $error) {
+                $formattedErrors[] = $error;
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $result['message'],
-                'error' => $result
-            ],$statusCode);
+                'message' => $formattedErrors[0]
+            ], 422);
         }
-        else{
-            if($response->successful())
+        
+        $data=$validator->validated();
+
+        $payload = [
+            "deviceInfo" => [
+                "ip" => "122.161.52.233",
+                "imeiNumber" => "12384659878976879887"
+            ],
+            "bookingRef" => $data['BookingRef'],
+            "userRef" => $data['UserRef']
+        ];
+        
+        // Headers
+        $headers = [
+            'D-SECRET-TOKEN' => $data['headersToken'],
+            'D-SECRET-KEY' => $data['headersKey'],
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
+
+        // API URL
+        $url = 'https://api.dotmik.in/api/flightBooking/v1/checkWallet';
+        try {
+            // Make the POST request using Laravel HTTP Client
+            $response = Http::withHeaders($headers)->post($url, $payload);
+            $result=$response->json();
+            $statusCode = $response->status();
+
+            if($result['status'] === false)
             {
-                return response()->json([
-                    'success' => true,
-                    'data' => $result,
-                ], $statusCode);
-            } else {
                 return response()->json([
                     'success' => false,
                     'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
             }
-        }
-        //code...
-    } catch  (\Exception $e) {
-        // Handle exception (e.g. network issues)
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
-    }   
-}
-
-public function Ticketing(Request $request)
-{    
-    $validator = Validator::make($request->all(), [
-        'BookingRef' => 'required|string',
-        'UserRef' => 'required|string',
-        'TicketingType' => 'required|string',
-        'headersToken' => 'required|string',
-        'headersKey' => 'required|string'
-    ]);
-    
-    if ($validator->fails()) {
-        // Return the first error message
-        return response()->json([
-            'success' => false,
-            'message' => $validator->errors()->first()
-        ], 422);
-    }
-    
-    $data = $validator->validated();
-    
-    // Prepare payload for the first request
-    $payload = [
-        "deviceInfo" => [
-            "ip" => "122.161.52.233",
-            "imeiNumber" => "12384659878976879887"
-        ],
-        "bookingRef" => $data['BookingRef'],
-        "userRef" => $data['UserRef']
-    ];
-    
-    // Prepare headers
-    $headers = [
-        'D-SECRET-TOKEN' => $data['headersToken'],
-        'D-SECRET-KEY' => $data['headersKey'],
-        'CROP-CODE' => 'DOTMIK160614',
-        'Content-Type' => 'application/json',
-    ];
-    
-    // API URL
-    $checkWalletUrl = 'https://staging.dotmik.in/api/flightBooking/v1/checkWallet';
-    $ticketingUrl = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
-    
-    try {
-        // Make the POST request to check wallet
-        $response = Http::withHeaders($headers)->post($checkWalletUrl, $payload);
-        $statusCode = $response->status();
-        $result = $response->json();
-    
-        if ($response->failed() || !isset($result['status']) || !$result['status']) {
+            else{
+                if($response->successful())
+                {
+                    return response()->json([
+                        'success' => true,
+                        'data' => $result,
+                    ], $statusCode);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['message'],
+                        'error' => $result
+                    ],$statusCode);
+                }
+            }
+            //code...
+        } catch  (\Exception $e) {
+            // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
-                'message' => $result['message'] ?? 'Failed to check wallet',
-                'error' => $result
-            ], $statusCode);
+                'message' => $e->getMessage()
+            ], 500);
+        }   
+    }
+
+    public function Ticketing(Request $request)
+    {    
+        $validator = Validator::make($request->all(), [
+            'BookingRef' => 'required|string',
+            'UserRef' => 'required|string',
+            'TicketingType' => 'required|string',
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
+        ]);
+        
+        if ($validator->fails()) {
+            // Return the first error message
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
         }
-    
-        // If the wallet check succeeds, proceed to ticketing
-        $payloadTicket = [
+        
+        $data = $validator->validated();
+        
+        // Prepare payload for the first request
+        $payload = [
             "deviceInfo" => [
                 "ip" => "122.161.52.233",
                 "imeiNumber" => "12384659878976879887"
             ],
             "bookingRef" => $data['BookingRef'],
-            "ticketingType" => $data['TicketingType']
+            "userRef" => $data['UserRef']
         ];
-    
-        $ticketingResponse = Http::withHeaders($headers)->post($ticketingUrl, $payloadTicket);
-        $ticketingResult = $ticketingResponse->json();
-        $ticketingStatusCode = $ticketingResponse->status();
-    
-        if ($ticketingResponse->failed() || !isset($ticketingResult['status']) || !$ticketingResult['status']) {
+        
+        // Prepare headers
+        $headers = [
+            'D-SECRET-TOKEN' => $data['headersToken'],
+            'D-SECRET-KEY' => $data['headersKey'],
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
+        
+        // API URL
+        $checkWalletUrl = 'https://api.dotmik.in/api/flightBooking/v1/checkWallet';
+        $ticketingUrl = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
+        
+        try {
+            // Make the POST request to check wallet
+            $response = Http::withHeaders($headers)->post($checkWalletUrl, $payload);
+            $statusCode = $response->status();
+            $result = $response->json();
+        
+            if ($response->failed() || !isset($result['status']) || !$result['status']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'] ?? 'Failed to check wallet',
+                    'error' => $result
+                ], $statusCode);
+            }
+        
+            // If the wallet check succeeds, proceed to ticketing
+            $payloadTicket = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879887"
+                ],
+                "bookingRef" => $data['BookingRef'],
+                "ticketingType" => $data['TicketingType']
+            ];
+        
+            $ticketingResponse = Http::withHeaders($headers)->post($ticketingUrl, $payloadTicket);
+            $ticketingResult = $ticketingResponse->json();
+            $ticketingStatusCode = $ticketingResponse->status();
+        
+            if ($ticketingResponse->failed() || !isset($ticketingResult['status']) || !$ticketingResult['status']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $ticketingResult['message'] ?? 'Failed to issue ticket',
+                    'error' => $ticketingResult
+                ], $ticketingStatusCode);
+            }
+            $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+            $History->update([
+                'PnrDetails' => $result['payloads']['data']['pnrDetails'],
+                'Status' => "BOOKED",
+            ]);
+            // If ticketing is successful, return the success response
+            return response()->json([
+                'success' => true,
+                'data' => $ticketingResult
+            ], $ticketingStatusCode);
+        
+        } catch (\Exception $e) {
+            // Handle general exceptions
             return response()->json([
                 'success' => false,
-                'message' => $ticketingResult['message'] ?? 'Failed to issue ticket',
-                'error' => $ticketingResult
-            ], $ticketingStatusCode);
-        }
-    
-        // If ticketing is successful, return the success response
-        return response()->json([
-            'success' => true,
-            'data' => $ticketingResult
-        ], $ticketingStatusCode);
-    
-    } catch (\Exception $e) {
-        // Handle general exceptions
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred: ' . $e->getMessage(),
-        ], 500);
-    }     
-}
+                'message' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }     
+    }
 
-    // public function 
-
-    // public function History(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(),[
-    //         'headersToken' => 'required|string',
-    //         'headersKey' => 'required|string',
-    //         "fromDate" => "required|string", //date in (MM/dd/YYYY)
-    //         "toDate" => "required|string",  //date in (MM/dd/YYYY)
-    //         "month" => "required|string", // Month of booking for July (eg: 07)
-    //         "year" => "required|string", //year of booking(eg:2024)
-    //         "type" => "required|string" //Possible values are 0 - BOOKING_DATE/ 1 - BOOKING_DATE_LIVE/ 2 - BOOKING_DATE_CANCELLED/ 3-BLOCKED
-    //     ]);     
-
-    //     if ($validator->fails()) {
-    //         $errors = $validator->errors()->all(); // Get all error messages
-    //         $formattedErrors = [];
-    
-    //         foreach ($errors as $error) {
-    //             $formattedErrors[] = $error;
-    //         }
-    
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $formattedErrors[0]
-    //         ], 422);
-    //     }
-        
-    //     $data=$validator->validated();
-
-    //     $payload = [
-    //         "deviceInfo" => [
-    //             "ip" => "122.161.52.233",
-    //             "imeiNumber" => "12384659878976879887"
-    //         ],
-    //         "fromDate" => $data['fromDate'], //date in (MM/dd/YYYY)
-    //         "todate" => $data['toDate'],  //date in (MM/dd/YYYY)
-    //         "month" => $data['month'], // Month of booking for July (eg: 07)
-    //         "year" => $data['year'], //year of booking(eg:2024)
-    //         "type" => $data['type'] //
-    //     ];
-        
-    //     // Headers
-    //     $headers = [
-    //         'D-SECRET-TOKEN' => $data['headersToken'],
-    //         'D-SECRET-KEY' => $data['headersKey'],
-    //         'CROP-CODE' => 'DOTMIK160614',
-    //         'Content-Type' => 'application/json',
-    //     ];
-
-    //     // API URL
-    //     $url = 'https://api.dotmik.in/api/flightBooking/v1/history';
-
-    //     try {
-    //         // Make the POST request using Laravel HTTP Client
-    //         $response = Http::withHeaders($headers)->post($url, $payload);
-    //         $result=$response->json();
-    //         $statusCode = $response->status();
-
-    //         if($result['status'] === false)
-    //         {
-    //             return response()->json($result,$statusCode);   
-    //         }
-    //         else{
-    //             if($response->successful())
-    //             {
-    //                 return response()->json([
-    //                     'success' => true,
-    //                     'data' => $result,
-    //                 ], 200);
-    //             } else {
-    //                 return response()->json([
-    //                     'success' => false,
-    //                     'message' => 'Failed to fetch flight data',
-    //                     'error' => $response->json()
-    //                 ], $response->status());
-    //             }
-    //         }
-    //         //code...
-    //     } catch  (\Exception $e) {
-    //         // Handle exception (e.g. network issues)
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'An error occurred',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }   
-    // }
-
-    public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket,$ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn, $gen, $Email,$Contact,$BaseFare, $TotalAmount,$CancelArray, $RescheduleChargesArray, $FlightNO,$AirlineCode, $Tax)
+   
+    public function generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$PNR, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax, $paxDetails,$Segment)
     {
 
         $htmlCode = "<!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Flight Ticket</title>
-            <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
-            <style>
-                body {
-                    font-family: 'Roboto', sans-serif;
-                    background-color: #f0f2f5;
-                    margin: 0;
-                    padding: 20px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                }
-                .container {
-                    max-width: 800px;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    padding: 20px;
-                }
-                h2, h3 {
-                    text-align: center;
-                    color: #333;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }
-                table, th, td {
-                    border: 1px solid #e0e0e0;
-                    padding: 15px;
-                    text-align: left;
-                }
-                th {
-                    background-color: #f7f7f7;
-                    color: #555;
-                    font-weight: bold;
-                }
-                td {
-                    color: #333;
-                }
-                .info-section {
-                    margin-bottom: 20px;
-                }
-                .fare-rules h4 {
-                    margin-top: 0;
-                    color: #555;
-                }
-                .fare-rules p {
-                    font-size: 0.9em;
-                    color: #777;
-                }
-                .badge {
-                    display: inline-block;
-                    padding: 5px 10px;
-                    background-color: #4caf50;
-                    color: white;
-                    border-radius: 5px;
-                    font-size: 0.85em;
-                }
-                .ticket-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                    padding-bottom: 15px;
-                    border-bottom: 2px solid #e0e0e0;
-                }
-                .ticket-header img {
-                    height: 50px;
-                }
-            </style>
-        </head>
-        <body>
-        <div class='container'>
-            <div class='ticket-header'>
-                <h2>Flight Ticket</h2>
-                <img src='https://via.placeholder.com/100x50?text=Logo' alt='Airline Logo'>
-            </div>
-            <div class='info-section'>
-                <table>
-                    <tr>
-                        <th>Flight</th>
-                        <td>{$AirlineCode}-{$FlightNO}</td>  
-                        <th>Class</th>
-                        <td>{$flight_type}</td>
-                    </tr>
-                    <tr>
-                        <th>Aircraft Type</th>
-                        <td>Airbus A{$Aircraft}</td>
-                    </tr>
-                </table>
-        
-                <table>
-                    <tr>
-                        <th>Depart</th>
-                        <td>{$Origin} ({$Origin_Code}) - {$DepartureTime}, {$DepartureDate}, Terminal {$Origin_terminal}</td>
-                        <th>Arrive</th>
-                        <td>{$Destination} ({$Destination_Code}) - {$ArrivalTime}, {$ArrivalDate}, Terminal {$Destination_terminal}</td>
-                    </tr>
-                    <tr>
-                        <th>Duration/Stops</th>
-                        <td>{$Duration}</td>
-                        <th>Status</th>
-                        <td><span class='badge'>Confirmed</span></td>
-                    </tr>
-                </table>
-            </div>
-        
-            <h3>Passenger Details</h3>
-            <div class='info-section'>
-                <table>
-                    <tr>
-                        <th>Ticket No.</th>
-                        <td>{$Ticket}</td>
-                        <th>Name</th>
-                        <td>{$first} {$last}</td>
-                    </tr>
-                    <tr>
-                        <th>Cabin</th>
-                        <td>{$Cabin}</td>
-                        <th>Check-In</th>
-                        <td>{$CheckIn}</td>
-                    </tr>
-                    <tr>
-                        <th>Gender</th>
-                        <td>{$gen}</td>
-                        <th>Status</th>
-                        <td>Confirmed</td>
-                    </tr>
-                    <tr>
-                        <th>Phone</th>
-                        <td>{$Contact}</td>
-                        <th>Email</th>
-                        <td>{$Email}</td>
-                    </tr>
-                </table>
-            </div>
-        
-            <h3>Payment Details</h3>
-            <div class='info-section'>
-                <table>
-                    <tr>
-                        <th>Base Fare</th>
-                        <td>₹ {$BaseFare}</td>
-                    </tr>
-                    <tr>
-                        <th>Taxes and Fees</th>
-                        <td>₹ {$Tax}</td>
-                    </tr>
-                    <tr>
-                        <th>Gross Fare</th>
-                        <td>₹ {$TotalAmount}</td>
-                    </tr>
-                </table>
-            </div>
-        
-            <h3>Fare Rule - Onward Journey</h3>
-            <div class='fare-rules'>
-                <h4>Cancellation Charges Per Pax</h4>
-                <table>
-                    <tr>
-                        <th>Timeline</th>
-                        <th>Penalty (Airline Fee)</th>
-                    </tr>";
-        
-        foreach ($CancelArray as $cancel) {
-            $htmlCode .= "<tr>
-                              <td>{$cancel['DurationFrom']} Hours - {$cancel['DurationTo']} Hours</td>
-                              <td>" . ($cancel['value'] === 'Non Refundable' ? $cancel['value'] : '₹ ' . $cancel['value']) . "</td>
-                          </tr>";
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Flight Ticket</title>
+    <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        
-        $htmlCode .= "</table>
-                <h4>Reschedule Charges Per Pax</h4>
-                <table>
-                    <tr>
-                        <th>Timeline</th>
-                        <th>Penalty (Airline Fee)</th>
-                    </tr>";
-        
-        foreach ($RescheduleChargesArray as $charges) {
-            $htmlCode .= "<tr>
-                              <td>{$charges['DurationFrom']} Hours - {$charges['DurationTo']} Hours</td>
-                              <td>" . ($charges['value'] === 'Non Refundable' ? $charges['value'] : '₹ ' . $charges['value'] . ' + Difference in Fare') . "</td>
-                          </tr>";
+        .container {
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
-        
-        $htmlCode .= "</table>
-        
-                <p>
-                    The above timeframe mentioned is the time till which cancellation/reschedule is permitted from the Airline side, and can be canceled by you when performing an online cancellation/reschedule. For any offline cancellation (to be done from our support office), we will need at least 6 hrs of buffer time to process the cancellation/reschedule offline.
-                </p>
-                <p>
-                    The above fare rules are just a guideline for your convenience and are subject to changes by the Airline from time to time. The agent does not guarantee the accuracy of cancel/rescheduling fees.
-                </p>
-            </div>
-        </div>
-        </body>
-        </html>";
-        
-        // // Load HTML into PDF
-    // $pdf = Pdf::loadHTML($htmlCode);
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f7f7f7;
+            color: #555;
+            font-weight: bold;
+        }
+        td {
+            color: #333;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .fare-rules h4 {
+            margin-top: 0;
+            color: #555;
+        }
+        .fare-rules p {
+            font-size: 0.9em;
+            color: #777;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .ticket-header img {
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class='container'>
+    <div class='ticket-header'>
+        <h2>Flight Ticket</h2>
+        <img src='https://via.placeholder.com/100x50?text=Logo' alt='Airline Logo'>
+    </div>";
 
-    // // Save the PDF temporarily to the storage
-    // $filePath = 'tickets/ticket-' . uniqid() . '.pdf';
-    // $pdf->save(storage_path('app/public/' . $filePath));
+    foreach ($Segment as $Seg) {
+        $htmlCode .= "<div class='info-section'>
+            <table>
+                <tr>
+                    <th>Flight</th>
+                    <td>{$Seg['Airline_Code']}-{$Seg['Flight_Number']}</td>
+                    <th>Class</th>
+                    <td>{$flight_type}</td>
+                </tr>
+                <tr>
+                    <th>Aircraft Type</th>
+                    <td>Airbus A{$Seg['Aircraft_Type']}</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th>Depart</th>
+                    <td>{$Seg['Origin_City']} ({$Seg['Origin']}) - {$Seg['Departure_DateTime']}, Terminal {$Seg['Origin_Terminal']}</td>
+                    <th>Arrive</th>
+                    <td>{$Seg['Destination_City']} ({$Seg['Destination']}) - {$Seg['Arrival_DateTime']}, Terminal {$Seg['Destination_Terminal']}</td>
+                </tr>
+                <tr>
+                    <th>Duration/Stops</th>
+                    <td>{$Seg['Duration']}</td>
+                    <th>Status</th>
+                    <td><span class='badge'>Confirmed</span></td>
+                </tr>
+                <tr>
+                    <th>Cabin</th>
+                    <td>{$Cabin}</td>
+                    <th>Check-In</th>
+                    <td>{$CheckIn}</td>
+                </tr>
+            </table>
+        </div>";
+    }
 
-    // // Return the saved file path to be used in the response
-    // return $filePath;
+    $htmlCode .= "<h3>Passenger Details</h3>
+    <div class='info-section'>
+        <table>
+            <tr>
+                <th>Phone</th>
+                <td>{$Contact}</td>
+                <th>Email</th>
+                <td>{$Email}</td>
+            </tr>";
 
+foreach ($paxDetails as $pax) {
+    $gen = $pax['Gender'] === 0 ? "Male" : "Female";
+    $htmlCode .= "<tr>
+                <th>Ticket No.</th>
+                <td>{$pax['TicketDetails'][0]['Ticket_Number']}</td>
+                <th>Name</th>
+                <td>{$pax['First_Name']} {$pax['Last_Name']}</td>
+            </tr>
+            <tr>
+                <th>Gender</th>
+                <td>{$gen}</td>
+            </tr>";
+}
+
+$htmlCode .= "</table>
+    </div>
+    <h3>Payment Details</h3>
+    <div class='info-section'>
+        <table>
+            <tr>
+                <th>Base Fare</th>
+                <td>INR {$BaseFare}</td>
+            </tr>
+            <tr>
+                <th>Taxes and Fees</th>
+                <td>INR {$Tax}</td>
+            </tr>
+            <tr>
+                <th>Gross Fare</th>
+                <td>INR {$TotalAmount}</td>
+            </tr>
+        </table>
+    </div>
+    <h3>Fare Rule - Onward Journey</h3>
+    <div class='fare-rules'>
+        <h4>Cancellation Charges Per Pax</h4>
+        <table>
+            <tr>
+                <th>Timeline</th>
+                <th>Penalty (Airline Fee)</th>
+            </tr>";
+
+foreach ($CancelArray as $cancel) {
+    $htmlCode .= "<tr>
+                    <td>{$cancel['DurationFrom']} - {$cancel['DurationTo']}</td>
+                    <td>" . ($cancel['value'] === 'Non Refundable' ? $cancel['value'] : 'INR ' . $cancel['value']) . "</td>
+                  </tr>";
+}
+
+$htmlCode .= "</table>
+    <h4>Reschedule Charges Per Pax</h4>
+    <table>
+        <tr>
+            <th>Timeline</th>
+            <th>Penalty (Airline Fee)</th>
+        </tr>";
+
+foreach ($RescheduleChargesArray as $charges) {
+    $htmlCode .= "<tr>
+                    <td>{$charges['DurationFrom']} - {$charges['DurationTo']}</td>
+                    <td>" . ($charges['value'] === 'Non Refundable' ? $charges['value'] : 'INR ' . $charges['value'] . ' + Difference in Fare') . "</td>
+                  </tr>";
+}
+
+$htmlCode .= "</table>
+    <p>
+        The above timeframe mentioned is the time till which cancellation/reschedule is permitted from the Airline side, and can be canceled by you when performing an online cancellation/reschedule. For any offline cancellation (to be done from our support office), we will need at least 6 hrs of buffer time to process the cancellation/reschedule offline.
+    </p>
+    <p>
+        The above fare rules are just a guideline for your convenience and are subject to changes by the Airline from time to time. The agent does not guarantee the accuracy of cancel/rescheduling fees.
+    </p>
+</div>
+</div>
+</body>
+</html>";
+
+
+        
     $directoryPath = storage_path('app/public/tickets');
     $fileName = 'ticket-' . uniqid() . '.pdf';
     $filePath = $directoryPath . '/' . $fileName;
@@ -1634,95 +1349,803 @@ public function Ticketing(Request $request)
 
     // Return the saved file path
     return 'tickets/' . $fileName; 
+
+
 }
-
-
 
 public function RePrintTicket(Request $request)
 {
-    $validator = Validator::make($request->all(), [
-        'headersToken' => 'required|string',
-        'headersKey' => 'required|string',
-        "bookingRef" => "nullable|string", 
-        "pnr" => "nullable|string"
-    ]);     
+    // $validator = Validator::make($request->all(), [
+    //     'headersToken' => 'required|string',
+    //     'headersKey' => 'required|string',
+    //     "bookingRef" => "nullable|string", 
+    //     "pnr" => "nullable|string"
+    // ]);     
     
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => $validator->errors()->first()
-        ], 422);
-    }
+    // if ($validator->fails()) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => $validator->errors()->first()
+    //     ], 422);
+    // }
     
-    $data = $validator->validated();
+    // $data = $validator->validated();
 
-    if(!$data['bookingRef'] && !$data['pnr'])
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Provide Either Bookin Ref or PNR'
-        ], 400);
-    }
+    // if(!$data['bookingRef'] && !$data['pnr'])
+    // {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Provide Either Bookin Ref or PNR'
+    //     ], 400);
+    // }
     
-    $payload = [
-        "deviceInfo" => [
-            "ip" => "122.161.52.233",
-            "imeiNumber" => "12384659878976879887"
-        ],
-        "bookingRef" => $data['bookingRef'],
-        "pnr" => $data["pnr"]
-    ];
+    // $payload = [
+    //     "deviceInfo" => [
+    //         "ip" => "122.161.52.233",
+    //         "imeiNumber" => "12384659878976879887"
+    //     ],
+    //     "bookingRef" => $data['bookingRef'],
+    //     "pnr" => $data["pnr"]
+    // ];
     
-    $headers = [
-        'D-SECRET-TOKEN' => $data['headersToken'],
-        'D-SECRET-KEY' => $data['headersKey'],
-        'CROP-CODE' => 'DOTMIK160614',
-        'Content-Type' => 'application/json',
-    ];
+    // $headers = [
+    //     'D-SECRET-TOKEN' => $data['headersToken'],
+    //     'D-SECRET-KEY' => $data['headersKey'],
+    //     'CROP-CODE' => 'DOTMIK160614',
+    //     'Content-Type' => 'application/json',
+    // ];
 
-    // API URL
-    $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
+    // // API URL
+    // $url = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
 
     try {
          // Make the POST request using Laravel HTTP Client
-            $response = Http::withHeaders($headers)->post($url, $payload);
-            $result=$response->json();
+            // $response = Http::withHeaders($headers)->post($url, $payload);
+            // $result=$response->json();
+            $res='{
+        "status": true,
+        "status_code": "TXN",
+        "request_id": "NjcwZTY3OGFlNzZmOTIwMjQtMTAtMTUgMTg6MzA6NTg=",
+        "payloads": {
+            "errors": [],
+            "data": {
+                "rePrintTicket": {
+                    "adultCount": 1,
+                    "pnrDetails": [
+                        {
+                            "Airline_Code": "6E",
+                            "Airline_Name": null,
+                            "Airline_PNR": "GRPMFY",
+                            "BlockedExpiryDate": "",
+                            "BookingChangeRequests": [],
+                            "CRS_Code": "",
+                            "CRS_PNR": "",
+                            "FailureRemark": null,
+                            "Flights": [
+                                {
+                                    "Airline_Code": "6E",
+                                    "Block_Ticket_Allowed": false,
+                                    "Cached": false,
+                                    "Destination": "DEHRADUN (DED)",
+                                    "Fares": [
+                                        {
+                                            "FareDetails": [
+                                                {
+                                                    "AirportTax_Amount": 660,
+                                                    "AirportTaxes": [
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "RCF",
+                                                            "Tax_Desc": "RCF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 91,
+                                                            "Tax_Code": "PSF",
+                                                            "Tax_Desc": "PSF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 236,
+                                                            "Tax_Code": "ASF",
+                                                            "Tax_Desc": "ASF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 61,
+                                                            "Tax_Code": "UDF",
+                                                            "Tax_Desc": "UDF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 172,
+                                                            "Tax_Code": "07GST",
+                                                            "Tax_Desc": "GST"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "PHF",
+                                                            "Tax_Desc": "PHF"
+                                                        }
+                                                    ],
+                                                    "Basic_Amount": 3339,
+                                                    "CancellationCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "3439.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Currency_Code": "INR",
+                                                    "FareClasses": [
+                                                        {
+                                                            "Class_Code": "R",
+                                                            "Class_Desc": "Regular",
+                                                            "FareBasis": "R0IP",
+                                                            "Privileges": null,
+                                                            "Segment_Id": 0
+                                                        }
+                                                    ],
+                                                    "Free_Baggage": {
+                                                        "Check_In_Baggage": "15 Kg (1 Piece Only)",
+                                                        "Hand_Baggage": "7 Kg"
+                                                    },
+                                                    "GST": 0,
+                                                    "Gross_Commission": 0,
+                                                    "Net_Commission": 0,
+                                                    "PAX_Type": 0,
+                                                    "Promo_Discount": 0,
+                                                    "RescheduleCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2250.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Service_Fee_Amount": 0,
+                                                    "TDS": 1,
+                                                    "Total_Amount": 4066,
+                                                    "Trade_Markup_Amount": 0,
+                                                    "YQ_Amount": 0
+                                                }
+                                            ],
+                                            "FareType": 0,
+                                            "Fare_Id": null,
+                                            "Fare_Key": null,
+                                            "Food_onboard": "N/A",
+                                            "GSTMandatory": false,
+                                            "LastFewSeats": null,
+                                            "ProductClass": "R",
+                                            "PromptMessage": null,
+                                            "Refundable": true,
+                                            "Seats_Available": null,
+                                            "Warning": ""
+                                        }
+                                    ],
+                                    "Flight_Id": "5564976327999057767",
+                                    "Flight_Key": "KEYqd6fRMTI1QyVuxRA8TngNOKkRz07BAJpxBz8zolAQst/jJl8ApYjd5nyG7WrQqQqQsizfSvx39fygvEliLdiD5U2jplZjV88M4vt5fd84oFHyjeYsExXJ239TJo+ucbIA1VpefHUkWL+W55zBueAWGUNnLR8EAMGOyYepSO1+46EpGbYBKP3bl6xijzYtGRYaaDbVV/mxJsC1tkkqVJbvnFGWODq1KCyY1v8jgrvSJzD4FHfwR/URShn2iRo7NH6q9Jy/nvpbZtPTC6z4abHaZVInN1Ku1vk2z3oCB6SSpxiixEH1UD2MlOx1cZIU6SLHu3+WmKVaxq5yXW5B2VyxG+Oohuslku6g8+N/yxe375kHMKf86EbK55/hP7+I3Nc8no+57EMlhMByzIphuzeyKBUkrNGeV1OxtczDIxmzlHyFrfJnkOCsI7x6p/3FyjqxL1R/bYHYz9k0Jvo7DQsCtgrmPCM5Hoj9lXi3Wa4xFqvGmqkEo/YT9nmW28oYKBLQ7hE/m0iZjLr7zW71pW1k5xO1j3bfBh6leMZKdDFHc9KMP5xwEfHvQZ5gIEC7oS2qlBjpPsLzHBMmGsbFFlsmr2IOYIECpigc07jY1msX7rsfh1mCZQWHgvYeGuoIBO724batT2FiHIpZsuAroMWi+apq0HNcv7I4zwGrzVw4AgmYz5uSkNkfz6EuiJTtEzHhOUL/m6DZ66ZnPoRSunTx204+ZVuMo6yQaA2owVxclrk2A8H3V2oyOeENIJ3hWLSKq1dh6EhWdAPY7MbQQbC6SEDKHSoJGpD7tIQ3ZjUZLi3rRRQR6TyxnA/iWsWkauGmOZykkSP5iLqyIbxEzNIyB7NvgPb3YWaaKcLGcu3Jhx7M6qKhWRFhn9MW6DI/vmruI/zkCuEU5A7r8TLUCkvwU/FLeoL0GDbQcov3OVtCV8=",
+                                    "Flight_Numbers": null,
+                                    "GST_Entry_Allowed": false,
+                                    "HasMoreClass": false,
+                                    "InventoryType": 5,
+                                    "IsLCC": true,
+                                    "Origin": "DELHI (DEL) ",
+                                    "Repriced": false,
+                                    "Segments": [
+                                        {
+                                            "Aircraft_Type": "320",
+                                            "Airline_Code": "6E",
+                                            "Airline_Name": "Indigo",
+                                            "Arrival_DateTime": "01/05/2025 09:00",
+                                            "Departure_DateTime": "01/05/2025 08:10",
+                                            "Destination": "DED",
+                                            "Destination_City": "DEHRADUN",
+                                            "Destination_Terminal": "",
+                                            "Duration": "00:50",
+                                            "Flight_Number": "2018",
+                                            "Leg_Index": 0,
+                                            "OperatedBy": null,
+                                            "Origin": "DEL",
+                                            "Origin_City": "DELHI",
+                                            "Origin_Terminal": "2",
+                                            "Return_Flight": false,
+                                            "Segment_Id": 0,
+                                            "Stop_Over": null
+                                        },
+                                        {
+                                            "Aircraft_Type": "ATR",
+                                            "Airline_Code": "6E",
+                                            "Airline_Name": "Indigo",
+                                            "Arrival_DateTime": "01/13/2025 20:50",
+                                            "Departure_DateTime": "01/13/2025 19:30",
+                                            "Destination": "JAI",
+                                            "Destination_City": "JAIPUR",
+                                            "Destination_Terminal": "2",
+                                            "Duration": "01:20",
+                                            "Flight_Number": "7148",
+                                            "Leg_Index": 1,
+                                            "OperatedBy": null,
+                                            "Origin": "DED",
+                                            "Origin_City": "DEHRADUN",
+                                            "Origin_Terminal": "",
+                                            "Return_Flight": true,
+                                            "Segment_Id": 1,
+                                            "Stop_Over": null
+                                        },
+                                        {
+                                            "Aircraft_Type": "321",
+                                            "Airline_Code": "6E",
+                                            "Airline_Name": "Indigo",
+                                            "Arrival_DateTime": "01/13/2025 23:35",
+                                            "Departure_DateTime": "01/13/2025 22:35",
+                                            "Destination": "DEL",
+                                            "Destination_City": "DELHI",
+                                            "Destination_Terminal": "3",
+                                            "Duration": "01:00",
+                                            "Flight_Number": "5136",
+                                            "Leg_Index": 1,
+                                            "OperatedBy": null,
+                                            "Origin": "JAI",
+                                            "Origin_City": "JAIPUR",
+                                            "Origin_Terminal": "2",
+                                            "Return_Flight": true,
+                                            "Segment_Id": 2,
+                                            "Stop_Over": null
+                                        }
+                                    ],
+                                    "TravelDate": "01/05/2025"
+                                }
+                            ],
+                            "Gross_Amount": 4066,
+                            "PAXTicketDetails": [
+                                {
+                                    "Age": "0",
+                                    "DOB": "08-08-1990",
+                                    "Fares": [
+                                        {
+                                            "FareDetails": [
+                                                {
+                                                    "AirportTax_Amount": 660,
+                                                    "AirportTaxes": [
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "RCF",
+                                                            "Tax_Desc": "RCF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 91,
+                                                            "Tax_Code": "PSF",
+                                                            "Tax_Desc": "PSF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 236,
+                                                            "Tax_Code": "ASF",
+                                                            "Tax_Desc": "ASF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 61,
+                                                            "Tax_Code": "UDF",
+                                                            "Tax_Desc": "UDF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 172,
+                                                            "Tax_Code": "07GST",
+                                                            "Tax_Desc": "GST"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "PHF",
+                                                            "Tax_Desc": "PHF"
+                                                        }
+                                                    ],
+                                                    "Basic_Amount": 3339,
+                                                    "CancellationCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "3439.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Currency_Code": "INR",
+                                                    "FareClasses": [
+                                                        {
+                                                            "Class_Code": "R",
+                                                            "Class_Desc": "Regular",
+                                                            "FareBasis": "R0IP",
+                                                            "Privileges": null,
+                                                            "Segment_Id": 0
+                                                        }
+                                                    ],
+                                                    "Free_Baggage": {
+                                                        "Check_In_Baggage": "15 Kg (1 Piece Only)",
+                                                        "Hand_Baggage": "7 Kg"
+                                                    },
+                                                    "GST": 0,
+                                                    "Gross_Commission": 0,
+                                                    "Net_Commission": 0,
+                                                    "PAX_Type": 0,
+                                                    "Promo_Discount": 0,
+                                                    "RescheduleCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2250.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Service_Fee_Amount": 0,
+                                                    "TDS": 1,
+                                                    "Total_Amount": 4066,
+                                                    "Trade_Markup_Amount": 0,
+                                                    "YQ_Amount": 0
+                                                }
+                                            ],
+                                            "FareType": 0,
+                                            "Fare_Id": null,
+                                            "Fare_Key": null,
+                                            "Food_onboard": "N/A",
+                                            "GSTMandatory": false,
+                                            "LastFewSeats": null,
+                                            "ProductClass": "R",
+                                            "PromptMessage": null,
+                                            "Refundable": true,
+                                            "Seats_Available": null,
+                                            "Warning": ""
+                                        }
+                                    ],
+                                    "First_Name": "MMR",
+                                    "FrequentFlyerDetails": null,
+                                    "Gender": 0,
+                                    "Last_Name": "Solution",
+                                    "Nationality": "Indian",
+                                    "Passport_Expiry": "09-09-2030",
+                                    "Passport_Issuing_Country": "India",
+                                    "Passport_Number": "1234567891",
+                                    "Pax_Id": 1,
+                                    "Pax_type": 0,
+                                    "SSRDetails": [],
+                                    "TicketDetails": [
+                                        {
+                                            "Flight_Id": "5564976327999057767",
+                                            "SegemtWiseChanges": [
+                                                {
+                                                    "CancelRequestId": "0",
+                                                    "CancelStatus": "LIVE",
+                                                    "Destination": "DED",
+                                                    "Origin": "DEL",
+                                                    "RescheduleRequestId": "0",
+                                                    "RescheduleStatus": "LIVE",
+                                                    "Return_Flight": false,
+                                                    "Segement_Id": "0"
+                                                }
+                                            ],
+                                            "SupPax_ID": null,
+                                            "Ticket_Number": "GRPMFY0"
+                                        }
+                                    ],
+                                    "TicketStatus": "Live",
+                                    "Title": "Mr"
+                                },
+                                 {
+                                    "Age": "0",
+                                    "DOB": "08-08-1990",
+                                    "Fares": [
+                                        {
+                                            "FareDetails": [
+                                                {
+                                                    "AirportTax_Amount": 660,
+                                                    "AirportTaxes": [
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "RCF",
+                                                            "Tax_Desc": "RCF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 91,
+                                                            "Tax_Code": "PSF",
+                                                            "Tax_Desc": "PSF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 236,
+                                                            "Tax_Code": "ASF",
+                                                            "Tax_Desc": "ASF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 61,
+                                                            "Tax_Code": "UDF",
+                                                            "Tax_Desc": "UDF"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 172,
+                                                            "Tax_Code": "07GST",
+                                                            "Tax_Desc": "GST"
+                                                        },
+                                                        {
+                                                            "Tax_Amount": 50,
+                                                            "Tax_Code": "PHF",
+                                                            "Tax_Desc": "PHF"
+                                                        }
+                                                    ],
+                                                    "Basic_Amount": 3339,
+                                                    "CancellationCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "3439.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Currency_Code": "INR",
+                                                    "FareClasses": [
+                                                        {
+                                                            "Class_Code": "R",
+                                                            "Class_Desc": "Regular",
+                                                            "FareBasis": "R0IP",
+                                                            "Privileges": null,
+                                                            "Segment_Id": 0
+                                                        }
+                                                    ],
+                                                    "Free_Baggage": {
+                                                        "Check_In_Baggage": "15 Kg (1 Piece Only)",
+                                                        "Hand_Baggage": "7 Kg"
+                                                    },
+                                                    "GST": 0,
+                                                    "Gross_Commission": 0,
+                                                    "Net_Commission": 0,
+                                                    "PAX_Type": 0,
+                                                    "Promo_Discount": 0,
+                                                    "RescheduleCharges": [
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 0,
+                                                            "DurationTo": 3,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "100",
+                                                            "ValueType": 1
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 3,
+                                                            "DurationTo": 72,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 0,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2999.00",
+                                                            "ValueType": 0
+                                                        },
+                                                        {
+                                                            "Applicablility": 1,
+                                                            "DurationFrom": 72,
+                                                            "DurationTo": 365,
+                                                            "DurationTypeFrom": 0,
+                                                            "DurationTypeTo": 1,
+                                                            "OfflineServiceFee": 0,
+                                                            "OnlineServiceFee": 0,
+                                                            "PassengerType": 0,
+                                                            "Remarks": "",
+                                                            "Return_Flight": false,
+                                                            "Value": "2250.00",
+                                                            "ValueType": 0
+                                                        }
+                                                    ],
+                                                    "Service_Fee_Amount": 0,
+                                                    "TDS": 1,
+                                                    "Total_Amount": 4066,
+                                                    "Trade_Markup_Amount": 0,
+                                                    "YQ_Amount": 0
+                                                }
+                                            ],
+                                            "FareType": 0,
+                                            "Fare_Id": null,
+                                            "Fare_Key": null,
+                                            "Food_onboard": "N/A",
+                                            "GSTMandatory": false,
+                                            "LastFewSeats": null,
+                                            "ProductClass": "R",
+                                            "PromptMessage": null,
+                                            "Refundable": true,
+                                            "Seats_Available": null,
+                                            "Warning": ""
+                                        }
+                                    ],
+                                    "First_Name": "Jazz",
+                                    "FrequentFlyerDetails": null,
+                                    "Gender": 1,
+                                    "Last_Name": "Singh",
+                                    "Nationality": "Indian",
+                                    "Passport_Expiry": "09-09-2030",
+                                    "Passport_Issuing_Country": "India",
+                                    "Passport_Number": "1234567891",
+                                    "Pax_Id": 1,
+                                    "Pax_type": 0,
+                                    "SSRDetails": [],
+                                    "TicketDetails": [
+                                        {
+                                            "Flight_Id": "5564976327999057767",
+                                            "SegemtWiseChanges": [
+                                                {
+                                                    "CancelRequestId": "0",
+                                                    "CancelStatus": "LIVE",
+                                                    "Destination": "DED",
+                                                    "Origin": "DEL",
+                                                    "RescheduleRequestId": "0",
+                                                    "RescheduleStatus": "LIVE",
+                                                    "Return_Flight": false,
+                                                    "Segement_Id": "0"
+                                                }
+                                            ],
+                                            "SupPax_ID": null,
+                                            "Ticket_Number": "GRPMFY1"
+                                        }
+                                    ],
+                                    "TicketStatus": "Live",
+                                    "Title": "Mr"
+                                }
+                                
+                            ],
+                            "Post_Markup": 0,
+                            "Record_Locator": "",
+                            "RetailerPostMarkup": 0,
+                            "Supplier_RefNo": "",
+                            "Ticket_Status_Desc": "Confirmed",
+                            "Ticket_Status_Id": "4",
+                            "TicketingDate": "10/10/2024 15:39:53"
+                        }
+                    ],
+                    "Booking_DateTime": "10/10/2024 15:38:35",
+                    "Booking_RefNo": "TBB7V89P",
+                    "Booking_Type": 0,
+                    "Child_Count": 0,
+                    "Class_of_Travel": 0,
+                    "GST": false,
+                    "GSTIN": "",
+                    "Infant_Count": 0,
+                    "Invoice_Number": "DN/OCT-24/0807781",
+                    "PAX_EmailId": "mmrsolutions@gmail.com",
+                    "PAX_Mobile": "9910179393",
+                    "Remark": "MAA-TCR  18-Nov-2024  Test API With GST",
+                    "Travel_Type": 0
+                }
+            },
+            "transaction": []
+        },
+        "message": "Ticket details fetched successfully"
+    }';
+           $result=json_decode($res,true);
 
-        //    $result=json_decode($res,true);
-
-            $statusCode = $response->status();
+            // $statusCode = 200;
+            // $response->status();
             
-            if($result['status'] === false)
-            {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message'],
-                    'error' => $result
-                ],$statusCode);
-            }
-            else
-            {
-                if($response->successful())
-                {    
-                    $PNR= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+            // if($result['status'] === false)
+            // {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => $result['message'],
+            //         'error' => $result
+            //     ],$statusCode);
+            // }
+            // else
+            // {
+            //     if($response->successful())
+            //     {    
+
                     $Aircraft= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Aircraft_Type'];
-                    $Ticket= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['Ticket_Number'];
-                    $Origin_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
-                    $Destination_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
-                    $first= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['First_Name'];
-                    $last= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Last_Name'];
-                    $Origin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
                     $Origin_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
                     $ArrivalDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Arrival_DateTime']);
                     $DepartureDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
-                    $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
                     $Destination_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
                     $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
+                   
+                    $FlightNO = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Flight_Number']; 
+                    $AirlineCode = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Airline_Code'];
+
+                    $Segment=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'];
+
+                    $PNR= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+                    $Origin_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
+                    $Destination_Code= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
+
+                    $paxDetails=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
+
+                    $Origin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
+
+
+                    $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
+
                     $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
                     $Cabin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
                     $CheckIn=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
-                    $Gender=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['Gender'];
+
                     $Contact=$result['payloads']['data']['rePrintTicket']['PAX_Mobile'];
                     $Email=$result['payloads']['data']['rePrintTicket']['PAX_EmailId'];
                     $BaseFare=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];
@@ -1733,9 +2156,6 @@ public function RePrintTicket(Request $request)
 
                     $RescheduleCharges=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
 
-                    $FlightNO = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Flight_Number'];
-
-                    $AirlineCode = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Airline_Code'];
 
                     $Tax= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
                     
@@ -1768,14 +2188,14 @@ public function RePrintTicket(Request $request)
                         $RescheduleChargesArray[] = $value;
                     }
                     
-                    if($Gender === 0)
-                    {
-                        $gen = 'Male';
-                    }
-                    elseif ($Gender === 1)
-                    {
-                        $gen = 'Female';
-                    }
+                    // if($Gender === 0)
+                    // {
+                    //     $gen = 'Male';
+                    // }
+                    // elseif ($Gender === 1)
+                    // {
+                    //     $gen = 'Female';
+                    // }
 
                 if($type === 0)
                 {
@@ -1809,21 +2229,21 @@ public function RePrintTicket(Request $request)
                 $Duration = $hours . 'h ' . $minutes . 'm';
         
                 // Generate the PDF
-                $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$first,$last,$PNR,$Ticket, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$gen,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax);
-        
+                $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$PNR, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax, $paxDetails,$Segment);
+                // $first,$last,$Ticket,$gen,
                 return response()->json([
                     'success' => true,
                     'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
                     'data' => $result,
                 ]);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $result['message'],
-                        'error' => $result
-                    ],$statusCode);
-                }
-            }
+            //     } else {
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => $result['message'],
+            //             'error' => $result
+            //         ],$statusCode);
+            //     }
+            // }
         // Assume successful response from the API
     } catch (\Exception $e) {
         return response()->json([
@@ -3339,3 +3759,375 @@ public function ReleasePNR(Request $request)
              
                 // }
                 // else 
+
+
+
+
+
+
+
+
+
+                // public function Filter(Request $request)
+// {
+//     $validator = Validator::make($request->all(),[
+//         'DATA' => "required|array",
+//         'Refundable' => "nullable|boolean",
+//         'Arrival' => 'nullable|string',
+//         'Stop' => 'nullable|string',
+//         'Departure' => 'nullable|string',
+//         'Airline' => 'nullable|string'
+//     ]);   
+
+//     if ($validator->fails()) {
+//         $errors = $validator->errors()->all(); // Get all error messages
+//         $formattedErrors = [];
+
+//         foreach ($errors as $error) {
+//             $formattedErrors[] = $error;
+//         }
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => $formattedErrors[0]
+//         ], 422);
+//     }
+    
+//     $data=$validator->validated();
+
+//     $FilteredFlights=$data['DATA'];
+
+//     if(isset($data['Stop']))
+//     {
+//         $Filtered=[];
+
+//         if($data['Stop'] === "0")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+  
+//               $count = count($filteration['Segments']); // 
+//               if($count === 1)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }
+//         else if($data['Stop'] === "1")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+//               $count = count($filteration['Segments']); // 
+//               if($count === 2)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }
+//         else if($data['Stop'] === "2")
+//         {
+//           foreach ($FilteredFlights as $filteration) {                
+//               $count = count($filteration['Segments']); // 
+//               if($count > 2)
+//               {
+//                   $Filtered[]=$filteration; 
+//               }
+//           }
+//           $FilteredFlights=$Filtered;
+//         }  
+//     }
+
+
+//     if(isset($data['Arrival']) && isset($data['Departure']))
+//     {
+//         $Filtered=[];
+
+//         if($data['Arrival'] === '12AM6AM')
+//         {  
+//             $arrivalDateTimeLow = "00:00";
+//             $arrivalDateTimeHigh = "06:00";
+//         }
+//         else if($data['Arrival'] === '6AM12PM')
+//         {  
+//             $arrivalDateTimeLow = "06:00";
+//             $arrivalDateTimeHigh = "12:00";
+//         }
+//         else if($data['Arrival'] === '12PM6PM')
+//         {   
+//             $arrivalDateTimeLow = "12:00";
+//             $arrivalDateTimeHigh = "18:00";
+//         }
+//         else if($data['Arrival'] === '6PM12AM')
+//         {
+//             $arrivalDateTimeLow = "18:00";
+//             $arrivalDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         if($data['Departure'] === '12AM6AM')
+//         {
+//             $departureDateTimeLow = "00:00";
+//             $departureDateTimeHigh = "06:00";
+//         }
+//         else if($data['Departure'] === '6AM12PM')
+//         {
+            
+//             $departureDateTimeLow = "06:00";
+//             $departureDateTimeHigh = "12:00";
+//         }
+//         else if($data['Departure'] === '12PM6PM')
+//         {   
+//             $departureDateTimeLow = "12:00";
+//             $departureDateTimeHigh = "18:00";
+//         }
+//         else if($data['Departure'] === '6PM12AM')
+//         {
+//             $departureDateTimeLow = "18:00";
+//             $departureDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+        
+//         foreach ($FilteredFlights as $filteration) {   
+//             $lastSegmentDeparture = reset($filteration['Segments']);
+//             $lastSegmentArrival = end($filteration['Segments']); // 
+
+//             $Departuredatetime = $lastSegmentDeparture['Departure_DateTime'];
+//             $dateObjD = new DateTime($Departuredatetime);
+//             $Dtime = $dateObjD->format('H:i');
+
+//             $Arrivaldatetime = $lastSegmentArrival['Arrival_DateTime'];
+//             $dateObjA = new DateTime($Arrivaldatetime);
+//             $Atime = $dateObjA->format('H:i');
+//             // return response()->json($time);
+//             if( $Dtime > $departureDateTimeLow && $Dtime < $departureDateTimeHigh && $Atime >  $arrivalDateTimeLow && $Atime < $arrivalDateTimeHigh  )
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+//         $FilteredFlights=$Filtered;
+
+//     }
+//     else if (isset($data['Arrival'])) 
+//     {     
+//         $Filtered=[];
+
+//         if($data['Arrival'] === '12AM6AM')
+//         {
+//             $arrivalDateTimeLow = "00:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "06:00";
+//         }
+//         else if($data['Arrival'] === '6AM12PM')
+//         {
+            
+//             $arrivalDateTimeLow = "06:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "12:00";
+//         }
+//         else if($data['Arrival'] === '12PM6PM')
+//         {   
+//             $arrivalDateTimeLow = "12:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "18:00";
+//         }
+//         else if($data['Arrival'] === '6PM12AM')
+//         {
+//             $arrivalDateTimeLow = "18:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $arrivalDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         foreach ($FilteredFlights as $filteration) {                
+//             $lastSegment = end($filteration['Segments']); // 
+//             $datetime = $lastSegment['Arrival_DateTime'];
+//             $dateObj = new DateTime($datetime);
+//             $time = $dateObj->format('H:i');
+//             // return response()->json($time);
+//             if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+
+//         $FilteredFlights=$Filtered;        
+//         //   return response()->json($filtered);
+
+//     }
+//     else if (isset($data['Departure'])) 
+//     {       
+//         $Filtered=[];
+                
+//         if($data['Departure'] === '12AM6AM')
+//         {
+//             $departureDateTimeLow = "00:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "06:00";
+//         }
+//         else if($data['Departure'] === '6AM12PM')
+//         {
+            
+//             $departureDateTimeLow = "06:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "12:00";
+//         }
+//         else if($data['Departure'] === '12PM6PM')
+//         {   
+//             $departureDateTimeLow = "12:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "18:00";
+//         }
+//         else if($data['Departure'] === '6PM12AM')
+//         {
+//             $departureDateTimeLow = "18:00";
+//             // return response()->json($arrivalDateTimeLow, 400);
+//             $departureDateTimeHigh = "24:00";
+//         }
+//         else{
+//             return response()->json('Invalid Arrival time or condition.', 400);
+//         }
+
+//         foreach ($FilteredFlights as $filteration) {                
+//             $firstSegment = reset($filteration['Segments']); // 
+//             $datetime = $firstSegment['Departure_DateTime'];
+//             $dateObj = new DateTime($datetime);
+//             $time = $dateObj->format('H:i');
+//             // return response()->json($time);
+//             if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
+//             {
+//                 $Filtered[]=$filteration;
+//             }
+//         }
+//         $FilteredFlights=$Filtered;
+//     } 
+    
+
+//     if(isset($data['Refundable']))
+//     {
+//         $Filtered=[];
+//         // return response()->json($filteredFlights['Fare']);
+//         $refundable = $data['Refundable'];
+//         $filtered = array_filter($FilteredFlights, function($flight) use($refundable) {
+//             return $flight['Fares'][0]['Refundable'] === $refundable ;
+//         });
+//         $FilteredFlights=array_values($filtered);
+//     }
+
+//     // Extract distinct airline codes
+//     $airlineCodes = array_map(function($flight) {
+//         return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+//     }, $FilteredFlights);
+
+//     // Remove null values and get distinct airline codes
+//     $distinctAirlineCodes = array_unique($airlineCodes);
+
+//     // Re-index array to remove numeric keys
+//     $distinctAirlineCodes = array_values($distinctAirlineCodes);
+
+//     $count=count($FilteredFlights);
+
+//     return response()->json(
+//         [
+//             'success' => true,
+//             'count' => $count,
+//             'AirlineCode' =>  $distinctAirlineCodes,
+//             'Flights' => $FilteredFlights
+//         ],
+//         200
+//     );
+// }
+
+ // public function 
+
+    // public function History(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(),[
+    //         'headersToken' => 'required|string',
+    //         'headersKey' => 'required|string',
+    //         "fromDate" => "required|string", //date in (MM/dd/YYYY)
+    //         "toDate" => "required|string",  //date in (MM/dd/YYYY)
+    //         "month" => "required|string", // Month of booking for July (eg: 07)
+    //         "year" => "required|string", //year of booking(eg:2024)
+    //         "type" => "required|string" //Possible values are 0 - BOOKING_DATE/ 1 - BOOKING_DATE_LIVE/ 2 - BOOKING_DATE_CANCELLED/ 3-BLOCKED
+    //     ]);     
+
+    //     if ($validator->fails()) {
+    //         $errors = $validator->errors()->all(); // Get all error messages
+    //         $formattedErrors = [];
+    
+    //         foreach ($errors as $error) {
+    //             $formattedErrors[] = $error;
+    //         }
+    
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $formattedErrors[0]
+    //         ], 422);
+    //     }
+        
+    //     $data=$validator->validated();
+
+    //     $payload = [
+    //         "deviceInfo" => [
+    //             "ip" => "122.161.52.233",
+    //             "imeiNumber" => "12384659878976879887"
+    //         ],
+    //         "fromDate" => $data['fromDate'], //date in (MM/dd/YYYY)
+    //         "todate" => $data['toDate'],  //date in (MM/dd/YYYY)
+    //         "month" => $data['month'], // Month of booking for July (eg: 07)
+    //         "year" => $data['year'], //year of booking(eg:2024)
+    //         "type" => $data['type'] //
+    //     ];
+        
+    //     // Headers
+    //     $headers = [
+    //         'D-SECRET-TOKEN' => $data['headersToken'],
+    //         'D-SECRET-KEY' => $data['headersKey'],
+    //         'CROP-CODE' => 'DOTMIK160614',
+    //         'Content-Type' => 'application/json',
+    //     ];
+
+    //     // API URL
+    //     $url = 'https://api.dotmik.in/api/flightBooking/v1/history';
+
+    //     try {
+    //         // Make the POST request using Laravel HTTP Client
+    //         $response = Http::withHeaders($headers)->post($url, $payload);
+    //         $result=$response->json();
+    //         $statusCode = $response->status();
+
+    //         if($result['status'] === false)
+    //         {
+    //             return response()->json($result,$statusCode);   
+    //         }
+    //         else{
+    //             if($response->successful())
+    //             {
+    //                 return response()->json([
+    //                     'success' => true,
+    //                     'data' => $result,
+    //                 ], 200);
+    //             } else {
+    //                 return response()->json([
+    //                     'success' => false,
+    //                     'message' => 'Failed to fetch flight data',
+    //                     'error' => $response->json()
+    //                 ], $response->status());
+    //             }
+    //         }
+    //         //code...
+    //     } catch  (\Exception $e) {
+    //         // Handle exception (e.g. network issues)
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }   
+    // }
