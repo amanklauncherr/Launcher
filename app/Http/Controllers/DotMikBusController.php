@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DotMitSourceCities;
+use App\Models\TravelHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -79,8 +81,8 @@ class DotMikBusController extends Controller
     public function AvaliableTrip(Request $request)
     {
         $validator= Validator::make($request->all(),[
-            // 'headersToken' => 'required|string',
-            // 'headersKey' => 'required|string',
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string',
             "sourceId" => 'required|string',
             "destinationId" => 'required|string',
             "date" => "required|string",  //
@@ -116,16 +118,18 @@ class DotMikBusController extends Controller
         ];
 
         $headers = [
-            'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+            'D-SECRET-TOKEN' => 
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
         // API URL
-        $url = 'https://staging.dotmik.in/api/busBooking/v1/availableTrips';
+        $url = 'https://api.dotmik.in/api/busBooking/v1/availableTrips';
         
         try 
         {
@@ -346,8 +350,8 @@ class DotMikBusController extends Controller
     {
         $validator = Validator::make($request->all(),[
             "tripId" => "required|string",
-            // 'headersToken' => 'required|string',
-            // 'headersKey' => 'required|string'
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -372,16 +376,18 @@ class DotMikBusController extends Controller
 
         // Headers
         $headers = [
-            'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+            'D-SECRET-TOKEN' => 
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
         // API URL
-        $url = 'https://staging.dotmik.in/api/busBooking/v1/tripDetails';
+        $url = 'https://api.dotmik.in/api/busBooking/v1/tripDetails';
 
         try {
             // Make the POST request using Laravel HTTP Client
@@ -424,8 +430,8 @@ class DotMikBusController extends Controller
         $validator = Validator::make($request->all(),[
             "boardingPoint" => "required|string",
             "tripId" => "required|string",
-            // 'headersToken' => 'required|string',
-            // 'headersKey' => 'required|string'
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -450,15 +456,17 @@ class DotMikBusController extends Controller
          ];
 
         $headers = [
-            'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+            'D-SECRET-TOKEN' => 
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
-        $url = 'https://staging.dotmik.in/api/busBooking/v1/boardingPointDetails';
+        $url = 'https://api.dotmik.in/api/busBooking/v1/boardingPointDetails';
 
         try {
             $response = Http::withHeaders($headers)->post($url, $payload);
@@ -496,7 +504,6 @@ class DotMikBusController extends Controller
 
    public function PartialBooking(Request $request)
     {
-      
         $validator = Validator::make($request->all(),[
             "boardingPoint" => "required|string",
             "tripId" => "required|string",
@@ -539,7 +546,7 @@ class DotMikBusController extends Controller
         }
         
         $data=$validator->validated();
-
+        
         // return response()->json($data['inventoryItems']);
 
         $payload = 
@@ -554,15 +561,17 @@ class DotMikBusController extends Controller
         ];
 
         $headers = [
-            'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+            'D-SECRET-TOKEN' => 
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
-        $url = 'https://staging.dotmik.in/api/busBooking/v1/blockTicket';
+        $url = 'https://api.dotmik.in/api/busBooking/v1/blockTicket';
 
         try {
             $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
@@ -576,6 +585,11 @@ class DotMikBusController extends Controller
             else{
                 if($response->successful())
                 {
+                    TravelHistory::create([
+                        'userID' => Auth::guard('api')->id(),
+                        'BookingType' => 'BUS',
+                        'BookingRef' => $result['payloads']['data']['referenceKey'],
+                    ]);                       
                     return response()->json([
                         'success' => true,
                         'data' => $result,
@@ -607,8 +621,8 @@ class DotMikBusController extends Controller
         "referenceKey" => "required|string",
         "passengerPhone" => "required|string|max:10|min:10",
         "passengerEmail" => "required|string|email",
-        // 'headersToken' => 'required|string',
-        // 'headersKey' => 'required|string'
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string'
         // "ip" => "required|string",
      ]);
 
@@ -641,16 +655,18 @@ class DotMikBusController extends Controller
     
     // Headers
     $headers = [
-        'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+        'D-SECRET-TOKEN' => 
+        // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
         'CROP-CODE' => 'DOTMIK160614',
         'Content-Type' => 'application/json',
     ];
 
     // API URL // dotmik
-    $url="https://staging.dotmik.in/api/busBooking/v1/bookTicket";
+    $url="https://api.dotmik.in/api/busBooking/v1/bookTicket";
 
     try {
         // Make the POST request using Laravel HTTP Client
@@ -665,6 +681,13 @@ class DotMikBusController extends Controller
         else{
             if($response->successful())
             {
+                $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
+                $History->update([
+                    'PnrDetails' => [
+                        "pnr" => $result['payload']['transaction']['description']['pnr']
+                    ],
+                    'Status' => "BOOKED",
+                ]);
                 return response()->json([
                     'success' => true,
                     'data' => $result,
@@ -692,8 +715,8 @@ class DotMikBusController extends Controller
    {
      $validator=Validator::make($request->all(),[
         "referenceId" => "required|string",
-        // 'headersToken' => 'required|string',
-        // 'headersKey' => 'required|string'
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string'
         // "ip" => "required|string",
      ]);
 
@@ -720,16 +743,18 @@ class DotMikBusController extends Controller
     
     // Headers
     $headers = [
-        'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-        // $data['headersToken'],
-        'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-        // $data['headersKey'],
+        'D-SECRET-TOKEN' => 
+        // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+        $data['headersToken'],
+        'D-SECRET-KEY' => 
+        // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+        $data['headersKey'],
         'CROP-CODE' => 'DOTMIK160614',
         'Content-Type' => 'application/json',
     ];
 
     // API URL
-    $url="https://staging.dotmik.in/api/busBooking/v1/checkTicket";
+    $url="https://api.dotmik.in/api/busBooking/v1/checkTicket";
 
     try {
         // Make the POST request using Laravel HTTP Client
@@ -744,6 +769,22 @@ class DotMikBusController extends Controller
         else{
             if($response->successful())
             {
+                $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
+                $History->update([
+                    'PnrDetails' => [
+                        'pnr' => $History['PnrDetails']['pnr'],
+                        'busType'=>$result['payload']['data']['busType'],
+                        'dateOfJourney'=>$result['payload']['data']['dateOfJourney'],
+
+                        // "pnr" => $result['payload']['transaction']['description']['pnr']
+                    ],
+                    'PAXTicketDetails' => $result['payload']['data']['inventoryItems'],
+                    'TravelDetails' => [
+                        'dropDetails' => $result['payload']['data']['dropDetails'],
+                        'pickupDetails' => $result['payload']['data']['pickupDetails'],
+                    ],
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'data' => $result,
@@ -799,16 +840,18 @@ class DotMikBusController extends Controller
         
         // Headers
         $headers = [
-            'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-            // $data['headersToken'],
-            'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-            // $data['headersKey'],
+            'D-SECRET-TOKEN' => 
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            $data['headersToken'],
+            'D-SECRET-KEY' => 
+            // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            $data['headersKey'],
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
 
         // API URL
-        $url="https://staging.dotmik.in/api/busBooking/v1/getCancelationData";
+        $url="https://api.dotmik.in/api/busBooking/v1/getCancelationData";
 
         try {
             // Make the POST request using Laravel HTTP Client
@@ -851,9 +894,9 @@ class DotMikBusController extends Controller
       $validator=Validator::make($request->all(),[
         "referenceId" => "required|string",
         "seatsToCancel" => "required|array",
-        "seatsToCancel.*" => "required|string"
-         // 'headersToken' => 'required|string',
-        // 'headersKey' => 'required|string'
+        "seatsToCancel.*" => "required|string",
+        'headersToken' => 'required|string',
+        'headersKey' => 'required|string'
         // "ip" => "required|string",
       ]);
 
@@ -881,16 +924,18 @@ class DotMikBusController extends Controller
     
     // Headers
     $headers = [
-        'D-SECRET-TOKEN' => "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-        // $data['headersToken'],
-        'D-SECRET-KEY' => "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-        // $data['headersKey'],
+        'D-SECRET-TOKEN' => 
+        // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+        $data['headersToken'],
+        'D-SECRET-KEY' => 
+        // "hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+        $data['headersKey'],
         'CROP-CODE' => 'DOTMIK160614',
         'Content-Type' => 'application/json',
     ];
 
     // API URL
-    $url="https://staging.dotmik.in/api/busBooking/v1/cancelTicket";
+    $url="https://api.dotmik.in/api/busBooking/v1/cancelTicket";
 
     try {
         // Make the POST request using Laravel HTTP Client
