@@ -1571,7 +1571,7 @@ public function RePrintTicket(Request $request)
                 {
                     $History->update([
                         'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
-                        'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
+                        'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']
                     ]);
                 }
 
