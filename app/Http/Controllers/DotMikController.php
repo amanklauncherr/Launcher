@@ -691,7 +691,7 @@ class DotMikController extends Controller
                 if($response->successful())
                 {
                     
-                    $Segments=$result['payloads']['data']['rePrice'][0]['Flight']['Segment'];
+                    $Segments=$result['payloads']['data']['rePrice'][0]['Flight']['Segments'];
 
                     $BookingType=null;
 
