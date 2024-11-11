@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\AirlineCode;
+use App\Models\iatacode;
 use App\Models\TravelHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -202,9 +203,7 @@ class DotMikController extends Controller
 
                 if(isset($data['Stops']))
                 {
-
                     $Filtered=[];
-
                     if($data['Stops'] === "0")
                     {
                         if($data['TYPE'] === 'ONEWAY')
@@ -479,7 +478,7 @@ class DotMikController extends Controller
                     return null; // Handle cases where airline code is not found
                 }, $distinctAirlineCodes);
 
-                $ACName = array_filter($ACName);
+                $ACName = array_values(array_filter($ACName));
 
                 $count = count($Flights);
 
@@ -520,7 +519,7 @@ class DotMikController extends Controller
                     'error' => $result
                 ],$statusCode);
             }
-     }
+        }
         } catch (\Exception $e) {
             // Handle exception (e.g. network issues)
             return response()->json([
@@ -531,7 +530,6 @@ class DotMikController extends Controller
 
     }
     
-
     public function fareRule(Request $request)
     {
             $validator = Validator::make($request->all(),[
@@ -692,6 +690,21 @@ class DotMikController extends Controller
             else{
                 if($response->successful())
                 {
+                    
+                    $Segments=$result['payloads']['data']['rePrice'][0]['Flight']['Segment'];
+
+                    $BookingType=null;
+
+                    foreach ($Segments as $Segment) {
+                        $Origin=iatacode::where('iata_code',$Segment['Origin']);
+                        $Destination=iatacode::where('iata_code',$Segment['Destination']);
+
+                        if($Origin['state'] != 'India' && $Destination['state'] != 'India')
+                        {
+                            $BookingType='International';
+                        }
+                         $BookingType='Domestic';
+                    }
 
                     // return response()->json($result);
 
@@ -733,12 +746,27 @@ class DotMikController extends Controller
 
                     $TotalAmount = $adultAmount + $childAmount + $infantAmount;
 
+                    $LauncherAmount = null;
+                    if( $BookingType === 'Domestic')
+                    {
+                        $LauncherAmount = ($TotalAmount * (20/100)) + $TotalAmount;
+                    }
+                    else if( $BookingType === 'International')
+                    {
+                        if($TotalAmount <= 20000)
+                        {
+                            $LauncherAmount = ($TotalAmount * (20/100)) + $TotalAmount;
+                        }
+                        elseif($TotalAmount >20000)
+                        {
+                            $LauncherAmount = ($TotalAmount * (25/100)) + $TotalAmount;   
+                        }
+                    }
+
                     $Totalservice = $adultservice + $childservice + $infantservice;
 
                     $TotalAirportFee = $adultAirportFee + $childAirportFee + $infantAirportFee;
 
-
-                   
                     return response()->json([
                         'success' => true,
                         'adultAmount' => $adultAmount,
@@ -747,6 +775,7 @@ class DotMikController extends Controller
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
+                        'launcherAmount' => $LauncherAmount,
                         'data' => $result,
                     ], $statusCode);
                 } else {
