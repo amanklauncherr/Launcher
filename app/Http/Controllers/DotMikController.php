@@ -1127,6 +1127,7 @@ class DotMikController extends Controller
                     'error' => $ticketingResult
                 ], $ticketingStatusCode);
             }
+           
             $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
             $History->update([
                 'PnrDetails' => $result['payloads']['data']['pnrDetails'],
@@ -1563,6 +1564,13 @@ public function RePrintTicket(Request $request)
                 // Generate the PDF
                 $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$PNR, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax, $paxDetails,$Segment);
                 // $first,$last,$Ticket,$gen,
+                            
+                $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+                $History->update([
+                    'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                    'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
@@ -3463,3 +3471,6 @@ public function ReleasePNR(Request $request)
     //         ], 500);
     //     }   
     // }
+
+
+ 
