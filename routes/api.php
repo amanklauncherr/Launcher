@@ -167,22 +167,6 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
 
-    
-    // Flight
-    Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
-
-    Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
-
-
-    Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
-
-    // Bus   
-    Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
-
-    Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
-
-    Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
-
     //History
     // GetTravelHistory
     Route::post('/History',[TravelHistoryController::class,'GetTravelHistory']);
@@ -315,12 +299,24 @@ Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrentTripDeta
 
 Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPointDetails']);
 
-
-
-
-
-
-
 Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
 
 Route::post('/Get/Cancel/Ticket',[DotMikBusController::class,'CancelTicket']);
+
+
+// Token API
+
+    // Flight
+    Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
+
+    Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
+
+
+    Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
+
+    // Bus   
+    Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);
+
+    Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
+
+    Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
