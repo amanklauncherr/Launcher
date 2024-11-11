@@ -90,9 +90,27 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
     // Section
     Route::post('/Add-Section',[Sections::class,'addSection']);
 
+    // Join Offer 
+    Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);
+    Route::get('/showJoinOfferAdmin',[JoinOfferController::class,'showJoinOfferAdmin']);
+
+    // Subscription Card
+    Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
+    Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
+
+    // Banner
+    Route::post('/Add-Banner',[BannerController::class,'Upload']);
+
+    // Client
+    Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);
+    Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
+    Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
+    
     // About
     Route::post('/Add-About',[AboutController::class,'addAbout']);
-    
+    // Card
+    Route::post('/addCard',[CardController::class,'addCard']);
+
     // Details
     Route::post('/Add-Details', [CompanyDetailController::class, 'addDetail']);
 
@@ -101,18 +119,11 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
     Route::put('/Update/QueAndAns/{id}',[QueAndAnsController::class,'updateQueAndAns']);
     Route::delete('/Delete/QueAndAns/{id}',[QueAndAnsController::class,'deleteQueAndAns']);
 
-    // Banner
-    Route::post('/Add-Banner',[BannerController::class,'Upload']);
-    
     // Coupon 
     Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);
     Route::put('/Update-Coupon/{coupon_code}',[CouponController::class,'updateCoupon']);
     Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);
 
-    // Client 
-    Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);
-    Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
-    Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
 
    // Job
    Route::post('/addJob',[JobPostingController::class,'AddJob']);
@@ -123,19 +134,9 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
    Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']);
    
-   // Card
-   Route::post('/addCard',[CardController::class,'addCard']);
-
-  // Join Offer 
-  Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);
-  Route::get('/showJoinOfferAdmin',[JoinOfferController::class,'showJoinOfferAdmin']);
-
-    // Subscription Card
-    Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
-    Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
-
-    Route::post('/addDestination',[DestinationController::class,'addDestination']);
-    Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);
+   // Destination
+   Route::post('/addDestination',[DestinationController::class,'addDestination']);
+   Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);
 
     // Subscription Details
     Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
@@ -162,48 +163,49 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
     
     Route::post('/showCart',[CartDetailsController::class,'showCart']); 
-    
+
     // Add User Subscription
     Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
 
-
     //History
-    // GetTravelHistory
-    Route::post('/History',[TravelHistoryController::class,'GetTravelHistory']);
+    // GetTravelHistory  // DotMik
+    Route::get('/Travel/History',[TravelHistoryController::class,'GetTravelHistory']);
 
 });
 
-// Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
-
-// Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
-
-//  // payment
-//  Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
-//  Route::get('/payment-redirect', function () 
-//  {
-//      // Handle the redirect after payment
-//      return response()->json(['message' => 'Redirect after payment']);
-//  });
-
-// Route::post('/updateProfile',[EmployerController::class,'update']);
-
-// Route::middleware(['throttle:20,1'])->group(function (){
 
 Route::post('/add',[IataCodeController::class,'addIata']);
 
+Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
+
+Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
+
+// Destination
+Route::get('/showDestination',[DestinationController::class,'showDestination']);
+
+Route::get('/destination',[DestinationController::class,'destination']);
+
+Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
+
+Route::get('/destinationType',[DestinationController::class,'destinationType']);
+
+//
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
 
 Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
+// OUIZ
 Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
 
 Route::get('/ShowQuiz',[QuizResponseController::class,'ShowQuiz']);
 
+// Client
 Route::post('/AddEmail',[NewsLetterController::class,'AddEmail']);
 
 Route::get('/ShowEmail',[NewsLetterController::class,'ShowEmail']);
+
 
 Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
 
@@ -229,9 +231,7 @@ Route::get('/STATE',[StateController::class,'AllState']);
 
 Route::get('/CITIES',[StateController::class,'CITIES']);
 
-Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
 
-Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
 
 // All iata
 Route::get('/showIata',[IataCodeController::class,'showIata']);
@@ -245,14 +245,7 @@ Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
 Route::get('/showState',[StateController::class,'showState']);
 
-// Destination
-Route::get('/showDestination',[DestinationController::class,'showDestination']);
 
-Route::get('/destination',[DestinationController::class,'destination']);
-
-Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
-
-Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
 // ORDERID
 Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
@@ -293,7 +286,7 @@ Route::post('/Source',[DotMitSourceCitiesController::class,'SourceCity']);
 
 Route::get('/Get/Source/Cities',[DotMikBusController::class,'GetSourceCities']);
 
-Route::post('/Avaliable/Trip',[DotMikBusController::class,'AvaliableTrip']);
+Route::post('/Avaliable/Trip',[DotMikBusController::class,'AvailableTrip']);
 
 Route::post('/Current/Trip/Details',[DotMikBusController::class,'CurrentTripDetails']);
 
@@ -320,3 +313,20 @@ Route::post('/Get/Cancel/Ticket',[DotMikBusController::class,'CancelTicket']);
     Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
 
     Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
+
+
+    // Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
+
+// Route::any('phonepe-response',[PaymentController::class,'response'])->name('response');
+
+//  // payment
+//  Route::post('/payment-callback', [PaymentController::class, 'paymentCallback']);
+//  Route::get('/payment-redirect', function () 
+//  {
+//      // Handle the redirect after payment
+//      return response()->json(['message' => 'Redirect after payment']);
+//  });
+
+// Route::post('/updateProfile',[EmployerController::class,'update']);
+
+// Route::middleware(['throttle:20,1'])->group(function (){

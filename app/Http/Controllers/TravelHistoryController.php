@@ -10,16 +10,17 @@ use Illuminate\Support\Facades\Auth;
 class TravelHistoryController extends Controller
 {
     //
-    public function GetTravelHistory(Request $request)
+    public function GetFlightTravelHistory(Request $request)
     {
-        $History=TravelHistory::where('user_id',Auth::guard('api')->id())->get();
+
+        $History=TravelHistory::where('user_id',Auth::guard('api')->id())->where('BookingType','FLIGHT')->get();
 
         if($History->isEmpty())
         {
             return response()->json(
                 [
                     'success' => 0,
-                    'error' => 'No Travel History'
+                    'error' => 'No Flight Travel History'
                 ]
             );
         }
@@ -29,12 +30,12 @@ class TravelHistoryController extends Controller
         foreach($History as $his)
         {
             $obj=[
-                $his->user_id,
-                $his->BookingType,
-                $his->BookingRef,
-                json_decode($his->PnrDetials),
-                json_decode($his->PAXTicketDetails),
-                json_decode($his->TravelDetails),
+                'user_id'=>$his->user_id,
+                'BookingType'=>$his->BookingType,
+                'BookingRef'=>$his->BookingRef,
+                'PnrDetails'=>json_decode($his->PnrDetails),
+                'PAXTicketDetails'=>json_decode($his->PAXTicketDetails),
+                'TravelDetails'=>json_decode($his->TravelDetails),
             ];
                 array_push($data,$obj);
         }
@@ -42,7 +43,46 @@ class TravelHistoryController extends Controller
         return response()->json(
             [
                 'success' => 1,
-                'message' => 'Travel History',
+                'message' => 'Flight Travel History',
+                'data'=> $data
+            ]
+        );       
+    }
+
+    public function GetBusTravelHistory(Request $request)
+    {
+
+        $History=TravelHistory::where('user_id',Auth::guard('api')->id())->where('BookingType','BUS')->get();
+
+        if($History->isEmpty())
+        {
+            return response()->json(
+                [
+                    'success' => 0,
+                    'error' => 'No BUS Travel History'
+                ]
+            );
+        }
+
+        $data = [];
+
+        foreach($History as $his)
+        {
+            $obj=[
+                'user_id'=>$his->user_id,
+                'BookingType'=>$his->BookingType,
+                'BookingRef'=>$his->BookingRef,
+                'PnrDetails'=>json_decode($his->PnrDetails),
+                'PAXTicketDetails'=>json_decode($his->PAXTicketDetails),
+                'TravelDetails'=>json_decode($his->TravelDetails),
+            ];
+                array_push($data,$obj);
+        }
+
+        return response()->json(
+            [
+                'success' => 1,
+                'message' => 'Bus Travel History',
                 'data'=> $data
             ]
         );       
