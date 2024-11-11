@@ -1566,15 +1566,21 @@ public function RePrintTicket(Request $request)
                 // $first,$last,$Ticket,$gen,
                             
                 $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
-                $History->update([
-                    'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
-                    'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
-                ]);
+
+                if($History)
+                {
+                    $History->update([
+                        'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                        'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
+                    ]);
+                }
+
 
                 return response()->json([
                     'success' => true,
                     'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
                     'data' => $result,
+                    'histroy' => $History
                 ]);
                 } else {
                     return response()->json([
