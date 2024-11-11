@@ -169,7 +169,9 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     //History
     // GetTravelHistory  // DotMik
-    Route::get('/Travel/History',[TravelHistoryController::class,'GetTravelHistory']);
+    Route::get('/Flight/Travel/History',[TravelHistoryController::class,'GetFlightTravelHistory']);
+
+    Route::get('/Bus/Travel/History',[TravelHistoryController::class,'GetBusTravelHistory']);
 
 });
 
