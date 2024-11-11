@@ -693,17 +693,18 @@ class DotMikController extends Controller
                     
                     $Segments=$result['payloads']['data']['rePrice'][0]['Flight']['Segments'];
 
-                    $BookingType=null;
+                    $BookingType = 'Domestic'; // Default to 'Domestic' initially
 
                     foreach ($Segments as $Segment) {
-                        $Origin=iatacode::where('iata_code',$Segment['Origin']);
-                        $Destination=iatacode::where('iata_code',$Segment['Destination']);
+                        $Origin = iatacode::where('iata_code', $Segment['Origin'])->first();
+                        $Destination = iatacode::where('iata_code', $Segment['Destination'])->first();
 
-                        if($Origin['state'] != 'India' && $Destination['state'] != 'India')
-                        {
-                            $BookingType='International';
+                        if ($Origin && $Destination) { // Ensure both are found
+                            if ($Origin->country !== 'India' || $Destination->country !== 'India') {
+                                $BookingType = 'International';
+                                break; // No need to continue if it's international
+                            }
                         }
-                         $BookingType='Domestic';
                     }
 
                     // return response()->json($result);
