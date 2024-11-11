@@ -1565,7 +1565,7 @@ public function RePrintTicket(Request $request)
                 $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$PNR, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax, $paxDetails,$Segment);
                 // $first,$last,$Ticket,$gen,
                             
-                $History = TravelHistory::where('BookingRef',$data['bookingRef'])->first();
+                $History = TravelHistory::get();
 
                 // if($History)
                 // {
