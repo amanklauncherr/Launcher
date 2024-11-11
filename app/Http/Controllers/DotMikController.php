@@ -1565,23 +1565,23 @@ public function RePrintTicket(Request $request)
                 $pdfFilePath = $this->generateTicketPdf($Origin,$Origin_terminal,$Origin_Code,$Destination,$Destination_Code,$Destination_terminal,$PNR, $ArrivalTime,$DepartureTime,$ArrivalDate,$DepartureDate,$flight_type,$Duration,$Aircraft,$Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray,  $FlightNO,$AirlineCode, $Tax, $paxDetails,$Segment);
                 // $first,$last,$Ticket,$gen,
                             
-                $History = TravelHistory::get();
+                $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
 
-                // if($History)
-                // {
-                //     $History->update([
-                //         'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
-                //         'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
-                //     ]);
-                // }
+                if($History)
+                {
+                    $History->update([
+                        'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                        'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights']['Segments']
+                    ]);
+                }
 
 
                 return response()->json([
                     'success' => true,
-                    'history' => $History,
                     'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
                     'data' => $result,
-                ]);
+                    'history' => $History
+                 ]);
                 } else {
                     return response()->json([
                         'success' => false,
