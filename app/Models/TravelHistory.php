@@ -10,7 +10,7 @@ class TravelHistory extends Model
     use HasFactory;
 
     protected $fillable=[
-        'userID',
+        'user_id',
         'BookingType',
         'BookingRef',
         'PnrDetails',
