@@ -10,15 +10,12 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-
 class DotMikBusController extends Controller
 {
     public function GetSourceCities(Request $request)
     {
-
         $state=$request->query('state');
         $city=$request->query('city');
-
         try 
         {
             if(!isset($state) && !isset($city))
@@ -329,8 +326,8 @@ class DotMikBusController extends Controller
     {
         $validator = Validator::make($request->all(),[
             "tripId" => "required|string",
-            // 'headersToken' => 'required|string',
-            // 'headersKey' => 'required|string'
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -761,6 +758,11 @@ class DotMikBusController extends Controller
         else{
             if($response->successful())
             {
+
+
+
+
+
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
                 $History->update([
                     'PnrDetails' => [
@@ -895,7 +897,7 @@ class DotMikBusController extends Controller
       ]);
 
 
-    if ($validator->fails()) {
+      if ($validator->fails()) {
         $errors = $validator->errors()->all();
         $formattedErrors = [];
 
@@ -907,67 +909,67 @@ class DotMikBusController extends Controller
             'success' => 0,
             'error' => $formattedErrors[0]
         ], 422);
-    }
+      }
     
-    $data=$validator->validated();
+        $data=$validator->validated();
 
-    $payload = [
-            "referenceId" => $data["referenceId"],
-            "seatsToCancel" => $data["seatsToCancel"]
-    ];
-    
-    // Headers
-    $headers = [
-        'D-SECRET-TOKEN' => $data['headersToken'],
-        // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
-        'D-SECRET-KEY' =>  $data['headersKey'],
-        //"hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
-        'CROP-CODE' => 'DOTMIK160614',
-        'Content-Type' => 'application/json',
-    ];
+        $payload = [
+                "referenceId" => $data["referenceId"],
+                "seatsToCancel" => $data["seatsToCancel"]
+        ];
+        
+        // Headers
+        $headers = [
+            'D-SECRET-TOKEN' => $data['headersToken'],
+            // "eg+szn0TFMvO4FMoMNU5MsxGr7MjLgSvdidA5imOJZ21cyD6/mJnWZz8Tc+VZVLf",
+            'D-SECRET-KEY' =>  $data['headersKey'],
+            //"hCPNl+FDiFGctdqlEqYy3RO+O2TgSHpV1svQJxolFybCLrKHtd7aeuGIRyVyDXc/",
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
 
-    // API URL
-    $url = "https://api.dotmik.in/api/busBooking/v1/cancelTicket";
+        // API URL
+        $url = "https://api.dotmik.in/api/busBooking/v1/cancelTicket";
 
-    try {
-        // Make the POST request using Laravel HTTP Client
-        $response = Http::withHeaders($headers)->post($url, $payload);
-        $result=$response->json();
-        $statusCode = $response->status();
+        try {
+            // Make the POST request using Laravel HTTP Client
+            $response = Http::withHeaders($headers)->post($url, $payload);
+            $result=$response->json();
+            $statusCode = $response->status();
 
-        if($result['status'] === false)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-                'error' => $result
-            ],$statusCode);   
-        }
-        else{
-            if($response->successful())
+            if($result['status'] === false)
             {
                 return response()->json([
-                    'success' => true,
-                    'data' => $result,
-                    'message' => $result['message']
-                ], 200);
-            } else {
-                return response()->json([
                     'success' => false,
-                    'message' => 'Failed to fetch flight data',
-                    'error' => $response->json()
-                ], $response->status());
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);   
             }
-        }
-        //code...
-    } catch  (\Exception $e) {
-        // Handle exception (e.g. network issues)
-        return response()->json([
-            'success' => false,
-            'message' => 'An error occurred',
-            'error' => $e->getMessage()
-        ], 500);
-    }   
+            else{
+                if($response->successful())
+                {
+                    return response()->json([
+                        'success' => true,
+                        'data' => $result,
+                        'message' => $result['message']
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to fetch flight data',
+                        'error' => $response->json()
+                    ], $response->status());
+                }
+            }
+            //code...
+        } catch  (\Exception $e) {
+            // Handle exception (e.g. network issues)
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }   
     }
 
 }
