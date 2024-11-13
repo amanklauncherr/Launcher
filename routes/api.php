@@ -44,6 +44,7 @@ use App\Models\Destination;
 use App\Models\SubscriptionDetail;
 use App\Http\Middleware\CheckBearerToken;
 use App\Models\DotMitSourceCities;
+use Spatie\Permission\Contracts\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,25 +63,35 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // , 'throttle:500,1'
 Route::group(['middleware'=>['api'],'prefix'=>'auth'], function(){
-    // Admin
-    Route::post('/register',[AdminController::class,'register']);
-    Route::post('/login',[AdminController::class,'login']);
 
-    Route::post('/logout',[AdminController::class,'logout']);
-    Route::get('/alluser',[AdminController::class,'allUser']);
+    // Admin Auth
+    Route::post('/register',[AdminController::class,'register']); //
+    Route::post('/login',[AdminController::class,'login']);  //
 
-    // User
-    Route::post('/userRegister',[UserProfileController::class,'userRegister']);
-    Route::post('/userLogin',[UserProfileController::class,'userLogin']);
+    // Route::post('/logout',[AdminController::class,'logout']);
+    // Route::get('/alluser',[AdminController::class,'allUser']);
+
+    // User Auth
+    Route::post('/userRegister',[UserProfileController::class,'userRegister']);  //
+    Route::post('/userLogin',[UserProfileController::class,'userLogin']);  //
 });
+
+// Verify user after register
+Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
+
+// Send Email for password reset
+Route::post('Reset/Password/Email',[UserProfileController::class,'ResetPasswordEmail']);
+
+// Pasword Reset
+Route::post('Reset/Password',[UserProfileController::class,'ResetPassword']);
 
 
 // ,'throttle:1000,1'
 Route::middleware(['check.bearer.token','role:admin'])->group(function () {
 
-    Route::get('/admin/profile',[AdminController::class,'profile']);
+    Route::get('/admin/profile',[AdminController::class,'profile']);  //
 
-    Route::put('/profile/update', [AdminController::class, 'updateProfile']);
+    Route::put('/profile/update', [AdminController::class, 'updateProfile']);  //
 
     // Route::post('/refresh',[AdminController::class,'refresh']);
 
@@ -88,36 +99,37 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
     Route::post('/term-conditions',[TermsConditionsController::class, 'store']);
 
     // Section
-    Route::post('/Add-Section',[Sections::class,'addSection']);
+    Route::post('/Add-Section',[Sections::class,'addSection']); //
 
     // Join Offer 
-    Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);
-    Route::get('/showJoinOfferAdmin',[JoinOfferController::class,'showJoinOfferAdmin']);
+    Route::post('/addJoinOffer',[JoinOfferController::class,'addJoinOffer']);  //
+    Route::get('/showJoinOfferAdmin',[JoinOfferController::class,'showJoinOfferAdmin']);  //
 
     // Subscription Card
-    Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);
-    Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);
+    Route::post('/addSubCard',[SubscriptionCardController::class,'addSubCard']);   //
+    Route::get('/showSubCardAdmin',[SubscriptionCardController::class,'showSubCardAdmin']);    //
 
     // Banner
-    Route::post('/Add-Banner',[BannerController::class,'Upload']);
+    Route::post('/Add-Banner',[BannerController::class,'Upload']);  //
 
     // Client
-    Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);
-    Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);
-    Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);
+    Route::post('/Add-Client', [ClientInfoController::class, 'addClient']);  //
+    Route::put('/Update/Client/{id}', [ClientInfoController::class, 'updateClient']);  //
+    Route::delete('/Delete/Client/{id}', [ClientInfoController::class, 'deleteClient']);  //
     
     // About
-    Route::post('/Add-About',[AboutController::class,'addAbout']);
+    Route::post('/Add-About',[AboutController::class,'addAbout']);  //
+
     // Card
-    Route::post('/addCard',[CardController::class,'addCard']);
+    Route::post('/addCard',[CardController::class,'addCard']);  //
 
     // Details
-    Route::post('/Add-Details', [CompanyDetailController::class, 'addDetail']);
+    Route::post('/Add-Details', [CompanyDetailController::class, 'addDetail']); //
 
     // Q and A
-    Route::post('/Add-QueAndAns', [QueAndAnsController::class, 'addQueAndAns']);
-    Route::put('/Update/QueAndAns/{id}',[QueAndAnsController::class,'updateQueAndAns']);
-    Route::delete('/Delete/QueAndAns/{id}',[QueAndAnsController::class,'deleteQueAndAns']);
+    Route::post('/Add-QueAndAns', [QueAndAnsController::class, 'addQueAndAns']);  //
+    Route::put('/Update/QueAndAns/{id}',[QueAndAnsController::class,'updateQueAndAns']);  //
+    Route::delete('/Delete/QueAndAns/{id}',[QueAndAnsController::class,'deleteQueAndAns']);  //
 
     // Coupon 
     Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);
@@ -125,14 +137,13 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
     Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);
 
 
-   // Job
-   Route::post('/addJob',[JobPostingController::class,'AddJob']);
-   Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
-   Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']); 
-   // Route::put('/updateBadge/{id}',[JobPostingController::class,'updateBadge']); 
-   Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
-   Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
-   Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']);
+    // Job
+    Route::post('/addJob',[JobPostingController::class,'AddJob']);
+    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
+    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']); 
+    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
+    Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
+    Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']);
    
    // Destination
    Route::post('/addDestination',[DestinationController::class,'addDestination']);
@@ -140,6 +151,8 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
 
     // Subscription Details
     Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
+    
+    // Route::put('/updateBadge/{id}',[JobPostingController::class,'updateBadge']); 
 });
 
 // ,'throttle:1000,1'
@@ -178,9 +191,9 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 Route::post('/add',[IataCodeController::class,'addIata']);
 
-Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);
+Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);  //
 
-Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);
+Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);   //
 
 // Destination
 Route::get('/showDestination',[DestinationController::class,'showDestination']);
@@ -191,48 +204,48 @@ Route::post('/searchDestination',[DestinationController::class,'searchDestinatio
 
 Route::get('/destinationType',[DestinationController::class,'destinationType']);
 
-//
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
-
-Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
 
 Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
 
 // OUIZ
 Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
-
 Route::get('/ShowQuiz',[QuizResponseController::class,'ShowQuiz']);
 
-// Client
+// Email
 Route::post('/AddEmail',[NewsLetterController::class,'AddEmail']);
-
 Route::get('/ShowEmail',[NewsLetterController::class,'ShowEmail']);
 
+// Show Client
+Route::get('/Show-Client',[ClientInfoController::class,'showClient']);  //
 
-Route::get('/Show-Client',[ClientInfoController::class,'showClient']);
+// Show Banner
+Route::get('/Show-Banner',[BannerController::class,'showUpload']);  //
 
-Route::get('/Show-Banner',[BannerController::class,'showUpload']);
-
+// Show Coupon
 Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);
 
 Route::get('/Apply-Coupon',[CouponController::class,'applyCoupon']);
 
 Route::get('/term-conditions',[TermsConditionsController::class,'show']);
 
-Route::get('/Show-Section',[Sections::class,'showSection']);
 
-Route::get('/Show-About',[AboutController::class,'showAbout']);
+// Show Section
+Route::get('/Show-Section',[Sections::class,'showSection']); //
 
-Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']);
+// Show About
+Route::get('/Show-About',[AboutController::class,'showAbout']); //
 
-Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']);
+// Show Details
+Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']); //
+
+Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']); //
 
 Route::get('/cities',[CitesController::class,'Cites']);
 
 Route::get('/STATE',[StateController::class,'AllState']);
 
 Route::get('/CITIES',[StateController::class,'CITIES']);
-
 
 
 // All iata
@@ -315,6 +328,8 @@ Route::post('/Get/Cancel/Ticket',[DotMikBusController::class,'CancelTicket']);
     Route::post('/Book/Ticket',[DotMikBusController::class,'BookTicket']);
 
     Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
+
+
 
 
     // Route::post('/initiate', [PaymentController::class, 'initiatePayment']);
