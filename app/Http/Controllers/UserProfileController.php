@@ -7,16 +7,19 @@ use App\Models\User;
 use App\Models\UserVerification;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use App\Mail\UserResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserVerificationConfirmation;
+use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
+use Illuminate\Support\Facades\Crypt;
 
 class UserProfileController extends Controller
 {
@@ -25,6 +28,7 @@ class UserProfileController extends Controller
     {
         $validator=Validator::make($request->all(),[
             'name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
             'email' => [
                 'required',
                 'email',
@@ -61,6 +65,7 @@ class UserProfileController extends Controller
             //code...
             $user = User::create([
                 'name' => $request->name,
+                'last_name' => $request->last_name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
@@ -68,13 +73,13 @@ class UserProfileController extends Controller
             $user->assignRole('user');
     
             if ($user) {
-                // UserVerification::create([
-                //     'userID'=>$user->id,
-                //     'uniqueCode'=> Str::random(100),
-                //     'verified' => 0,
-                // ]);              
-                // $code=UserVerification::where('userID',$user->id)->first();
-                // Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
+                UserVerification::create([
+                    'userID'=>$user->id,
+                    'uniqueCode'=> Str::random(100),
+                    'verified' => 0,
+                ]);              
+                $code=UserVerification::where('userID',$user->id)->first();
+                Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
                 return response()->json([
                     'success' => 1,
                     'message' => 'User registered successfully. Visit Your email to Verify',
@@ -121,7 +126,6 @@ class UserProfileController extends Controller
             ], 422);
         }
 
-
             //code...
             $credentials = $request->only('email','password');
             $user = User::where('email',$credentials['email'])->first();
@@ -129,11 +133,15 @@ class UserProfileController extends Controller
             if(!$user){
                 return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
             }
+            $userVerified=UserVerification::where('userID',$user->id)->first();
+            if($userVerified->verified === 0)
+            {
+                return response()->json([ 'success' => 0,'error' => 'Please Verify. Before Login'], 401);
+            }
             if(!Hash::check($credentials['password'],$user->password))
             {
                 return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
             }
-
             if (!$user->hasRole('user')) 
             {
                 // User has the 'admin' role
@@ -249,6 +257,7 @@ class UserProfileController extends Controller
             $userProfile= UserProfile::where('user_id',$user->id)->first();
             $validator = Validator::make($request->all(), [
                 'user_Name'  => 'required|string',
+                // 'last_name' => 'req'
                 'user_Number' => $userProfile ? 'required|integer' : 'required|integer|unique:user_profiles',
                 'user_Address' => 'required|string',
                 'user_City' => 'required|string',
@@ -271,6 +280,7 @@ class UserProfileController extends Controller
                 if($userProfile)
                 {
                     $user->name = $request->user_Name;
+                    // $user->last_name = $re
                     $userProfile->update($profile);
                     $user->save();
     
@@ -302,7 +312,6 @@ class UserProfileController extends Controller
         }
         return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
     }
-
 
     public function showUserProfile(Request $request)
     {
@@ -346,4 +355,121 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
+
+    
+    public function ResetPasswordEmail(Request $request)
+    {
+        $validator=Validator::make(request()->all(),[
+            'email' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            return response()->json([
+                'success' => 0,
+                'error' => $error 
+            ], 422);
+        }  
+
+        $data=$validator->validated();
+
+        $user = User::where('email', $data['email'])->first();
+        
+        if(!$user)
+        {
+            return response()->json(['success'=>0, 'error'=>'No User Exists with provided email'], 400);
+        }
+        if (!$user->hasRole('user')) 
+        {
+            return response()->json([ 'success' => 0,'error' => 'Unauthorized Email Role. Only User email can access'], 401);  
+        }    
+        try {
+
+            $tokenData = [
+                'email' => $data['email'],
+                'created_at' => Carbon::now()->timestamp
+            ];
+            
+            $encryptedToken = Crypt::encryptString(json_encode($tokenData));
+
+            Mail::to($data['email'])->send(new UserResetPassword($encryptedToken));
+        
+            return response()->json([
+                'success' => 1,
+                'message' => 'Mail Sent Successfully. Check Your mail'
+            ], 200);
+        
+
+        } catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'message' => 'An error occurred while Adding Email',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function ResetPassword(Request $request)
+    {
+        $validator=Validator::make(request()->all(),[
+            "token" => 'required|string',
+            "password" => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ]
+
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            return response()->json([
+                'success' => 0,
+                'error' => $error 
+            ], 422);
+        }  
+
+        try {
+
+            //code...
+            $data=$validator->validated();
+
+
+            $decryptedTokenData = Crypt::decryptString($data['token']);
+            $tokenData = json_decode($decryptedTokenData, true);
+        
+            $email = $tokenData['email'];
+            $createdAt = Carbon::createFromTimestamp($tokenData['created_at']);
+            
+            // Set the expiration time (e.g., 5 minutes)
+            $expirationTime = $createdAt->addMinutes(5);
+        
+            if (Carbon::now()->greaterThan($expirationTime)) {
+                return response()->json(['success' => 0, 'error' => 'Your Link has Expired create a new one'], 400);
+            }
+
+            $user=User::where('email',$email)->first();
+
+            if(!$user)
+            {
+                return response()->json(['success'=>0, 'error'=>'No User Exists with provided email'], 400);
+            }
+            if (!$user->hasRole('user')) 
+            {
+                // User has the 'admin' role
+                return response()->json([ 'success' => 0,'error' => 'Unauthorized Email Role. Only User email can access'], 401);  
+            }
+            $user->update([
+                'password' => Hash::make($data['password'])
+            ]);
+
+            return response()->json(['success'=>1, 'message'=> 'Password Updated Successfully'],200);
+        } catch  (\Exception $e) {
+                // Handle exception (e.g. network issues)
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+        }
+    }
+
 }
