@@ -133,11 +133,11 @@ class UserProfileController extends Controller
             if(!$user){
                 return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
             }
-            $userVerified=UserVerification::where('userID',$user->id)->first();
-            if($userVerified->verified === 0)
-            {
-                return response()->json([ 'success' => 0,'error' => 'Please Verify. Before Login'], 401);
-            }
+            // $userVerified=UserVerification::where('userID',$user->id)->first();
+            // if($userVerified->verified === 0)
+            // {
+            //     return response()->json([ 'success' => 0,'error' => 'Please Verify. Before Login'], 401);
+            // }
             if(!Hash::check($credentials['password'],$user->password))
             {
                 return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
