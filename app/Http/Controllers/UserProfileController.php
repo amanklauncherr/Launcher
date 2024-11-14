@@ -406,7 +406,6 @@ class UserProfileController extends Controller
  
             return response()->json([
                 'success' => 1,
-                'encypted' => $encryptedToken,
                 'message' => 'Mail Sent Successfully. Check Your mail'
             ], 200);
         
