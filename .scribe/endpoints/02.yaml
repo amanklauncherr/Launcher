@@ -1,0 +1,385 @@
+name: 'User Management'
+description: ''
+endpoints:
+  -
+    httpMethods:
+      - POST
+    uri: api/auth/userRegister
+    metadata:
+      groupName: 'User Management'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Register a new user.'
+      description: |-
+        This endpoint registers a new user with the provided details.
+        It requires a name, last name, email, and password, validates the input,
+        and sends an email verification link if the registration is successful.
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'The first name of the user.'
+        required: true
+        example: John
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      last_name:
+        name: last_name
+        description: 'The last name of the user.'
+        required: true
+        example: Doe
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      email:
+        name: email
+        description: 'The unique email of the user. Must be a valid email format.'
+        required: true
+        example: john.doe@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      password:
+        name: password
+        description: 'The password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
+        required: true
+        example: '30lq?0ta#'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: John
+      last_name: Doe
+      email: john.doe@example.com
+      password: '30lq?0ta#'
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+              "success": 1,
+              "message": "User registered successfully. Visit Your email to Verify",
+              "user": {
+                  "id": 1,
+                  "name": "John",
+                  "last_name": "Doe",
+                  "email": "john.doe@example.com",
+                  "updated_at": "2024-11-14T12:00:00.000000Z",
+                  "created_at": "2024-11-14T12:00:00.000000Z"
+              }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+              "success": 0,
+              "error": "Validation error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+              "success": 0,
+              "message": "Error while Register",
+              "error": "Detailed error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/auth/userLogin
+    metadata:
+      groupName: 'User Management'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'User Login'
+      description: |-
+        This endpoint authenticates a user with their email and password.
+        It validates the credentials, checks if the user is verified, ensures they have the 'user' role,
+        and returns an access token if successful.
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        name: email
+        description: "The user's email address."
+        required: true
+        example: john.doe@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      password:
+        name: password
+        description: "The user's password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character."
+        required: true
+        example: 'FM,ON_?r)x8/pF'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      email: john.doe@example.com
+      password: 'FM,ON_?r)x8/pF'
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+              "success": 1,
+              "user": {
+                  "id": 1,
+                  "name": "John",
+                  "email": "john.doe@example.com",
+                  "created_at": "2024-11-14T12:00:00.000000Z",
+                  "updated_at": "2024-11-14T12:00:00.000000Z"
+              },
+              "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+              "token_type": "bearer",
+              "expires_in": 3600
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "success": 0,
+              "error": "Unauthorized Login Role. Only User can Login"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "success": 0,
+              "error": "Password does not match"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "success": 0,
+              "error": "Please Verify. Before Login"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+              "success": 0,
+              "error": "Email does not exist"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+              "success": 0,
+              "error": "Validation error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+              "success": 0,
+              "message": "Error while Login",
+              "error": "Detailed error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: api/userPasswordUpdate
+    metadata:
+      groupName: 'User Management'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update User Password'
+      description: |-
+        This endpoint allows an authenticated user to update their password. It checks if the old password is correct,
+        verifies that the new password matches the confirmation password, and updates the password if all checks pass.
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      old_password:
+        name: old_password
+        description: "The user's current password. Must be at least 8 characters."
+        required: true
+        example: OldPassword1!
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      new_password:
+        name: new_password
+        description: "The user's new password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character."
+        required: true
+        example: NewPassword1!
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      confirm_new_password:
+        name: confirm_new_password
+        description: 'Confirmation of the new password. Must match the new password.'
+        required: true
+        example: NewPassword1!
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      old_password: OldPassword1!
+      new_password: NewPassword1!
+      confirm_new_password: NewPassword1!
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+              "message": "Password Updated Successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "error": "Old Password does not match"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "error": "Confirm New Password Should match with New Password"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+              "error": "Unauthorized"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+              "errors": {
+                  "old_password": [
+                      "The old password field is required."
+                  ],
+                  "new_password": [
+                      "The new password must be at least 8 characters.",
+                      "The new password must contain an uppercase letter, a lowercase letter, a number, and a special character."
+                  ],
+                  "confirm_new_password": [
+                      "The confirm new password must match the new password."
+                  ]
+              }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+              "message": "Error while Updating User Profile",
+              "error": "Detailed error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
