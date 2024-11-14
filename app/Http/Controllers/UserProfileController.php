@@ -7,13 +7,15 @@ use App\Models\User;
 use App\Models\UserVerification;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
-use App\Mail\UserResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserVerificationConfirmation;
+use App\Mail\UserResetPassword;
+
 use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -79,6 +81,7 @@ class UserProfileController extends Controller
                     'verified' => 0,
                 ]);              
                 $code=UserVerification::where('userID',$user->id)->first();
+                
                 Mail::to($request->email)->send(new UserVerificationConfirmation($code->uniqueCode));
                 return response()->json([
                     'success' => 1,
@@ -183,7 +186,6 @@ class UserProfileController extends Controller
         ]);
     }
 
-
     public function passwordUpdateUser(Request $request)
     {
         $validator=Validator::make($request->all(),[
@@ -256,40 +258,42 @@ class UserProfileController extends Controller
             $user = $request->attributes->get('user');
             $userProfile= UserProfile::where('user_id',$user->id)->first();
             $validator = Validator::make($request->all(), [
-                'user_Name'  => 'required|string',
                 // 'last_name' => 'req'
-                'user_Number' => $userProfile ? 'required|integer' : 'required|integer|unique:user_profiles',
-                'user_Address' => 'required|string',
-                'user_City' => 'required|string',
-                'user_State' => 'required|string',
-                'user_Country' => 'required|string',
-                'user_PinCode' => 'required|string',
-                'user_AboutMe' => 'required|string',
+                'user_Number' => $userProfile ? 'nullable|integer|unique:user_profiles,user_Number' : 'required|integer|unique:user_profiles,user_Number',
+                'user_Address' => $userProfile ? 'nullable|string' : 'required|string',
+                'user_City' => $userProfile ? 'nullable|string' : 'required|string',
+                'user_State' => $userProfile ? 'nullable|string' : 'required|string',
+                'user_Country' => $userProfile ? 'nullable|string' : 'required|string',
+                'user_PinCode' => $userProfile ? 'nullable|string' : 'required|string',
+                'user_AboutMe' => $userProfile ? 'nullable|string' :'required|string',
             ]);
         
             if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
+                $error=$validator->errors()->first();
+                return response()->json([
+                    "success" => 0,
+                    'errors' => $error
+                ], 422);
             }
         
             try {
                 // $user = Auth::user();
-                $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);
-    
-                // $userProfile= UserProfile::where('user_id',$user->id)->first();
-                 
+                $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);             
+                
                 if($userProfile)
                 {
-                    $user->name = $request->user_Name;
+                    // $user->name = $request->user_Name;
                     // $user->last_name = $re
                     $userProfile->update($profile);
-                    $user->save();
-    
+                    $user->save();                    
+
                     return response()->json([
-                        'success'=>1,
+                        'success'=> 1,
                         'message' => 'Profile updated successfully','profile' => $userProfile,'user'=>$user
                     ], 201);
                 }
                 else{
+
                     $userProfile = UserProfile::create([
                         'user_id' => $user->id,
                         'user_Number' => $profile['user_Number'],
@@ -300,11 +304,19 @@ class UserProfileController extends Controller
                         'user_PinCode' => $profile['user_PinCode'],
                         'user_AboutMe' => $profile['user_AboutMe']
                     ]);
+
+                    $userisProfile = User::where('id',$user->id)->first();
+
+                    $userisProfile->update([
+                        'isProfile' => true
+                    ]);
+
                     return response()->json(['success'=>1, 'message' => 'Profile created successfully', 'profile' => $userProfile], 201);
                 }
     
             } catch (\Exception $e) {
                 return response()->json([
+                    'success' => 0,
                     'message' => 'An error occurred while Creating User Profile',
                     'error' => $e->getMessage()
                 ], 500);
@@ -355,7 +367,6 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
-
     
     public function ResetPasswordEmail(Request $request)
     {
@@ -389,12 +400,13 @@ class UserProfileController extends Controller
                 'created_at' => Carbon::now()->timestamp
             ];
             
-            $encryptedToken = Crypt::encryptString(json_encode($tokenData));
+            $encryptedToken =  Crypt::encryptString(json_encode($tokenData));
 
             Mail::to($data['email'])->send(new UserResetPassword($encryptedToken));
-        
+ 
             return response()->json([
                 'success' => 1,
+                'encypted' => $encryptedToken,
                 'message' => 'Mail Sent Successfully. Check Your mail'
             ], 200);
         
