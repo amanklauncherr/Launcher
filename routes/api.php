@@ -191,6 +191,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 });
 
+Route::get('/Get/All/Orders',[OrderIDCreationController::class,'GetAllOrders']);
 
 Route::post('/add',[IataCodeController::class,'addIata']);
 
@@ -293,7 +294,6 @@ Route::post('/Re/Price',[DotMikController::class,'RePrice']);
 
 Route::post('/Check/Wallet',[DotMikController::class,'CheckWallet']);
 
-
 Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
 
 Route::post('/Low/Fare',[DotMikController::class,'LowFare']);
@@ -303,8 +303,6 @@ Route::post('/Sector/Avalability',[DotMikController::class,'SectorAvalability'])
 Route::post('/Release/PNR',[DotMikController::class,'ReleasePNR']);
 
 // Bus 
-Route::post('/Source',[DotMitSourceCitiesController::class,'SourceCity']);
-
 Route::get('/Get/Source/Cities',[DotMikBusController::class,'GetSourceCities']);
 
 Route::post('/Avaliable/Trip',[DotMikBusController::class,'AvailableTrip']);
