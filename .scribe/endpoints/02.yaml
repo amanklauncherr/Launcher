@@ -62,7 +62,7 @@ endpoints:
         name: password
         description: 'The password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
         required: true
-        example: 't=a=>e"9y&yS'
+        example: '`rUt^*ADQ}-uyZ=('
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -72,7 +72,7 @@ endpoints:
       name: John
       last_name: Doe
       email: john.doe@example.com
-      password: 't=a=>e"9y&yS'
+      password: '`rUt^*ADQ}-uyZ=('
     fileParameters: []
     responses:
       -
@@ -158,7 +158,7 @@ endpoints:
         name: password
         description: "The user's password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character."
         required: true
-        example: ',i5J3N'
+        example: 'VuPeQ]7z'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -166,7 +166,7 @@ endpoints:
         custom: []
     cleanBodyParameters:
       email: john.doe@example.com
-      password: ',i5J3N'
+      password: 'VuPeQ]7z'
     fileParameters: []
     responses:
       -
@@ -276,14 +276,14 @@ endpoints:
         name: uniqueCode
         description: 'The unique code provided to verify the user.'
         required: true
-        example: nostrum
+        example: quos
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      uniqueCode: nostrum
+      uniqueCode: quos
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -347,7 +347,7 @@ endpoints:
         name: user_Number
         description: "The user's phone number. Required if creating a profile, else optional."
         required: false
-        example: 9
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -357,7 +357,7 @@ endpoints:
         name: user_Address
         description: "The user's address. Required if creating a profile, else optional."
         required: false
-        example: nam
+        example: non
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -367,7 +367,7 @@ endpoints:
         name: user_City
         description: "The user's city. Required if creating a profile, else optional."
         required: false
-        example: asperiores
+        example: qui
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -377,7 +377,7 @@ endpoints:
         name: user_State
         description: "The user's state. Required if creating a profile, else optional."
         required: false
-        example: et
+        example: explicabo
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -387,7 +387,7 @@ endpoints:
         name: user_Country
         description: "The user's country. Required if creating a profile, else optional."
         required: false
-        example: voluptas
+        example: delectus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -397,7 +397,7 @@ endpoints:
         name: user_PinCode
         description: "The user's postal code. Required if creating a profile, else optional."
         required: false
-        example: illum
+        example: hic
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -407,20 +407,20 @@ endpoints:
         name: user_AboutMe
         description: "The user's bio or description. Required if creating a profile, else optional."
         required: false
-        example: odit
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      user_Number: 9
-      user_Address: nam
-      user_City: asperiores
-      user_State: et
-      user_Country: voluptas
-      user_PinCode: illum
-      user_AboutMe: odit
+      user_Number: 2
+      user_Address: non
+      user_City: qui
+      user_State: explicabo
+      user_Country: delectus
+      user_PinCode: hic
+      user_AboutMe: consequatur
     fileParameters: []
     responses:
       -

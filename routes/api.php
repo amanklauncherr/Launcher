@@ -187,9 +187,11 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
    
-    Route::get('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
+    Route::get('/get/Order/User',[OrderIDCreationController::class,'GetOrderUser']);
 
 });
+
+Route::get('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
 Route::get('/Get/All/Orders',[OrderIDCreationController::class,'GetAllOrders']);
 
@@ -245,37 +247,40 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']); //
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']); //
 
 // Saved  Cites and State
-Route::get('/cities',[CitesController::class,'Cites']);
+Route::get('/cities',[CitesController::class,'Cites']); // 
 
-Route::get('/STATE',[StateController::class,'AllState']);
+Route::get('/CITIES',[StateController::class,'CITIES']);  //
 
-Route::get('/showState',[StateController::class,'showState']);
+Route::get('/STATE',[StateController::class,'AllState']); //
 
-Route::get('/CITIES',[StateController::class,'CITIES']);
+Route::get('/showState',[StateController::class,'showState']);  //
 
-Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
+Route::get('/showCode',[CountryCodeController::class,'showCountryCode']); //
 
 
 // All iata
-Route::get('/showIata',[IataCodeController::class,'showIata']);
+Route::get('/showIata',[IataCodeController::class,'showIata']); //
 
 // Iata by query
-Route::get('/showIata/airport',[IataCodeController::class,'showAirport']);
+Route::get('/Check/IATA',[IataCodeController::class,'CheckIATA']); //
 
-Route::get('/Check/IATA',[IataCodeController::class,'CheckVIAIATA']);
+Route::get('/showIata/airport',[IataCodeController::class,'showAirport']); //
 
-Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
-
+Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']); //
 
 
 
 // ORDERID
 
 
-// PAYPAL
-Route::post('/paypal',[PaymentController::class,'paypal']);
+// Flight and Order PAYPAL
+Route::post('/paypal',[PaymentController::class,'flightPaypal']);
 
 Route::get('/success',[PaymentController::class,'success'])->name('success');
+
+Route::post('/Order/Paypal/Payment',[PaymentController::class,'OrderPaypal']);
+
+Route::get('/Order/Success',[PaymentController::class,'success'])->name('Ordersuccess');
 
 Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
 

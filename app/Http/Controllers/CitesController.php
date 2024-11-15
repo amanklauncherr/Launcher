@@ -8,7 +8,20 @@ use Illuminate\Http\Request;
 
 class CitesController extends Controller
 {
-    //
+    /**
+     * @group State&City&Iata
+     *
+     * API to retrieve a list of all cities, sorted alphabetically.
+     *
+     * @response 200 {
+     *   "city": ["New York", "Los Angeles", "Chicago", "San Francisco", "Miami"]
+     * }
+     *
+     * @response 500 {
+     *   "message": "An error occurred while retrieving cities",
+     *   "error": "<error-message>"
+     * }
+     */
     public function Cites(Request $request){
         
         // Retrieve all cities

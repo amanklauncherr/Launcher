@@ -151,14 +151,14 @@ endpoints:
         name: coupon_code
         description: ''
         required: true
-        example: assumenda
+        example: ullam
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      coupon_code: assumenda
+      coupon_code: ullam
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -267,14 +267,14 @@ endpoints:
         name: coupon_code
         description: ''
         required: true
-        example: totam
+        example: ut
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      coupon_code: totam
+      coupon_code: ut
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

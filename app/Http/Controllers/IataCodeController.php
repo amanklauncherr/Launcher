@@ -18764,133 +18764,173 @@ class IataCodeController extends Controller
 //           'state' => $data['state']
 //       ]);
 
-public function showIata()
-{
-    $code=iatacode::get();
-    if($code->isEmpty())
-    {
-      return response()->json(['success'=>0,'message' => 'No Data Found']);
-    }
-    return response()->json(['success'=>1, 'Data' => $code]);
-}
+  /**
+   * @group IATA Code Management
+   *
+   * API to retrieve a list of all IATA codes.
+   *
+   * @response 200 {
+   *   "success": 1,
+   *   "Data": [
+   *     {"iata_code": "XYZ", "airport_name": "XYZ Airport", "city": "XYZ City", "country": "Country", ...},
+   *     ...
+   *   ]
+   * }
+   *
+   * @response 404 {
+   *   "success": 0,
+   *   "message": "No Data Found"
+   * }
+   */
 
-public function CheckVIAIATA(Request $request)
-{
-    $paramsOrigin = $request->query('Origin');
-    $paramsDestination = $request->query('Destination');
-
-    if(!$paramsOrigin || !$paramsDestination)
-    {
-      return response()->json([
-        'success' => 0,
-        'message' => 'Please Provide Origin and Destination Iata Both'
-      ], 404);
-    }
-
-    $IataOriginExists = iatacode::where('iata_code',$paramsOrigin)->first();
-
-    $IataDestinationExists = iatacode::where('iata_code',$paramsDestination)->first();
-
-    if(!$IataOriginExists )
-    {
-      return response()->json([
-        'success' => 0,
-        'message' => 'Origin Iata Not Found'
-      ], 404);
-    }
-    if(!$IataDestinationExists )
-    {
-      return response()->json([
-        'success' => 0,
-        'message' => 'Destination Iata Not Found'
-      ], 404);
-    }
-    // return response()->json(['O'=>$IataOriginExists,'D'=>$IataDestinationExists]);
-
-    if($IataOriginExists->country === 'India' && $IataDestinationExists->country === 'India' )
-    {
-      return response()->json([
-        'success' => 1,
-        'data' => '0'
-      ], 200); 
-    }
-    else{
-      return response()->json([
-        'success' => 1,
-        'data' => '1'
-      ], 200);
-    }
-}
-
-public function showAirport(Request $request)
-{
-  try 
+  public function showIata()
   {
-    $query = $request->query('query');
-    // $city = $request->query('city');
-    
-    $airport = iatacode::where('iata_code', $query )
-    ->orWhere('city', $query )
-    ->orWhere('country', $query )
-    ->orWhere('state', $query )
-    ->orWhere('airport_name', $query )
-    ->get();
-    
-    if ($airport->isEmpty()) {
-      return response()->json([
+      $code=iatacode::get();
+      if($code->isEmpty())
+      {
+        return response()->json(['success'=>0,'message' => 'No Data Found']);
+      }
+      return response()->json(['success'=>1, 'Data' => $code]);
+  }
+
+
+  /**
+   * @group IATA Code Management
+   *
+   * API to check if the provided Origin and Destination any IATA codes is either Domestic or Intrernational if Domestic it will return 0 else 1.
+   * 
+   * @queryParam Origin string required The IATA code for the origin airport.
+   * @queryParam Destination string required The IATA code for the destination airport.
+   *
+   * @response 200 {
+   *   "success": 1,
+   *   "data": "0" // Both IATA codes are from India
+   * }
+   * @response 200 {
+   *   "success": 1,
+   *   "data": "1" // At least one IATA code is not from India
+   * }
+   * 
+   * @response 404 {
+   *   "success": 0,
+   *   "message": "Please Provide Origin and Destination Iata Both"
+   * }
+   * @response 404 {
+   *   "success": 0,
+   *   "message": "Origin Iata Not Found"
+   * }
+   * @response 404 {
+   *   "success": 0,
+   *   "message": "Destination Iata Not Found"
+   * }
+   */
+  public function CheckIATA(Request $request)
+  {
+      $paramsOrigin = $request->query('Origin');
+      $paramsDestination = $request->query('Destination');
+
+      if(!$paramsOrigin || !$paramsDestination)
+      {
+        return response()->json([
           'success' => 0,
-          'message' => 'No Data Found'
-      ], 404);
-    }
-    return response()->json([
-      'success' => 1,
-      'data' => $airport
-    ], 200);
-    
-    // $iata = $request->query('iata');
-    // $city = $request->query('city');
+          'message' => 'Please Provide Origin and Destination Iata Both'
+        ], 404);
+      }
 
-    // // Ensure that at least one parameter is provided for searching
-    // if (!$iata && !$city) {
-    //     return response()->json([
-    //         'success' => 0,
-    //         'message' => 'Please provide either IATA code or City name to search.'
-    //     ], 400);
-    // }
+      $IataOriginExists = iatacode::where('iata_code',$paramsOrigin)->first();
 
-    // // Create the query, but only add conditions if values are provided
-    // $query = iatacode::query();
+      $IataDestinationExists = iatacode::where('iata_code',$paramsDestination)->first();
 
-    // if ($iata) {
-    //     $query->where('iata_code', 'like', '%' . $iata . '%');
-    // }
+      if(!$IataOriginExists )
+      {
+        return response()->json([
+          'success' => 0,
+          'message' => 'Origin Iata Not Found'
+        ], 404);
+      }
+      if(!$IataDestinationExists )
+      {
+        return response()->json([
+          'success' => 0,
+          'message' => 'Destination Iata Not Found'
+        ], 404);
+      }
+      // return response()->json(['O'=>$IataOriginExists,'D'=>$IataDestinationExists]);
 
-    // if ($city) {
-    //     $query->orWhere('city', 'like', '%' . $city . '%');
-    // }
+      if($IataOriginExists->country === 'India' && $IataDestinationExists->country === 'India' )
+      {
+        return response()->json([
+          'success' => 1,
+          'data' => '0'
+        ], 200); 
+      }
+      else{
+        return response()->json([
+          'success' => 1,
+          'data' => '1'
+        ], 200);
+      }
+  }
 
-    // $airport = $query->get();
+  /**
+   * @group Airport Search
+   *
+   * API to search for airports based on a query string, which could match IATA code, city, country, state, or airport name.
+   * 
+   * @queryParam query string required The search term (IATA code, city, country, state, or airport name).
+   *
+   * @response 200 {
+   *   "success": 1,
+   *   "data": [
+   *     {"iata_code": "XYZ", "airport_name": "XYZ Airport", "city": "XYZ City", "country": "Country", ...},
+   *     ...
+   *   ]
+   * }
+   *
+   * @response 404 {
+   *   "success": 0,
+   *   "message": "No Data Found"
+   * }
+   *
+   * @response 500 {
+   *   "success": 0,
+   *   "error": "Something went wrong while retrieving data",
+   *   "details": "<error message>"
+   * }
+   */
 
-    // if ($airport->isEmpty()) {
-    //     return response()->json([
-    //         'success' => 0,
-    //         'message' => 'No Data Found'
-    //     ], 404);
-    // }
-
-    // return response()->json([
-    //     'success' => 1,
-    //     'data' => $airport
-    // ], 200);
-
-  } catch (\Throwable $th) {
-        // Handle any exceptions and return a JSON response
+  public function showAirport(Request $request)
+  {
+    try 
+    {
+      $query = $request->query('query');
+      
+      $airport = iatacode::where('iata_code', $query )
+      ->orWhere('city', $query )
+      ->orWhere('country', $query )
+      ->orWhere('state', $query )
+      ->orWhere('airport_name', $query )
+      ->get();
+      
+      if ($airport->isEmpty()) {
         return response()->json([
             'success' => 0,
-            'error' => 'Something went wrong while retrieving data',
-            'details' => $th->getMessage()
-        ], 500);
-    }
-}    
+            'message' => 'No Data Found'
+        ], 404);
+      }
+      return response()->json([
+        'success' => 1,
+        'data' => $airport
+      ], 200);
+      
+    } catch (\Throwable $th) {
+          // Handle any exceptions and return a JSON response
+          return response()->json([
+              'success' => 0,
+              'error' => 'Something went wrong while retrieving data',
+              'details' => $th->getMessage()
+          ], 500);
+      }
+  }    
 }
 

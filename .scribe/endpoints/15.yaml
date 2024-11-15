@@ -34,14 +34,14 @@ endpoints:
         name: id
         description: 'optional The ID of the destination to be updated. If not provided, a new destination is created.'
         required: false
-        example: est
+        example: sit
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanQueryParameters:
-      id: est
+      id: sit
     bodyParameters:
       name:
         name: name
@@ -98,7 +98,7 @@ endpoints:
         description: 'Array of images for the destination. Each image must be of type jpeg, png, jpg, gif, or svg.'
         required: true
         example:
-          - cupiditate
+          - sunt
         type: 'string[]'
         enumValues: []
         exampleWasSpecified: false
@@ -130,7 +130,7 @@ endpoints:
       state: '"Ile-de-France"'
       destination_type: '"Tourist"'
       images:
-        - cupiditate
+        - sunt
       short_description: '"The city of lights."'
       description: '"Paris is known for its art, fashion, and culture."'
     fileParameters:

@@ -149,7 +149,7 @@ endpoints:
         description: 'An array of products to update with their `product_id`, `quantity`, and `price`. Only products with quantities greater than zero are retained.'
         required: false
         example:
-          - reiciendis
+          - tempore
         type: 'string[]'
         enumValues: []
         exampleWasSpecified: false
@@ -157,7 +157,7 @@ endpoints:
         custom: []
     cleanBodyParameters:
       products:
-        - reiciendis
+        - tempore
     fileParameters: []
     responses:
       -

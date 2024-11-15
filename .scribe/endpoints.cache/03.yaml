@@ -30,14 +30,14 @@ endpoints:
         name: email
         description: "The user's email address."
         required: true
-        example: chamill@example.org
+        example: zwest@example.com
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      email: chamill@example.org
+      email: zwest@example.com
     fileParameters: []
     responses:
       -
@@ -113,7 +113,7 @@ endpoints:
         name: token
         description: "The token sent to the user's email for verification."
         required: true
-        example: harum
+        example: ut
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -123,15 +123,15 @@ endpoints:
         name: password
         description: 'The new password (minimum 8 characters, must include at least one uppercase letter, one lowercase letter, one number, and one special character).'
         required: true
-        example: ',ip`N8dp3ASV('
+        example: '4.hFJ"k\glD4}@U"fYL'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      token: harum
-      password: ',ip`N8dp3ASV('
+      token: ut
+      password: '4.hFJ"k\glD4}@U"fYL'
     fileParameters: []
     responses:
       -

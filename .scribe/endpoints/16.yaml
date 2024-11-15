@@ -36,7 +36,7 @@ endpoints:
         name: note
         description: 'An optional note for the enquiry.'
         required: false
-        example: sapiente
+        example: dolorum
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -44,7 +44,7 @@ endpoints:
         custom: []
     cleanBodyParameters:
       gigID: 1
-      note: sapiente
+      note: dolorum
     fileParameters: []
     responses:
       -

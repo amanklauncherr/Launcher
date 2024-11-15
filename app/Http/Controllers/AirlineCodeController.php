@@ -9,6 +9,41 @@ use Illuminate\Http\Request;
 
 class AirlineCodeController extends Controller
 {
+
+    /**
+     * @group Airline Management
+     *
+     * API to retrieve airline data by its carrier code (IATA code).
+     *
+     * @queryParam code string required The IATA carrier code.
+     *
+     * @response 200 {
+     *   "success": 1,
+     *   "data": {
+     *     "carrier_code": "XYZ",
+     *     "airline_name": "XYZ Airlines",
+     *     "country": "Country",
+     *     "other_fields": "..."
+     *   }
+     * }
+     * 
+     * @response 400 {
+     *   "success": 0,
+     *   "message": "Airline code is required"
+     * }
+     * 
+     * @response 404 {
+     *   "success": 0,
+     *   "message": "No Data Found"
+     * }
+     * 
+     * @response 500 {
+     *   "success": 0,
+     *   "error": "Something went wrong while retrieving data",
+     *   "details": "<error message>"
+     * }
+     */
+
 public function showAirlineCode(Request $request)
 {
     try {
