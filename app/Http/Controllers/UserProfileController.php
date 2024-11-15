@@ -26,6 +26,46 @@ use Illuminate\Support\Facades\Crypt;
 class UserProfileController extends Controller
 {
     //
+
+    /**
+     * Register a new user.
+     *
+     * This endpoint registers a new user with the provided details.
+     * It requires a name, last name, email, and password, validates the input,
+     * and sends an email verification link if the registration is successful.
+     *
+     * @group User Management
+     *
+     * @bodyParam name string required The first name of the user. Example: John
+     * @bodyParam last_name string required The last name of the user. Example: Doe
+     * @bodyParam email string required The unique email of the user. Must be a valid email format. Example: john.doe@example.com
+     * @bodyParam password string required The password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+     *
+     * @response 201 {
+     *     "success": 1,
+     *     "message": "User registered successfully. Visit Your email to Verify",
+     *     "user": {
+     *         "id": 1,
+     *         "name": "John",
+     *         "last_name": "Doe",
+     *         "email": "john.doe@example.com",
+     *         "updated_at": "2024-11-14T12:00:00.000000Z",
+     *         "created_at": "2024-11-14T12:00:00.000000Z"
+     *     }
+     * }
+     *
+     * @response 422 {
+     *     "success": 0,
+     *     "error": "Validation error message"
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "message": "Error while Register",
+     *     "error": "Detailed error message"
+     * }
+     */
+
     public function userRegister(Request $request)
     {
         $validator=Validator::make($request->all(),[
@@ -105,6 +145,63 @@ class UserProfileController extends Controller
         }
     }
 
+    /**
+     * User Login
+     *
+     * This endpoint authenticates a user with their email and password.
+     * It validates the credentials, checks if the user is verified, ensures they have the 'user' role,
+     * and returns an access token if successful.
+     *
+     * @group User Management
+     *
+     * @bodyParam email string required The user's email address. Example: john.doe@example.com
+     * @bodyParam password string required The user's password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character.
+     *
+     * @response 200 {
+     *     "success": 1,
+     *     "user": {
+     *         "id": 1,
+     *         "name": "John",
+     *         "email": "john.doe@example.com",
+     *         "created_at": "2024-11-14T12:00:00.000000Z",
+     *         "updated_at": "2024-11-14T12:00:00.000000Z"
+     *     },
+     *     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+     *     "token_type": "bearer",
+     *     "expires_in": 3600
+     * }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "Unauthorized Login Role. Only User can Login"
+     * }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "Password does not match"
+     * }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "Please Verify. Before Login"
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "error": "Email does not exist"
+     * }
+     *
+     * @response 422 {
+     *     "success": 0,
+     *     "error": "Validation error message"
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "message": "Error while Login",
+     *     "error": "Detailed error message"
+     * }
+     */
     public function userLogin(Request $request)
     {
         $validator=Validator::make($request->all(),[
@@ -136,11 +233,11 @@ class UserProfileController extends Controller
             if(!$user){
                 return response()->json([ 'success' => 0,'error' => 'Email does not exist'], 404);
             }
-            // $userVerified=UserVerification::where('userID',$user->id)->first();
-            // if($userVerified->verified === 0)
-            // {
-            //     return response()->json([ 'success' => 0,'error' => 'Please Verify. Before Login'], 401);
-            // }
+            $userVerified=UserVerification::where('userID',$user->id)->first();
+            if($userVerified->verified === 0)
+            {
+                return response()->json([ 'success' => 0,'error' => 'Please Verify. Before Login'], 401);
+            }
             if(!Hash::check($credentials['password'],$user->password))
             {
                 return response()->json([ 'success' => 0,'error' => 'Password does not match'], 401);
@@ -162,17 +259,6 @@ class UserProfileController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-            //  //  to check roles
-            // $roles = $user->getRoleNames();
-            // print_r($roles->toArray());die();
-            
-            // $verificationStatus=UserVerification::where('userID',$user->id)->get();
-            // if($verificationStatus[0]->verified === 1)
-            // {
-            // }
-            // return response()->json([ 'success' => 0,'error' => 'Please Before login verify your registration by clicking on the link you have been sent on your'], 401);  
-
-
     }
 
     protected function respondWithToken($token){
@@ -185,6 +271,55 @@ class UserProfileController extends Controller
             
         ]);
     }
+
+    /**
+     * Update User Password
+     *
+     * This endpoint allows an authenticated user to update their password. It checks if the old password is correct,
+     * verifies that the new password matches the confirmation password, and updates the password if all checks pass.
+     *
+     * @group User Management
+     *
+     * @bodyParam old_password string required The user's current password. Must be at least 8 characters. Example: OldPassword1!
+     * @bodyParam new_password string required The user's new password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character. Example: NewPassword1!
+     * @bodyParam confirm_new_password string required Confirmation of the new password. Must match the new password. Example: NewPassword1!
+     *
+     * @response 201 {
+     *     "message": "Password Updated Successfully"
+     * }
+     *
+     * @response 401 {
+     *     "error": "Old Password does not match"
+     * }
+     *
+     * @response 401 {
+     *     "error": "Confirm New Password Should match with New Password"
+     * }
+     *
+     * @response 401 {
+     *     "error": "Unauthorized"
+     * }
+     *
+     * @response 422 {
+     *     "errors": {
+     *         "old_password": [
+     *             "The old password field is required."
+     *         ],
+     *         "new_password": [
+     *             "The new password must be at least 8 characters.",
+     *             "The new password must contain an uppercase letter, a lowercase letter, a number, and a special character."
+     *         ],
+     *         "confirm_new_password": [
+     *             "The confirm new password must match the new password."
+     *         ]
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "message": "Error while Updating User Profile",
+     *     "error": "Detailed error message"
+     * }
+     */
 
     public function passwordUpdateUser(Request $request)
     {
@@ -215,26 +350,27 @@ class UserProfileController extends Controller
 
             $tokenType = $request->attributes->get('token_type');
             if ($tokenType === 'public') {
-                return response()->json(['Success'=> 0,'data' => 'Unauthorized, Login To Add Enquiry']);
-            } elseif ($tokenType === 'user') {
+                return response()->json(['Success'=> 0,'data' => 'Unauthorized, Public token provided, Login To Access']);
+            } elseif ($tokenType === 'user') 
+            {
                 // $user = Auth::user();
 
-            $user = $request->attributes->get('user');
-            if(!Hash::check($credentials['old_password'],$user->password)){
-                return response()->json(['error' => 'Old Password does not match'], 401);
+                $user = $request->attributes->get('user');
+                if(!Hash::check($credentials['old_password'],$user->password)){
+                    return response()->json(['success'=> 0,'error' => 'Old Password does not match'], 401);
+                }
+                if($credentials['new_password'] != $credentials['confirm_new_password']){
+                    return response()->json(['success'=> 0,'error' => 'Confirm New Password Should match with New Password '], 401);
+                }
+
+                $user->password = Hash::make($credentials['new_password']);
+
+                $user->save();
+
+                return response()->json(['success'=> 1,'message' => 'Password Updated Succcessfully'], 201);
             }
-            if($credentials['new_password'] != $credentials['confirm_new_password']){
-                return response()->json(['error' => 'Confirm New Password Should match with New Password '], 401);
-            }
 
-            $user->password = Hash::make($credentials['new_password']);
-
-            $user->save();
-
-            return response()->json(['message' => 'Password Updated Succcessfully'], 201);
-            }
-
-            return response()->json(['error' => 'Unauthorized'], 401);
+            // return response()->json(['success'=> 0,'error' => 'Unauthorized'], 401);
 
 
         } catch (\Exception $e) {
@@ -245,6 +381,53 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Add or update the user profile.
+     *
+     * This endpoint allows an authenticated user to create or update their profile.
+     * If the profile exists, it will be updated with the provided details.
+     *
+     * @group User Management
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after User Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}     
+     *
+     * @bodyParam user_Number integer The user's phone number. Required if creating a profile, else optional.
+     * @bodyParam user_Address string The user's address. Required if creating a profile, else optional.
+     * @bodyParam user_City string The user's city. Required if creating a profile, else optional.
+     * @bodyParam user_State string The user's state. Required if creating a profile, else optional.
+     * @bodyParam user_Country string The user's country. Required if creating a profile, else optional.
+     * @bodyParam user_PinCode string The user's postal code. Required if creating a profile, else optional.
+     * @bodyParam user_AboutMe string The user's bio or description. Required if creating a profile, else optional.
+     *
+     * @response 201 {
+     *    "success": 1,
+     *    "message": "Profile created successfully",
+     *    "profile": {
+     *       "user_id": 1,
+     *       "user_Number": "1234567890",
+     *       "user_Address": "123 Main St",
+     *       "user_City": "New York",
+     *       "user_State": "NY",
+     *       "user_Country": "USA",
+     *       "user_PinCode": "10001",
+     *       "user_AboutMe": "Hello, I am a developer."
+     *    }
+     * }
+     * @response 422 {
+     *    "errors": "Validation error message here"
+     * }
+     * @response 401 {
+     *    "success": 0,
+     *    "message": "Unauthorized, Login To Update Your Profile"
+     * }
+     */
 
     public function AddUserProfile(Request $request)
     {
@@ -289,8 +472,10 @@ class UserProfileController extends Controller
 
                     return response()->json([
                         'success'=> 1,
-                        'message' => 'Profile updated successfully','profile' => $userProfile,'user'=>$user
-                    ], 201);
+                        'message' => 'Profile updated successfully',
+                        'profile' => $userProfile,
+                        'user'=>$user
+                    ], 200);
                 }
                 else{
 
@@ -325,6 +510,57 @@ class UserProfileController extends Controller
         return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
     }
 
+
+    /**
+     * Show the user's profile information.
+     *
+     * This endpoint allows an authenticated user to view their profile information.
+     * If the user profile doesn't exist, a message prompting them to create one is returned.
+     *
+     * @group User Management
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after User Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @response 200 {
+     *    "success": 1,
+     *    "user": {
+     *       "id": 1,
+     *       "name": "John Doe",
+     *       "email": "john@example.com"
+     *    },
+     *    "userprofile": {
+     *       "user_id": 1,
+     *       "user_Number": "1234567890",
+     *       "user_Address": "123 Main St",
+     *       "user_City": "New York",
+     *       "user_State": "NY",
+     *       "user_Country": "USA",
+     *       "user_PinCode": "10001",
+     *       "user_AboutMe": "Hello, I am a developer."
+     *    }
+     * }
+     * 
+     * @response 200 {
+     *    "success": 1,
+     *    "user": {
+     *       "id": 1,
+     *       "name": "John Doe",
+     *       "email": "john@example.com"
+     *    },
+     *    "userprofile": "Please add your personal information in your profile"
+     * }
+     * 
+     * @response 401 {
+     *    "success": 0,
+     *    "message": "Unauthorized, Login To Update Your Profile"
+     * }
+     */
     public function showUserProfile(Request $request)
     {
         try {
@@ -334,7 +570,8 @@ class UserProfileController extends Controller
         if ($tokenType === 'public') {
             return response()->json(['success'=> 0,'message' => 'Unauthorized, Login To Update Your Profile']);
         }
-        elseif ($tokenType === 'user'){
+        elseif ($tokenType === 'user')
+        {
             // $user=Auth::user();
             $user = $request->attributes->get('user');
             $id=$user->id;
@@ -359,7 +596,7 @@ class UserProfileController extends Controller
                 }      
             }
         }
-        return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
+            return response()->json(['success'=>0,'error' => 'Unauthorized.'], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while Showing User data',
@@ -367,6 +604,34 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Send a password reset email.
+     *
+     * This endpoint allows a user to request a password reset by providing their email address.
+     * If the email is valid and belongs to a user with the "user" role, an encrypted token is sent to the email.
+     *
+     * @group User Password Reset
+     *
+     * @bodyParam email string required The user's email address.
+     *
+     * @response 200 {
+     *    "success": 1,
+     *    "message": "Mail Sent Successfully. Check Your mail"
+     * }
+     * @response 400 {
+     *    "success": 0,
+     *    "error": "No User Exists with provided email"
+     * }
+     * @response 401 {
+     *    "success": 0,
+     *    "error": "Unauthorized Email Role. Only User email can access"
+     * }
+     * @response 422 {
+     *    "success": 0,
+     *    "error": "Validation error message here"
+     * }
+     */
     
     public function ResetPasswordEmail(Request $request)
     {
@@ -407,8 +672,7 @@ class UserProfileController extends Controller
             return response()->json([
                 'success' => 1,
                 'message' => 'Mail Sent Successfully. Check Your mail'
-            ], 200);
-        
+            ], 200);  
 
         } catch (\Exception $e) {
             //throw $th;
@@ -418,6 +682,39 @@ class UserProfileController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Reset the user's password.
+     *
+     * This endpoint allows a user to reset their password using a token sent to their email.
+     * The token is validated, and if it has not expired, the user's password is updated.
+     *
+     * @group User Password Reset
+     *
+     * @bodyParam token string required The token sent to the user's email for verification.
+     * @bodyParam password string required The new password (minimum 8 characters, must include at least one uppercase letter, one lowercase letter, one number, and one special character).
+     *
+     * @response 200 {
+     *    "success": 1,
+     *    "message": "Password Updated Successfully"
+     * }
+     * @response 400 {
+     *    "success": 0,
+     *    "error": "Your Link has Expired create a new one"
+     * }
+     * @response 401 {
+     *    "success": 0,
+     *    "error": "Unauthorized Email Role. Only User email can access"
+     * }
+     * @response 422 {
+     *    "success": 0,
+     *    "error": "Validation error message here"
+     * }
+     * @response 500 {
+     *    "success": false,
+     *    "message": "An error occurred while updating the password"
+     * }
+     */
 
     public function ResetPassword(Request $request)
     {

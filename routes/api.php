@@ -77,13 +77,13 @@ Route::group(['middleware'=>['api'],'prefix'=>'auth'], function(){
 });
 
 // Verify user after register
-Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);
+Route::get('/verified/{uniqueCode}',[UserVerificationController::class,'verify']);  //
 
 // Send Email for password reset
-Route::post('Reset/Password/Email',[UserProfileController::class,'ResetPasswordEmail']);
+Route::post('Reset/Password/Email',[UserProfileController::class,'ResetPasswordEmail']);  //
 
 // Pasword Reset
-Route::post('Reset/Password',[UserProfileController::class,'ResetPassword']);
+Route::post('Reset/Password',[UserProfileController::class,'ResetPassword']); //
 
 
 // ,'throttle:1000,1'
@@ -132,22 +132,21 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
     Route::delete('/Delete/QueAndAns/{id}',[QueAndAnsController::class,'deleteQueAndAns']);  //
 
     // Coupon 
-    Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);
-    Route::put('/Update-Coupon/{coupon_code}',[CouponController::class,'updateCoupon']);
-    Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);
-
+    Route::post('/Add-Coupon',[CouponController::class,'addCoupon']);  //  
+    Route::put('/Update-Coupon/{coupon_code}',[CouponController::class,'updateCoupon']);  //
+    Route::delete('/Delete-Coupon/{coupon_code}',[CouponController::class,'deleteCoupon']);  //
 
     // Job
-    Route::post('/addJob',[JobPostingController::class,'AddJob']);
-    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);
-    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']); 
-    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);
+    Route::post('/addJob',[JobPostingController::class,'AddJob']); //
+    Route::put('/updateJobActive/{id}',[JobPostingController::class,'updateJobActive']);  //
+    Route::put('/updateJobVerified/{id}',[JobPostingController::class,'updateJobVerified']);  //
+    Route::get('/showJobs/Admin',[JobPostingController::class,'showJobAdmin']);  //
     Route::get('/emp/{user_id}',[JobPostingController::class,'empProfile']); //employer details for admin to see
-    Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']);
+    Route::post('/updateJob/{id}',[JobPostingController::class,'updateJob']); //
    
    // Destination
-   Route::post('/addDestination',[DestinationController::class,'addDestination']);
-   Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);
+   Route::post('/addDestination',[DestinationController::class,'addDestination']);  //
+   Route::delete('/deleteDestination',[DestinationController::class,'deleteDestination']);  //
 
     // Subscription Details
     Route::post('/add/Subscription',[SubscriptionDetailController::class,'addSubscription']);
@@ -159,23 +158,23 @@ Route::middleware(['check.bearer.token','role:admin'])->group(function () {
 Route::middleware(['publictokenOrauth'])->group(function () {
 
     // userProfile
-    Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);
-    Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);
-    Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);
+    Route::post('/addUserProfile',[UserProfileController::class,'AddUserProfile']);  //
+    Route::get('/showUserProfile',[UserProfileController::class,'showUserProfile']);  //
+    Route::put('/userPasswordUpdate',[UserProfileController::class,'passwordUpdateUser']);  //
 
     // Enquiry
-    Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']);
+    Route::post('/addEnquiry',[EnquiryController::class,'AddEnquiry']); //
 
     // Search Gigs
-    Route::get('/searchJob',[JobPostingController::class,'searchJob']);
+    Route::get('/searchJob',[JobPostingController::class,'searchJob']);//
 
     // Single Gig Info
-    Route::get('/showJob',[JobPostingController::class,'showJob']);
+    Route::get('/showJob',[JobPostingController::class,'showJob']); //
 
     // Add to cart
-    Route::post('/updateCart',[CartDetailsController::class,'updateCart']); 
+    Route::post('/updateCart',[CartDetailsController::class,'updateCart']);  //
     
-    Route::post('/showCart',[CartDetailsController::class,'showCart']); 
+    Route::post('/showCart',[CartDetailsController::class,'showCart']);  //
 
     // Add User Subscription
     Route::post('/add/User/Subscription',[UserSubscriptionController::class,'subscribeUser']);
@@ -185,6 +184,10 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::get('/Flight/Travel/History',[TravelHistoryController::class,'GetFlightTravelHistory']);
 
     Route::get('/Bus/Travel/History',[TravelHistoryController::class,'GetBusTravelHistory']);
+
+    Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
+   
+    Route::get('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
 });
 
@@ -196,25 +199,24 @@ Route::get('/showJoinOffer',[JoinOfferController::class,'showJoinOffer']);  //
 Route::get('/showSubCard',[SubscriptionCardController::class,'showSubCard']);   //
 
 // Destination
-Route::get('/showDestination',[DestinationController::class,'showDestination']);
+Route::get('/showDestination',[DestinationController::class,'showDestination']);  //
 
-Route::get('/destination',[DestinationController::class,'destination']);
+Route::get('/destination',[DestinationController::class,'destination']);  //
 
-Route::post('/searchDestination',[DestinationController::class,'searchDestination']);
+Route::post('/searchDestination',[DestinationController::class,'searchDestination']); //
 
-Route::get('/destinationType',[DestinationController::class,'destinationType']);
+Route::get('/destinationType',[DestinationController::class,'destinationType']);  //
 
-Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
 
-Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']);
+Route::get('/showEnquiry',[EnquiryController::class,'showEnquiry']); //
 
 // OUIZ
-Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']);
-Route::get('/ShowQuiz',[QuizResponseController::class,'ShowQuiz']);
+Route::post('/AddQuiz',[QuizResponseController::class,'AddQuiz']); //
+Route::get('/ShowQuiz',[QuizResponseController::class,'ShowQuiz']);  //
 
 // Email
-Route::post('/AddEmail',[NewsLetterController::class,'AddEmail']);
-Route::get('/ShowEmail',[NewsLetterController::class,'ShowEmail']);
+Route::post('/AddEmail',[NewsLetterController::class,'AddEmail']);  //
+Route::get('/ShowEmail',[NewsLetterController::class,'ShowEmail']); //
 
 // Show Client
 Route::get('/Show-Client',[ClientInfoController::class,'showClient']);  //
@@ -223,7 +225,7 @@ Route::get('/Show-Client',[ClientInfoController::class,'showClient']);  //
 Route::get('/Show-Banner',[BannerController::class,'showUpload']);  //
 
 // Show Coupon
-Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);
+Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);  //
 
 Route::get('/Apply-Coupon',[CouponController::class,'applyCoupon']);
 
@@ -241,11 +243,16 @@ Route::get('/Show-Details',[CompanyDetailController::class,'showDetail']); //
 
 Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']); //
 
+// Saved  Cites and State
 Route::get('/cities',[CitesController::class,'Cites']);
 
 Route::get('/STATE',[StateController::class,'AllState']);
 
+Route::get('/showState',[StateController::class,'showState']);
+
 Route::get('/CITIES',[StateController::class,'CITIES']);
+
+Route::get('/showCode',[CountryCodeController::class,'showCountryCode']);
 
 
 // All iata
@@ -258,12 +265,11 @@ Route::get('/Check/IATA',[IataCodeController::class,'CheckVIAIATA']);
 
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']);
 
-Route::get('/showState',[StateController::class,'showState']);
 
 
 
 // ORDERID
-Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
+
 
 // PAYPAL
 Route::post('/paypal',[PaymentController::class,'paypal']);

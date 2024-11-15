@@ -15,6 +15,39 @@ use Illuminate\Support\Facades\Validator;
 class EnquiryController extends Controller
 {
     //
+    /**
+     * Add a new enquiry for a job posting.
+     *
+     * This endpoint allows authenticated users to add an enquiry for a specific job posting. Users with a "public" token cannot access this endpoint.
+     *
+     * @group Gig Enquiry 
+     * 
+     * @bodyParam gigID integer required The ID of the job posting. Example: 1
+     * @bodyParam note string An optional note for the enquiry.
+     * 
+     * @response 201 {
+     *   "success": 1,
+     *   "enquiry": {
+     *     "userID": 1,
+     *     "gigID": 1,
+     *     "note": "Looking forward to discussing further."
+     *   }
+     * }
+     * @response 401 {
+     *   "success": 0,
+     *   "message": "Unauthorized, Login To Add Enquiry"
+     * }
+     * @response 422 {
+     *   "success": 0,
+     *   "message": "User has already enquired for this Gig"
+     * }
+     * @response 500 {
+     *   "success": 0,
+     *   "message": "An error occurred while Adding Enquiry",
+     *   "error": "Exception message"
+     * }
+     */
+
     public function AddEnquiry(Request $request)
     {
         $tokenType = $request->attributes->get('token_type');
@@ -66,15 +99,35 @@ class EnquiryController extends Controller
         // $user = Auth::user();
     }   
     
+
+    /**
+     * Retrieve all job enquiries.
+     *
+     * This endpoint returns a list of all job enquiries, including job title, location, user name, email, phone number, and any notes.
+     *
+     * @group Enquiry
+     * 
+     * @response 200 {
+     *   "success": 1,
+     *   "Enquires": [
+     *     {
+     *       "job_title": "Web Developer",
+     *       "job_location": "Remote",
+     *       "user_name": "John Doe",
+     *       "user_email": "john@example.com",
+     *       "user_phone_no": "1234567890",
+     *       "note": "Looking forward to discussing further."
+     *     }
+     *   ]
+     * }
+     * @response 404 {
+     *   "success": 0,
+     *   "error": "No Data Found"
+     * }
+     */
     public function showEnquiry()
     {
    
-            //    $enquries=Enquiry::get();
-            //    if($enquries->isEmpty())
-            //    { 
-            //     return response()->json(['success'=>0,'message'=>'No Enquiry found'],400);
-            //    }
-
        $jobs=DB::table('enquiries')
              ->leftJoin('job_posting','enquiries.gigID','=','job_posting.id')
              ->leftJoin('users','enquiries.userID','=','users.id')

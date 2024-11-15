@@ -10,8 +10,58 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class DestinationController extends Controller
 {
-    //
+    /**
+     * @group Destination Management
+     * 
+     * Add or update a destination.
+     *
+     * This endpoint allows adding a new destination or updating an existing one, depending on whether an ID is provided. 
+     * If the destination already exists (based on the provided ID), it will be updated with the new details.
+     * The endpoint accepts destination details such as name, city, state, images, and more.
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     * 
+     * @queryParam id string optional The ID of the destination to be updated. If not provided, a new destination is created.
+     * 
+     * @bodyParam name string required The name of the destination. Example: "Paris"
+     * @bodyParam city string optional The city of the destination. Example: "Paris"
+     * @bodyParam state string optional The state of the destination. Example: "Ile-de-France"
+     * @bodyParam destination_type string optional The type of the destination. Example: "Tourist"
+     * @bodyParam thumbnail_image file required Image for the thumbnail of the destination. File must be of type jpeg, png, jpg, gif, or svg.
+     * @bodyParam images array required Array of images for the destination. Each image must be of type jpeg, png, jpg, gif, or svg.
+     * @bodyParam short_description string required A short description of the destination. Example: "The city of lights."
+     * @bodyParam description string required A detailed description of the destination. Example: "Paris is known for its art, fashion, and culture."
+     * 
+     * @response 201 {
+     *     'success' : 1
+     *     "message": "Destination Added"
+     * }
+     * 
+     * @response 200 {
+     *      'success' : 1
+     *     "message": "Destination Updated"
+     * }
+     * 
+     * @response 422 {
+     *     "errors": {
+     *         "name": ["The name field is required."]
+     *     }
+     * }
+     * 
+     * @response 500 {
+     *     'success' : 0
+     *     "error": "Something went wrong",
+     *     "details": "Error message details"
+     * }
+     */
     public function addDestination(Request $request){
+
         $params = $request->query('id');
         $destination = Destination::where('id', $params)->first();
     
@@ -55,7 +105,7 @@ class DestinationController extends Controller
                 }
     
                 $destination->update($data);
-                return response()->json(['message' => 'Destination Updated'], 201);
+                return response()->json(['success'=> 1,'message' => 'Destination Updated'], 200);
             }
             if ($request->hasFile('images')) {
                 $imagePaths = [];
@@ -67,19 +117,56 @@ class DestinationController extends Controller
             }
 
             Destination::create($data);
-            return response()->json(['message' => 'Destination Added'], 201);
+            return response()->json(['success'=> 1, 'message' => 'Destination Added'], 201);
     
         } catch (\Throwable $th) {
-            return response()->json(['error' => 'Something went wrong', 'details' => $th->getMessage()], 500);
+            return response()->json(['success'=> 0, 'error' => 'Something went wrong', 'details' => $th->getMessage()], 500);
         }
     }
 
-    public function showDestination(){
-           $terms = Destination::all();
+    /**
+     * Show all destinations.
+     *
+     * This endpoint retrieves all destinations from the database. If no destinations are found, it returns a 404 error. 
+     * If destinations are found, it returns a list of destinations along with their details such as name, city, state, 
+     * images, description, etc.
+     *
+     * @group Destination Management
+     * 
+     * @response 200 {
+     *     "success": 1,
+     *     "data": [
+     *         {
+     *             "id": "1",
+     *             "name": "Paris",
+     *             "city": "Paris",
+     *             "state": "Ile-de-France",
+     *             "destination_type": "Tourist",
+     *             "thumbnail_image": "https://link-to-thumbnail-image.com",
+     *             "images": [
+     *                 "https://link-to-image1.com",
+     *                 "https://link-to-image2.com"
+     *             ],
+     *             "short_description": "The city of lights.",
+     *             "description": "Paris is known for its art, fashion, and culture."
+     *         }
+     *     ]
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "message": "No Destinations found"
+     * }
+     */
+
+    public function showDestination()
+    {
+        $terms = Destination::all();
 
         if ($terms->isEmpty()) {
             return response()->json(['success'=>0,'message' => 'No Destinations found'], 404);
-        } else {
+        } else 
+        {
             $existingImages = [];
 
             foreach ($terms as $destination) {
@@ -97,10 +184,44 @@ class DestinationController extends Controller
                     // Add other fields as needed
                 ];
         }
-
-    return response()->json(['success'=>1,'data'=>$existingImages], 200);
-            }   
+        return response()->json(['success'=>1,'data'=>$existingImages], 200);
+    }   
     }
+
+    /**
+     * Show all destinations.
+     *
+     * This endpoint retrieves all destinations from the database. If no destinations are found, it returns a 404 error. 
+     * If destinations are found, it returns a list of destinations along with their details such as name, city, state, 
+     * images, description, etc.
+     *
+     * @group Destination Management
+     * 
+     * @response 200 {
+     *     "success": 1,
+     *     "data": [
+     *         {
+     *             "id": "1",
+     *             "name": "Paris",
+     *             "city": "Paris",
+     *             "state": "Ile-de-France",
+     *             "destination_type": "Tourist",
+     *             "thumbnail_image": "https://link-to-thumbnail-image.com",
+     *             "images": [
+     *                 "https://link-to-image1.com",
+     *                 "https://link-to-image2.com"
+     *             ],
+     *             "short_description": "The city of lights.",
+     *             "description": "Paris is known for its art, fashion, and culture."
+     *         }
+     *     ]
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "message": "No Destinations found"
+     * }
+     */
 
     public function destination(Request $request){
         try {
@@ -126,6 +247,70 @@ class DestinationController extends Controller
         }
     }
 
+    /**
+     * Search destinations based on filters.
+     *
+     * This endpoint allows users to search destinations based on the `state` and `destination_type` query parameters. 
+     * Both filters are optional. If no matching destinations are found, a 404 error is returned.
+     *
+     * @group Destination Management
+     * 
+     * @param string|null $state Filter by state. (Optional)
+     * @param string|null $destination_type Filter by destination type. (Optional)
+     *
+     * @response 200 {
+     *     "success": 1,
+     *     "Destination": [
+     *         {
+     *             "id": "1",
+     *             "name": "Paris",
+     *             "city": "Paris",
+     *             "state": "Ile-de-France",
+     *             "destination_type": "Tourist",
+     *             "thumbnail_image": "https://link-to-thumbnail-image.com",
+     *             "images": [
+     *                 "https://link-to-image1.com",
+     *                 "https://link-to-image2.com"
+     *             ],
+     *             "short_description": "The city of lights.",
+     *             "description": "Paris is known for its art, fashion, and culture."
+     *         },
+     *         {
+     *             "id": "2",
+     *             "name": "New York",
+     *             "city": "New York",
+     *             "state": "New York",
+     *             "destination_type": "Urban",
+     *             "thumbnail_image": "https://link-to-thumbnail-image.com",
+     *             "images": [
+     *                 "https://link-to-image1.com",
+     *                 "https://link-to-image2.com"
+     *             ],
+     *             "short_description": "The city that never sleeps.",
+     *             "description": "New York is known for its skyline, culture, and food."
+     *         }
+     *     ]
+     * }
+     *
+     * @response 422 {
+     *     "success": 0,
+     *     "errors": [
+     *         "The state field must be a string.",
+     *         "The destination type field must be a string."
+     *     ]
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "message": "No destination Found"
+     * }
+     *
+     * @response 500 {
+     *      "success": 0,
+     *     "error": "Something went wrong",
+     *     "details": "Detailed error message"
+     * }
+     */
     public function searchDestination(Request $request){
         try {
             //code...
@@ -164,9 +349,39 @@ class DestinationController extends Controller
             return response()->json(['success' => 1,'Destination' => $searchResults], 200);     
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(['error' => 'Something went wrong', 'details' => $th->getMessage()], 500);
+            return response()->json([ "success"=> 0,'error' => 'Something went wrong', 'details' => $th->getMessage()], 500);
         }
     }
+
+
+     /**
+     * @group Destination Management
+     * 
+     * Retrieve unique destination types.
+     *
+     * This endpoint returns all unique destination types available in the `Destination` records.
+     * If no destination types are found, a 404 error is returned.
+     * 
+     * @response 200 {
+     *     "success": 1,
+     *     "destination_types": [
+     *         "Tourist",
+     *         "Urban",
+     *         "Beach"
+     *     ]
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "message": "No data Found"
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "error": "Something went wrong",
+     *     "details": "Detailed error message"
+     * }
+     */
 
     public function destinationType(){
     
@@ -188,6 +403,44 @@ class DestinationController extends Controller
             'details' => $th->getMessage()], 500);
     }
     }
+
+   
+
+    /**
+     * @group Destination Management
+     * 
+     * Delete a destination by ID.
+     *
+     * This endpoint deletes a destination record based on the provided `id`. 
+     * If the destination with the given ID does not exist, a 404 error is returned. 
+     * On successful deletion, a success message is returned.
+     *
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @param int $id (query) The ID of the destination to delete.
+     *
+     * @response 200 {
+     *     "success": 1,
+     *     "message": "Destination Removed Successfully"
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "message": "No Data Found"
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "error": "Something went wrong while deleting",
+     *     "details": "Detailed error message"
+     * }
+     */
 
     public function deleteDestination(Request $request){
         try {

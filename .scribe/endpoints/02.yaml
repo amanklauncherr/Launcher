@@ -1,5 +1,8 @@
 name: 'User Management'
-description: ''
+description: |-
+  **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+
+  **Note:** You will get the access_token after User Login
 endpoints:
   -
     httpMethods:
@@ -59,7 +62,7 @@ endpoints:
         name: password
         description: 'The password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
         required: true
-        example: '30lq?0ta#'
+        example: 't=a=>e"9y&yS'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -69,7 +72,7 @@ endpoints:
       name: John
       last_name: Doe
       email: john.doe@example.com
-      password: '30lq?0ta#'
+      password: 't=a=>e"9y&yS'
     fileParameters: []
     responses:
       -
@@ -155,7 +158,7 @@ endpoints:
         name: password
         description: "The user's password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character."
         required: true
-        example: 'FM,ON_?r)x8/pF'
+        example: ',i5J3N'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -163,7 +166,7 @@ endpoints:
         custom: []
     cleanBodyParameters:
       email: john.doe@example.com
-      password: 'FM,ON_?r)x8/pF'
+      password: ',i5J3N'
     fileParameters: []
     responses:
       -
@@ -242,6 +245,304 @@ endpoints:
               "success": 0,
               "message": "Error while Login",
               "error": "Detailed error message"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/verified/{uniqueCode}'
+    metadata:
+      groupName: 'User Management'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verify user by unique code.'
+      description: "This endpoint verifies a user using a unique code. If the code is valid, the user's verification status is updated."
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uniqueCode:
+        name: uniqueCode
+        description: 'The unique code provided to verify the user.'
+        required: true
+        example: nostrum
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      uniqueCode: nostrum
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+             "success": 1,
+             "message": "User successfully verified"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+             "success": 0,
+             "message": "Not Found"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/addUserProfile
+    metadata:
+      groupName: 'User Management'
+      groupDescription: |-
+        **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+
+        **Note:** You will get the access_token after User Login
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Add or update the user profile.'
+      description: |-
+        This endpoint allows an authenticated user to create or update their profile.
+        If the profile exists, it will be updated with the provided details.
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: 'Bearer {access_token}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      user_Number:
+        name: user_Number
+        description: "The user's phone number. Required if creating a profile, else optional."
+        required: false
+        example: 9
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_Address:
+        name: user_Address
+        description: "The user's address. Required if creating a profile, else optional."
+        required: false
+        example: nam
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_City:
+        name: user_City
+        description: "The user's city. Required if creating a profile, else optional."
+        required: false
+        example: asperiores
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_State:
+        name: user_State
+        description: "The user's state. Required if creating a profile, else optional."
+        required: false
+        example: et
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_Country:
+        name: user_Country
+        description: "The user's country. Required if creating a profile, else optional."
+        required: false
+        example: voluptas
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_PinCode:
+        name: user_PinCode
+        description: "The user's postal code. Required if creating a profile, else optional."
+        required: false
+        example: illum
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      user_AboutMe:
+        name: user_AboutMe
+        description: "The user's bio or description. Required if creating a profile, else optional."
+        required: false
+        example: odit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      user_Number: 9
+      user_Address: nam
+      user_City: asperiores
+      user_State: et
+      user_Country: voluptas
+      user_PinCode: illum
+      user_AboutMe: odit
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+             "success": 1,
+             "message": "Profile created successfully",
+             "profile": {
+                "user_id": 1,
+                "user_Number": "1234567890",
+                "user_Address": "123 Main St",
+                "user_City": "New York",
+                "user_State": "NY",
+                "user_Country": "USA",
+                "user_PinCode": "10001",
+                "user_AboutMe": "Hello, I am a developer."
+             }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+             "success": 0,
+             "message": "Unauthorized, Login To Update Your Profile"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+             "errors": "Validation error message here"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: api/showUserProfile
+    metadata:
+      groupName: 'User Management'
+      groupDescription: |-
+        **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+
+        **Note:** You will get the access_token after User Login
+      subgroup: ''
+      subgroupDescription: ''
+      title: "Show the user's profile information."
+      description: |-
+        This endpoint allows an authenticated user to view their profile information.
+        If the user profile doesn't exist, a message prompting them to create one is returned.
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: 'Bearer {access_token}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+             "success": 1,
+             "user": {
+                "id": 1,
+                "name": "John Doe",
+                "email": "john@example.com"
+             },
+             "userprofile": {
+                "user_id": 1,
+                "user_Number": "1234567890",
+                "user_Address": "123 Main St",
+                "user_City": "New York",
+                "user_State": "NY",
+                "user_Country": "USA",
+                "user_PinCode": "10001",
+                "user_AboutMe": "Hello, I am a developer."
+             }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 200
+        content: |-
+          {
+             "success": 1,
+             "user": {
+                "id": 1,
+                "name": "John Doe",
+                "email": "john@example.com"
+             },
+             "userprofile": "Please add your personal information in your profile"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+             "success": 0,
+             "message": "Unauthorized, Login To Update Your Profile"
           }
         headers: []
         description: ''

@@ -1,21 +1,17 @@
-name: 'Destination Management'
+name: 'Coupon Management'
 description: ''
 endpoints:
   -
     httpMethods:
       - POST
-    uri: api/addDestination
+    uri: api/Add-Coupon
     metadata:
-      groupName: 'Destination Management'
+      groupName: 'Coupon Management'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Add or update a destination.
-
-        This endpoint allows adding a new destination or updating an existing one, depending on whether an ID is provided. 
-        If the destination already exists (based on the provided ID), it will be updated with the new details.
-        The endpoint accepts destination details such as name, city, state, images, and more.
+        API to create a new coupon with specific attributes like code, applicable places, and discount percentage.
 
         **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
 
@@ -25,133 +21,66 @@ endpoints:
       custom: []
     headers:
       Authorization: 'Bearer {access_token}'
-      Content-Type: multipart/form-data
+      Content-Type: application/json
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
-    queryParameters:
-      id:
-        name: id
-        description: 'optional The ID of the destination to be updated. If not provided, a new destination is created.'
-        required: false
-        example: odit
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanQueryParameters:
-      id: odit
+    queryParameters: []
+    cleanQueryParameters: []
     bodyParameters:
-      name:
-        name: name
-        description: 'The name of the destination.'
+      coupon_code:
+        name: coupon_code
+        description: 'Unique code for the coupon.'
         required: true
-        example: '"Paris"'
+        example: SPRING20
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
-      city:
-        name: city
-        description: 'optional The city of the destination.'
-        required: false
-        example: '"Paris"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        custom: []
-      state:
-        name: state
-        description: 'optional The state of the destination.'
-        required: false
-        example: '"Ile-de-France"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      destination_type:
-        name: destination_type
-        description: 'optional The type of the destination.'
-        required: false
-        example: '"Tourist"'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      thumbnail_image:
-        name: thumbnail_image
-        description: 'Image for the thumbnail of the destination. File must be of type jpeg, png, jpg, gif, or svg.'
-        required: true
-        example: null
-        type: file
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      images:
-        name: images
-        description: 'Array of images for the destination. Each image must be of type jpeg, png, jpg, gif, or svg.'
+      coupon_places:
+        name: coupon_places
+        description: 'Array of applicable places where the coupon can be used.'
         required: true
         example:
-          - voluptatum
+          - 'New York'
+          - 'Los Angeles'
         type: 'string[]'
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      short_description:
-        name: short_description
-        description: 'A short description of the destination.'
-        required: true
-        example: '"The city of lights."'
-        type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
-      description:
-        name: description
-        description: 'A detailed description of the destination.'
+      discount:
+        name: discount
+        description: 'Discount percentage for the coupon. Must be between 0 and 100.'
         required: true
-        example: '"Paris is known for its art, fashion, and culture."'
-        type: string
+        example: '15'
+        type: numeric
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         custom: []
     cleanBodyParameters:
-      name: '"Paris"'
-      city: '"Paris"'
-      state: '"Ile-de-France"'
-      destination_type: '"Tourist"'
-      images:
-        - voluptatum
-      short_description: '"The city of lights."'
-      description: '"Paris is known for its art, fashion, and culture."'
-    fileParameters:
-      thumbnail_image: null
+      coupon_code: SPRING20
+      coupon_places:
+        - 'New York'
+        - 'Los Angeles'
+      discount: '15'
+    fileParameters: []
     responses:
-      -
-        status: 200
-        content: |-
-          {
-               'success' : 1
-              "message": "Destination Updated"
-          }
-        headers: []
-        description: ''
-        custom: []
       -
         status: 201
         content: |-
           {
-              'success' : 1
-              "message": "Destination Added"
+           "message": "Coupon created successfully",
+           "coupon": {
+               "id": 1,
+               "coupon_code": "SPRING20",
+               "coupon_places": "[\"New York\", \"Los Angeles\"]",
+               "discount": 15,
+               "created_at": "2024-11-14T12:00:00.000Z",
+               "updated_at": "2024-11-14T12:00:00.000Z"
+           }
           }
         headers: []
         description: ''
@@ -160,9 +89,19 @@ endpoints:
         status: 422
         content: |-
           {
-              "errors": {
-                  "name": ["The name field is required."]
-              }
+            "errors": {
+                "coupon_code": [
+                    "The coupon_code field is required.",
+                    "The coupon_code has already been taken."
+                ],
+                "coupon_places": [
+                    "The coupon_places field is required."
+                ],
+                "discount": [
+                    "The discount field is required.",
+                    "The discount must be between 0 and 100."
+                ]
+            }
           }
         headers: []
         description: ''
@@ -171,9 +110,124 @@ endpoints:
         status: 500
         content: |-
           {
-              'success' : 0
-              "error": "Something went wrong",
-              "details": "Error message details"
+            "message": "An error occurred while Adding Coupon",
+            "error": "Error message details"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: 'api/Update-Coupon/{coupon_code}'
+    metadata:
+      groupName: 'Coupon Management'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: |-
+        API to update an existing coupon.
+
+        **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+
+        **Note:** You will get the access_token after Admin Login
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: 'Bearer {access_token}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      coupon_code:
+        name: coupon_code
+        description: ''
+        required: true
+        example: assumenda
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      coupon_code: assumenda
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      coupon_places:
+        name: coupon_places
+        description: 'List of places where the coupon can be applied.'
+        required: false
+        example: '["New York", "Los Angeles"]'
+        type: array|null
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+      discount:
+        name: discount
+        description: 'Discount percentage for the coupon.'
+        required: false
+        example: '20'
+        type: numeric|null
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        custom: []
+    cleanBodyParameters:
+      coupon_places: '["New York", "Los Angeles"]'
+      discount: '20'
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "message": "Coupon updated successfully",
+            "coupon": {
+              "id": 1,
+              "coupon_code": "SPRING20",
+              "coupon_places": "[\"New York\", \"Los Angeles\"]",
+              "discount": 20,
+              "created_at": "2024-11-14T12:00:00.000Z",
+              "updated_at": "2024-11-14T13:00:00.000Z"
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Record not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "errors": {
+              "coupon_places": ["The coupon places field must be an array."]
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 500
+        content: |-
+          {
+            "message": "An error occurred while deleting the record",
+            "error": "<error-message>"
           }
         headers: []
         description: ''
@@ -187,18 +241,14 @@ endpoints:
   -
     httpMethods:
       - DELETE
-    uri: api/deleteDestination
+    uri: 'api/Delete-Coupon/{coupon_code}'
     metadata:
-      groupName: 'Destination Management'
+      groupName: 'Coupon Management'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
       title: |-
-        Delete a destination by ID.
-
-        This endpoint deletes a destination record based on the provided `id`. 
-        If the destination with the given ID does not exist, a 404 error is returned. 
-        On successful deletion, a success message is returned.
+        API to delete an existing coupon by coupon code.
 
         **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
 
@@ -210,8 +260,19 @@ endpoints:
       Authorization: 'Bearer {access_token}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
+    urlParameters:
+      coupon_code:
+        name: coupon_code
+        description: ''
+        required: true
+        example: totam
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      coupon_code: totam
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -222,8 +283,7 @@ endpoints:
         status: 200
         content: |-
           {
-              "success": 1,
-              "message": "Destination Removed Successfully"
+            "message": "Record deleted successfully"
           }
         headers: []
         description: ''
@@ -232,8 +292,7 @@ endpoints:
         status: 404
         content: |-
           {
-              "success": 0,
-              "message": "No Data Found"
+            "message": "Record not found"
           }
         headers: []
         description: ''
@@ -242,9 +301,8 @@ endpoints:
         status: 500
         content: |-
           {
-              "success": 0,
-              "error": "Something went wrong while deleting",
-              "details": "Detailed error message"
+            "message": "An error occurred while deleting the record",
+            "error": "<error-message>"
           }
         headers: []
         description: ''
@@ -258,258 +316,13 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: api/showDestination
+    uri: api/Show-Coupon
     metadata:
-      groupName: 'Destination Management'
+      groupName: 'Coupon Management'
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Show all destinations.'
-      description: |-
-        This endpoint retrieves all destinations from the database. If no destinations are found, it returns a 404 error.
-        If destinations are found, it returns a list of destinations along with their details such as name, city, state,
-        images, description, etc.
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "success": 1,
-              "data": [
-                  {
-                      "id": "1",
-                      "name": "Paris",
-                      "city": "Paris",
-                      "state": "Ile-de-France",
-                      "destination_type": "Tourist",
-                      "thumbnail_image": "https://link-to-thumbnail-image.com",
-                      "images": [
-                          "https://link-to-image1.com",
-                          "https://link-to-image2.com"
-                      ],
-                      "short_description": "The city of lights.",
-                      "description": "Paris is known for its art, fashion, and culture."
-                  }
-              ]
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "success": 0,
-              "message": "No Destinations found"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/destination
-    metadata:
-      groupName: 'Destination Management'
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Show all destinations.'
-      description: |-
-        This endpoint retrieves all destinations from the database. If no destinations are found, it returns a 404 error.
-        If destinations are found, it returns a list of destinations along with their details such as name, city, state,
-        images, description, etc.
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "success": 1,
-              "data": [
-                  {
-                      "id": "1",
-                      "name": "Paris",
-                      "city": "Paris",
-                      "state": "Ile-de-France",
-                      "destination_type": "Tourist",
-                      "thumbnail_image": "https://link-to-thumbnail-image.com",
-                      "images": [
-                          "https://link-to-image1.com",
-                          "https://link-to-image2.com"
-                      ],
-                      "short_description": "The city of lights.",
-                      "description": "Paris is known for its art, fashion, and culture."
-                  }
-              ]
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "success": 0,
-              "message": "No Destinations found"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/searchDestination
-    metadata:
-      groupName: 'Destination Management'
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Search destinations based on filters.'
-      description: |-
-        This endpoint allows users to search destinations based on the `state` and `destination_type` query parameters.
-        Both filters are optional. If no matching destinations are found, a 404 error is returned.
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-              "success": 1,
-              "Destination": [
-                  {
-                      "id": "1",
-                      "name": "Paris",
-                      "city": "Paris",
-                      "state": "Ile-de-France",
-                      "destination_type": "Tourist",
-                      "thumbnail_image": "https://link-to-thumbnail-image.com",
-                      "images": [
-                          "https://link-to-image1.com",
-                          "https://link-to-image2.com"
-                      ],
-                      "short_description": "The city of lights.",
-                      "description": "Paris is known for its art, fashion, and culture."
-                  },
-                  {
-                      "id": "2",
-                      "name": "New York",
-                      "city": "New York",
-                      "state": "New York",
-                      "destination_type": "Urban",
-                      "thumbnail_image": "https://link-to-thumbnail-image.com",
-                      "images": [
-                          "https://link-to-image1.com",
-                          "https://link-to-image2.com"
-                      ],
-                      "short_description": "The city that never sleeps.",
-                      "description": "New York is known for its skyline, culture, and food."
-                  }
-              ]
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-              "success": 0,
-              "message": "No destination Found"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-              "success": 0,
-              "errors": [
-                  "The state field must be a string.",
-                  "The destination type field must be a string."
-              ]
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 500
-        content: |-
-          {
-               "success": 0,
-              "error": "Something went wrong",
-              "details": "Detailed error message"
-          }
-        headers: []
-        description: ''
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/destinationType
-    metadata:
-      groupName: 'Destination Management'
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: |-
-        Retrieve unique destination types.
-
-        This endpoint returns all unique destination types available in the `Destination` records.
-        If no destination types are found, a 404 error is returned.
+      title: 'API to retrieve all available coupons.'
       description: ''
       authenticated: false
       custom: []
@@ -528,12 +341,24 @@ endpoints:
         status: 200
         content: |-
           {
-              "success": 1,
-              "destination_types": [
-                  "Tourist",
-                  "Urban",
-                  "Beach"
-              ]
+            "Coupon": [
+                {
+                    "id": 1,
+                    "coupon_code": "SPRING20",
+                    "coupon_places": "[\"New York\", \"Los Angeles\"]",
+                    "discount": 15,
+                    "created_at": "2024-11-14T12:00:00.000Z",
+                    "updated_at": "2024-11-14T12:00:00.000Z"
+                },
+                {
+                    "id": 2,
+                    "coupon_code": "SUMMER30",
+                    "coupon_places": "[\"Chicago\", \"San Francisco\"]",
+                    "discount": 30,
+                    "created_at": "2024-11-14T12:30:00.000Z",
+                    "updated_at": "2024-11-14T12:30:00.000Z"
+                }
+            ]
           }
         headers: []
         description: ''
@@ -542,19 +367,7 @@ endpoints:
         status: 404
         content: |-
           {
-              "success": 0,
-              "message": "No data Found"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 500
-        content: |-
-          {
-              "success": 0,
-              "error": "Something went wrong",
-              "details": "Detailed error message"
+            "Message": "No Coupon Found"
           }
         headers: []
         description: ''

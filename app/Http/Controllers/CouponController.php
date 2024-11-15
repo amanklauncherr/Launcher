@@ -13,6 +13,58 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class CouponController extends Controller
 {
     //
+
+    /**
+     * @group Coupon Management
+     *
+     * API to create a new coupon with specific attributes like code, applicable places, and discount percentage.
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @bodyParam coupon_code string required Unique code for the coupon. Example: SPRING20
+     * @bodyParam coupon_places array required Array of applicable places where the coupon can be used. Example: ["New York", "Los Angeles"]
+     * @bodyParam discount numeric required Discount percentage for the coupon. Must be between 0 and 100. Example: 15
+     *
+     * @response 201 {
+     *  "message": "Coupon created successfully",
+     *  "coupon": {
+     *      "id": 1,
+     *      "coupon_code": "SPRING20",
+     *      "coupon_places": "[\"New York\", \"Los Angeles\"]",
+     *      "discount": 15,
+     *      "created_at": "2024-11-14T12:00:00.000Z",
+     *      "updated_at": "2024-11-14T12:00:00.000Z"
+     *  }
+     * }
+     *
+     * @response 422 {
+     *   "errors": {
+     *       "coupon_code": [
+     *           "The coupon_code field is required.",
+     *           "The coupon_code has already been taken."
+     *       ],
+     *       "coupon_places": [
+     *           "The coupon_places field is required."
+     *       ],
+     *       "discount": [
+     *           "The discount field is required.",
+     *           "The discount must be between 0 and 100."
+     *       ]
+     *   }
+     * }
+     *
+     * @response 500 {
+     *   "message": "An error occurred while Adding Coupon",
+     *   "error": "Error message details"
+     * }
+     */
+
     public function addCoupon(Request $request)
     {
         $validator = Validator::make($request->all(),[
@@ -43,6 +95,38 @@ class CouponController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @group Coupon Management
+     *
+     * API to retrieve all available coupons.
+     *
+     * @response 200 {
+     *   "Coupon": [
+     *       {
+     *           "id": 1,
+     *           "coupon_code": "SPRING20",
+     *           "coupon_places": "[\"New York\", \"Los Angeles\"]",
+     *           "discount": 15,
+     *           "created_at": "2024-11-14T12:00:00.000Z",
+     *           "updated_at": "2024-11-14T12:00:00.000Z"
+     *       },
+     *       {
+     *           "id": 2,
+     *           "coupon_code": "SUMMER30",
+     *           "coupon_places": "[\"Chicago\", \"San Francisco\"]",
+     *           "discount": 30,
+     *           "created_at": "2024-11-14T12:30:00.000Z",
+     *           "updated_at": "2024-11-14T12:30:00.000Z"
+     *       }
+     *   ]
+     * }
+     *
+     * @response 404 {
+     *   "Message": "No Coupon Found"
+     * }
+     */
+
 
     public function showCoupon(){
         $coupon=Coupon::all();
@@ -88,10 +172,55 @@ class CouponController extends Controller
         }
     }
 
+    /**
+     * @group Coupon Management
+     *
+     * API to update an existing coupon.
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @bodyParam coupon_places array|null List of places where the coupon can be applied. Example: ["New York", "Los Angeles"]
+     * @bodyParam discount numeric|null Discount percentage for the coupon. Example: 20
+     *
+     * @response 201 {
+     *   "message": "Coupon updated successfully",
+     *   "coupon": {
+     *     "id": 1,
+     *     "coupon_code": "SPRING20",
+     *     "coupon_places": "[\"New York\", \"Los Angeles\"]",
+     *     "discount": 20,
+     *     "created_at": "2024-11-14T12:00:00.000Z",
+     *     "updated_at": "2024-11-14T13:00:00.000Z"
+     *   }
+     * }
+     *
+     * @response 404 {
+     *   "message": "Record not found"
+     * }
+     *
+     * @response 422 {
+     *   "errors": {
+     *     "coupon_places": ["The coupon places field must be an array."]
+     *   }
+     * }
+     *
+     * @response 500 {
+     *   "message": "An error occurred while deleting the record",
+     *   "error": "<error-message>"
+     * }
+     */
+
+
     public function updateCoupon(Request $request,$coupon_code)
     {
         $validator = Validator::make($request->all(),[
-            'coupon_places' => 'nullable|array',
+            'coupon_places' => 'nullable|array',  
             'discount' => 'nullable|numeric|min:0'
         ]);
 
@@ -121,6 +250,34 @@ class CouponController extends Controller
             ], 500);
         }
     }
+
+
+    /**
+     * @group Coupon Management
+     *
+     * API to delete an existing coupon by coupon code.
+     * 
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @response 200 {
+     *   "message": "Record deleted successfully"
+     * }
+     *
+     * @response 404 {
+     *   "message": "Record not found"
+     * }
+     *
+     * @response 500 {
+     *   "message": "An error occurred while deleting the record",
+     *   "error": "<error-message>"
+     * }
+     */
 
     public function deleteCoupon(Request $request,$coupon_code)
     {

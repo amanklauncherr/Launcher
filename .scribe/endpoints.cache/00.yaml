@@ -44,149 +44,6 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - GET
-    uri: 'api/verified/{uniqueCode}'
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      uniqueCode:
-        name: uniqueCode
-        description: ''
-        required: true
-        example: fuga
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      uniqueCode: fuga
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 401
-        content: '{"success":0,"message":"Not Found"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/Reset/Password/Email
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      email:
-        name: email
-        description: ''
-        required: true
-        example: deonte52@example.net
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      email: deonte52@example.net
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/Reset/Password
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      token:
-        name: token
-        description: ''
-        required: true
-        example: rerum
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      password:
-        name: password
-        description: 'Must match the regex /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/. Must be at least 8 characters.'
-        required: true
-        example: '<:x`C+]Ep#=obi"9%'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      token: rerum
-      password: '<:x`C+]Ep#=obi"9%'
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
       - POST
     uri: api/term-conditions
     metadata:
@@ -228,172 +85,6 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - POST
-    uri: api/Add-Coupon
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      coupon_code:
-        name: coupon_code
-        description: ''
-        required: true
-        example: repellat
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      coupon_places:
-        name: coupon_places
-        description: ''
-        required: true
-        example: []
-        type: object
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      discount:
-        name: discount
-        description: 'Must be at least 0. Must not be greater than 100.'
-        required: true
-        example: 17
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      coupon_code: repellat
-      coupon_places: []
-      discount: 17
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - PUT
-    uri: 'api/Update-Coupon/{coupon_code}'
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      coupon_code:
-        name: coupon_code
-        description: ''
-        required: true
-        example: voluptate
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      coupon_code: voluptate
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      coupon_places:
-        name: coupon_places
-        description: ''
-        required: false
-        example: null
-        type: object
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-      discount:
-        name: discount
-        description: 'Must be at least 0.'
-        required: false
-        example: 5
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
-    cleanBodyParameters:
-      discount: 5
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - DELETE
-    uri: 'api/Delete-Coupon/{coupon_code}'
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      coupon_code:
-        name: coupon_code
-        description: ''
-        required: true
-        example: sint
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanUrlParameters:
-      coupon_code: sint
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
       - GET
     uri: 'api/emp/{user_id}'
     metadata:
@@ -413,14 +104,14 @@ endpoints:
         name: user_id
         description: 'The ID of the user.'
         required: true
-        example: qui
+        example: perspiciatis
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      user_id: qui
+      user_id: perspiciatis
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -475,165 +166,6 @@ endpoints:
   -
     httpMethods:
       - POST
-    uri: api/addUserProfile
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/showUserProfile
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 401
-        content: '{"success":0,"error":"Token not provided. This Api requires Token"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/addEnquiry
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/updateCart
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/showCart
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
     uri: api/add/User/Subscription
     metadata:
       groupName: Endpoints
@@ -656,14 +188,14 @@ endpoints:
         name: subscription_id
         description: 'The <code>id</code> of an existing record in the subscription_details table.'
         required: true
-        example: facere
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      subscription_id: facere
+      subscription_id: quis
     fileParameters: []
     responses: []
     responseFields: []
@@ -816,14 +348,14 @@ endpoints:
         name: OrderID
         description: ''
         required: true
-        example: placeat
+        example: vero
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      OrderID: placeat
+      OrderID: vero
     fileParameters: []
     responses:
       -
@@ -874,338 +406,6 @@ endpoints:
   -
     httpMethods:
       - GET
-    uri: api/showCode
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '{"success":1,"Codes":["+93","+358","+355","+213","+1684","+376","+244","+1264","+672","+1268","+54","+374","+297","+61","+43","+994","+1242","+973","+880","+1246","+375","+32","+501","+229","+1441","+975","+591","+387","+267","+55","+246","+673","+359","+226","+257","+855","+237","+1","+238","+ 345","+236","+235","+56","+86","+61","+61","+57","+269","+242","+243","+682","+506","+225","+385","+53","+357","+420","+45","+253","+1767","+1849","+593","+20","+503","+240","+291","+372","+251","+500","+298","+679","+358","+33","+594","+689","+241","+220","+995","+49","+233","+350","+30","+299","+1473","+590","+1671","+502","+44","+224","+245","+595","+509","+379","+504","+852","+36","+354","+91","+62","+98","+964","+353","+44","+972","+39","+1876","+81","+44","+962","+77","+254","+686","+850","+82","+965","+996","+856","+371","+961","+266","+231","+218","+423","+370","+352","+853","+389","+261","+265","+60","+960","+223","+356","+692","+596","+222","+230","+262","+52","+691","+373","+377","+976","+382","+1664","+212","+258","+95","+264","+674","+977","+31","+599","+687","+64","+505","+227","+234","+683","+672","+1670","+47","+968","+92","+680","+970","+507","+675","+595","+51","+63","+872","+48","+351","+1939","+974","+40","+7","+250","+262","+590","+290","+1869","+1758","+590","+508","+1784","+685","+378","+239","+966","+221","+381","+248","+232","+65","+421","+386","+677","+252","+27","+211","+500","+34","+94","+249","+597","+47","+268","+46","+41","+963","+886","+992","+255","+66","+670","+228","+690","+676","+1868","+216","+90","+993","+1649","+688","+256","+380","+971","+44","+1","+598","+998","+678","+58","+84","+1284","+1340","+681","+967","+260","+263"]}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/showEnquiry
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '{"success":1,"Enquires":[{"job_title":"Photographer","job_location":"North Goa","user_name":"Jagdish","user_email":"adhikarijagdish@gmail.com","user_phone_no":9910179393,"note":"Checking Job"},{"job_title":"Model","job_location":"New Delhi","user_name":"Jagdish","user_email":"adhikarijagdish@gmail.com","user_phone_no":9910179393,"note":null},{"job_title":"Model","job_location":"New Delhi","user_name":"Test7","user_email":"test7@gmail.com","user_phone_no":null,"note":null},{"job_title":"Model","job_location":"New Delhi","user_name":"nitin","user_email":"nitin08837@gmail.com","user_phone_no":9057498447,"note":""},{"job_title":"Photographer","job_location":"North Goa","user_name":"nitin","user_email":"nitin08837@gmail.com","user_phone_no":9057498447,"note":""},{"job_title":"Photographer","job_location":"North Goa","user_name":"Test7","user_email":"test7@gmail.com","user_phone_no":null,"note":""},{"job_title":"Model","job_location":"New Delhi","user_name":"phunsuk  jatav","user_email":"phunsukj@gmail.com","user_phone_no":8700125886,"note":""},{"job_title":"Model","job_location":"New Delhi","user_name":"Testing User2","user_email":"info@TestingUser2.co","user_phone_no":9876543213,"note":""}]}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/AddQuiz
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        name: name
-        description: ''
-        required: true
-        example: reiciendis
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      email:
-        name: email
-        description: 'Must be a valid email address.'
-        required: true
-        example: larkin.fritz@example.net
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      phone:
-        name: phone
-        description: ''
-        required: true
-        example: odio
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      answer1:
-        name: answer1
-        description: ''
-        required: true
-        example: et
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      answer2:
-        name: answer2
-        description: ''
-        required: true
-        example: temporibus
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-      answer3:
-        name: answer3
-        description: ''
-        required: true
-        example: nam
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      name: reiciendis
-      email: larkin.fritz@example.net
-      phone: odio
-      answer1: et
-      answer2: temporibus
-      answer3: nam
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/ShowQuiz
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '[{"id":1,"name":"Jagdish","email":"adhikari@gmail.com","phone":"9334452345","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-07-04","updated_at":"2024-07-04"},{"id":2,"name":"Jagdish","email":"jagidh@gmail.com","phone":"9334452344","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-07-04","updated_at":"2024-07-04"},{"id":3,"name":"Jagdish bhagat","email":"jagidhbahgat@gmail.com","phone":"9334452343","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-07-04","updated_at":"2024-07-04"},{"id":4,"name":"nitin","email":"nitin@g.com","phone":"9058294020","answer1":"Livin'' it up in luxury and relaxation","answer2":"Friends Squad for non-stop laughs","answer3":"Exploring hiking trails and nature","created_at":"2024-07-04","updated_at":"2024-07-04"},{"id":5,"name":"nitin","email":"nitin@gm.com","phone":"7898909890","answer1":"Diving deep into culture and history","answer2":"Fam for those priceless moments","answer3":"Exploring hiking trails and nature","created_at":"2024-07-04","updated_at":"2024-07-04"},{"id":6,"name":"Megha Khulbe","email":"Launcherr.co@gmail.com","phone":"9871831224","answer1":"Chillin'' on sunny beaches","answer2":"Rollin'' solo to find your groove","answer3":"Exploring hiking trails and nature","created_at":"2024-07-10","updated_at":"2024-07-10"},{"id":7,"name":"Disha","email":"dishakhulbe@gmail.com","phone":"5857523588","answer1":"Chillin'' on sunny beaches","answer2":"Rollin'' solo to find your groove","answer3":"Exploring hiking trails and nature","created_at":"2024-07-12","updated_at":"2024-07-12"},{"id":16,"name":"NK","email":"N@G.COM","phone":"+9109U8897298","answer1":"Livin'' it up in luxury and relaxation","answer2":"Rollin'' solo to find your groove","answer3":"Exploring hiking trails and nature","created_at":"2024-07-18","updated_at":"2024-07-18"},{"id":17,"name":"nik","email":"n@h.com","phone":"+919067776878","answer1":"Livin'' it up in luxury and relaxation","answer2":"Rollin'' solo to find your groove","answer3":"Checking out cool museums and landmarks","created_at":"2024-07-18","updated_at":"2024-07-18"},{"id":18,"name":"Nitin Saini","email":"nitinsaini8030@gmail.com","phone":"+919560767761","answer1":"Livin'' it up in luxury and relaxation","answer2":"Friends Squad for non-stop laughs","answer3":"Diving into a beach read","created_at":"2024-07-29","updated_at":"2024-07-29"},{"id":19,"name":"Sarthak","email":"Sarthakguptask4@gmail.com","phone":"+919521426626","answer1":"Diving deep into culture and history","answer2":"Rollin'' solo to find your groove","answer3":"Checking out cool museums and landmarks","created_at":"2024-08-01","updated_at":"2024-08-01"},{"id":20,"name":"Sarthak","email":"Sarthakguptask4@gmail.com","phone":"+919521426626","answer1":"Diving deep into culture and history","answer2":"Rollin'' solo to find your groove","answer3":"Checking out cool museums and landmarks","created_at":"2024-08-01","updated_at":"2024-08-01"},{"id":21,"name":"Manas Tripathi","email":"info@StudyLancer.com","phone":"+918700125888","answer1":"Diving deep into culture and history","answer2":"Fam for those priceless moments","answer3":"Checking out cool museums and landmarks","created_at":"2024-08-01","updated_at":"2024-08-01"},{"id":22,"name":"Manas Tripathi","email":"spestcontrol02@gmail.com","phone":"+919988223377","answer1":"Diving deep into culture and history","answer2":"Friends Squad for non-stop laughs","answer3":"Relaxing with a spa day","created_at":"2024-08-01","updated_at":"2024-08-01"},{"id":25,"name":"Nitin","email":"nitin08837@gmail.com","phone":"9334455669","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-08-08","updated_at":"2024-08-08"},{"id":30,"name":"Manas","email":"manas3431@gmail.com","phone":"0000000000","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-08-20","updated_at":"2024-08-20"},{"id":32,"name":"Jagdish","email":"adhikarijagdish3@gmail.com","phone":"0000000002","answer1":"Everything is oky","answer2":"Hello ji","answer3":"hi how are you","created_at":"2024-08-20","updated_at":"2024-08-20"},{"id":33,"name":"Sarthak","email":"sarthakguptask5@gmail.com","phone":"+917239867198","answer1":"Getting wild with outdoor adventures","answer2":"Friends Squad for non-stop laughs","answer3":"Checking out cool museums and landmarks","created_at":"2024-09-02","updated_at":"2024-09-02"},{"id":34,"name":"Nitin Saini","email":"nitinsaini@launcherr.co","phone":"+918470067761","answer1":"Chillin'' on sunny beaches","answer2":"Friends Squad for non-stop laughs","answer3":"Relaxing with a spa day","created_at":"2024-10-18","updated_at":"2024-10-18"},{"id":35,"name":"Aman","email":"amankumar@launcherr.co","phone":"+918853309666","answer1":"Chillin'' on sunny beaches","answer2":"Fam for those priceless moments","answer3":"Diving into a beach read","created_at":"2024-11-13","updated_at":"2024-11-13"},{"id":36,"name":"Dipankar Sarkar","email":"dipankar.skypoint@gmail.com","phone":"+917003824164","answer1":"Chillin'' on sunny beaches","answer2":"Fam for those priceless moments","answer3":"Diving into a beach read","created_at":"2024-11-14","updated_at":"2024-11-14"}]'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - POST
-    uri: api/AddEmail
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      email:
-        name: email
-        description: 'Must be a valid email address. Must not be greater than 35 characters.'
-        required: true
-        example: hudson.kemmer@example.net
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        custom: []
-    cleanBodyParameters:
-      email: hudson.kemmer@example.net
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/ShowEmail
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '[{"id":37,"email":"sarthakguptask3@gmail.com","created_at":"2024-07-16T15:22:15.000000Z","updated_at":"2024-07-16T15:22:15.000000Z"},{"id":65,"email":"adhikarijagdish3@gmail.com","created_at":"2024-08-08T11:49:41.000000Z","updated_at":"2024-08-08T11:49:41.000000Z"},{"id":66,"email":"nitin08837@gmail.com","created_at":"2024-08-08T11:51:38.000000Z","updated_at":"2024-08-08T11:51:38.000000Z"},{"id":67,"email":"manas3431@gmail.com","created_at":"2024-08-08T11:52:01.000000Z","updated_at":"2024-08-08T11:52:01.000000Z"}]'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
-    uri: api/Show-Coupon
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '{"Coupon":[{"id":11,"coupon_code":"LAUNCHERRSVX10","coupon_places":"[\"products\"]","discount":"10.00","created_at":"2024-07-14","updated_at":"2024-07-14"},{"id":12,"coupon_code":"n0in4fon0idwnc213","coupon_places":"[\"Travel\",\"Shoping\",\"Food\"]","discount":"100.00","created_at":"2024-07-14","updated_at":"2024-07-14"},{"id":13,"coupon_code":"n0in4fon0idwnc000","coupon_places":"[\"Travel\",\"Shoping\",\"Food\"]","discount":"100.00","created_at":"2024-07-14","updated_at":"2024-07-14"},{"id":14,"coupon_code":"n0in4fon0idwnc001","coupon_places":"[\"Travel\",\"Shoping\",\"Food\"]","discount":"100.00","created_at":"2024-07-14","updated_at":"2024-07-14"}]}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
-      - GET
     uri: api/Apply-Coupon
     metadata:
       groupName: Endpoints
@@ -1228,7 +428,7 @@ endpoints:
         name: coupon_code
         description: 'The <code>coupon_code</code> of an existing record in the coupons table.'
         required: true
-        example: vero
+        example: perspiciatis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1238,15 +438,15 @@ endpoints:
         name: place
         description: ''
         required: true
-        example: amet
+        example: culpa
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      coupon_code: vero
-      place: amet
+      coupon_code: perspiciatis
+      place: culpa
     fileParameters: []
     responses:
       -
@@ -1384,6 +584,45 @@ endpoints:
   -
     httpMethods:
       - GET
+    uri: api/showState
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: '{"success":1,"states":["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh (UT)","Chhattisgarh","Dadra and Nagar Haveli (UT)","Daman and Diu (UT)","Delhi (NCT)","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshadweep (UT)","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry (UT)","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttarakhand","Uttar Pradesh","West Bengal"]}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
     uri: api/CITIES
     metadata:
       groupName: Endpoints
@@ -1408,6 +647,45 @@ endpoints:
       -
         status: 404
         content: '{"success":0,"message":"Please Select A State"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: api/showCode
+    metadata:
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: '{"success":1,"Codes":["+93","+358","+355","+213","+1684","+376","+244","+1264","+672","+1268","+54","+374","+297","+61","+43","+994","+1242","+973","+880","+1246","+375","+32","+501","+229","+1441","+975","+591","+387","+267","+55","+246","+673","+359","+226","+257","+855","+237","+1","+238","+ 345","+236","+235","+56","+86","+61","+61","+57","+269","+242","+243","+682","+506","+225","+385","+53","+357","+420","+45","+253","+1767","+1849","+593","+20","+503","+240","+291","+372","+251","+500","+298","+679","+358","+33","+594","+689","+241","+220","+995","+49","+233","+350","+30","+299","+1473","+590","+1671","+502","+44","+224","+245","+595","+509","+379","+504","+852","+36","+354","+91","+62","+98","+964","+353","+44","+972","+39","+1876","+81","+44","+962","+77","+254","+686","+850","+82","+965","+996","+856","+371","+961","+266","+231","+218","+423","+370","+352","+853","+389","+261","+265","+60","+960","+223","+356","+692","+596","+222","+230","+262","+52","+691","+373","+377","+976","+382","+1664","+212","+258","+95","+264","+674","+977","+31","+599","+687","+64","+505","+227","+234","+683","+672","+1670","+47","+968","+92","+680","+970","+507","+675","+595","+51","+63","+872","+48","+351","+1939","+974","+40","+7","+250","+262","+590","+290","+1869","+1758","+590","+508","+1784","+685","+378","+239","+966","+221","+381","+248","+232","+65","+421","+386","+677","+252","+27","+211","+500","+34","+94","+249","+597","+47","+268","+46","+41","+963","+886","+992","+255","+66","+670","+228","+690","+676","+1868","+216","+90","+993","+1649","+688","+256","+380","+971","+44","+1","+598","+998","+678","+58","+84","+1284","+1340","+681","+967","+260","+263"]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1578,45 +856,6 @@ endpoints:
     custom: []
   -
     httpMethods:
-      - GET
-    uri: api/showState
-    metadata:
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      custom: []
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        status: 200
-        content: '{"success":1,"states":["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chandigarh (UT)","Chhattisgarh","Dadra and Nagar Haveli (UT)","Daman and Diu (UT)","Delhi (NCT)","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Lakshadweep (UT)","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Puducherry (UT)","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttarakhand","Uttar Pradesh","West Bengal"]}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-        custom: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-    custom: []
-  -
-    httpMethods:
       - POST
     uri: api/paypal
     metadata:
@@ -1752,7 +991,7 @@ endpoints:
     responses:
       -
         status: 400
-        content: '{"success":false,"message":"Failed to fetch token","error":"{\"status\":false,\"status_code\":\"IFR\",\"request_id\":\"NjczNjAwY2VlNTk0NTIwMjQtMTEtMTQgMTk6MjM6MTg=\",\"payloads\":{\"errors\":{\"mobileNumber\":[\"The mobile number field is required.\"],\"password\":[\"The password field is required.\"]},\"data\":[],\"transaction\":[]},\"message\":\"Please share all required fields\"}"}'
+        content: '{"success":false,"message":"Failed to fetch token","error":"{\"status\":false,\"status_code\":\"IFR\",\"request_id\":\"NjczNmU3Yzk4YWVjYzIwMjQtMTEtMTUgMTE6NDg6NDk=\",\"payloads\":{\"errors\":{\"mobileNumber\":[\"The mobile number field is required.\"],\"password\":[\"The password field is required.\"]},\"data\":[],\"transaction\":[]},\"message\":\"Please share all required fields\"}"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1790,7 +1029,7 @@ endpoints:
         name: TYPE
         description: ''
         required: true
-        example: ONEWAY
+        example: ROUNDTRIP
         type: string
         enumValues:
           - ONEWAY
@@ -1828,7 +1067,7 @@ endpoints:
           0 for domestic, 1 for international
           "bookingType" => "required|string|in:0,1,2,3", // 0 for one way, 1 for round trip.
         required: true
-        example: et
+        example: velit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1838,7 +1077,7 @@ endpoints:
         name: childCount
         description: ''
         required: true
-        example: omnis
+        example: voluptas
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1848,7 +1087,7 @@ endpoints:
         name: infantCount
         description: ''
         required: true
-        example: pariatur
+        example: nisi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1858,7 +1097,7 @@ endpoints:
         name: classOfTravel
         description: ''
         required: true
-        example: '0'
+        example: '1'
         type: string
         enumValues:
           - '0'
@@ -1872,7 +1111,7 @@ endpoints:
         name: airlineCode
         description: ''
         required: false
-        example: inventore
+        example: distinctio
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1882,7 +1121,7 @@ endpoints:
         name: Arrival
         description: ''
         required: false
-        example: voluptatem
+        example: et
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1892,7 +1131,7 @@ endpoints:
         name: Departure
         description: ''
         required: false
-        example: ab
+        example: sit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1912,7 +1151,7 @@ endpoints:
         name: Stops
         description: ''
         required: false
-        example: '1'
+        example: '2'
         type: string
         enumValues:
           - '0'
@@ -1925,7 +1164,7 @@ endpoints:
         name: Price
         description: ''
         required: false
-        example: 12
+        example: 7
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1935,7 +1174,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: expedita
+        example: velit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1945,7 +1184,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: exercitationem
+        example: iusto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1955,7 +1194,7 @@ endpoints:
         name: 'tripInfo[].origin'
         description: ''
         required: true
-        example: eaque
+        example: pariatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1965,7 +1204,7 @@ endpoints:
         name: 'tripInfo[].destination'
         description: ''
         required: true
-        example: quam
+        example: officiis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1975,7 +1214,7 @@ endpoints:
         name: 'tripInfo[].travelDate'
         description: 'Must be a valid date in the format <code>m/d/Y</code>.'
         required: true
-        example: 11/14/2024
+        example: 11/15/2024
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1994,26 +1233,26 @@ endpoints:
         nullable: true
         custom: []
     cleanBodyParameters:
-      TYPE: ONEWAY
+      TYPE: ROUNDTRIP
       tripInfo:
         -
-          origin: eaque
-          destination: quam
-          travelDate: 11/14/2024
+          origin: pariatur
+          destination: officiis
+          travelDate: 11/15/2024
           tripId: '1'
       travelType: '1'
-      adultCount: et
-      childCount: omnis
-      infantCount: pariatur
-      classOfTravel: '0'
-      airlineCode: inventore
-      Arrival: voluptatem
-      Departure: ab
+      adultCount: velit
+      childCount: voluptas
+      infantCount: nisi
+      classOfTravel: '1'
+      airlineCode: distinctio
+      Arrival: et
+      Departure: sit
       Refundable: false
-      Stops: '1'
-      Price: 12
-      headersToken: expedita
-      headersKey: exercitationem
+      Stops: '2'
+      Price: 7
+      headersToken: velit
+      headersKey: iusto
     fileParameters: []
     responses: []
     responseFields: []
@@ -2047,7 +1286,7 @@ endpoints:
         name: SearchKey
         description: ''
         required: true
-        example: placeat
+        example: eius
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2057,7 +1296,7 @@ endpoints:
         name: FareID
         description: ''
         required: true
-        example: cumque
+        example: maxime
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2067,7 +1306,7 @@ endpoints:
         name: FlightKey
         description: ''
         required: true
-        example: non
+        example: ab
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2077,7 +1316,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: et
+        example: aut
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2087,18 +1326,18 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: alias
+        example: exercitationem
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      SearchKey: placeat
-      FareID: cumque
-      FlightKey: non
-      headersToken: et
-      headersKey: alias
+      SearchKey: eius
+      FareID: maxime
+      FlightKey: ab
+      headersToken: aut
+      headersKey: exercitationem
     fileParameters: []
     responses: []
     responseFields: []
@@ -2132,7 +1371,7 @@ endpoints:
         name: SearchKey
         description: ''
         required: true
-        example: minus
+        example: harum
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2142,7 +1381,7 @@ endpoints:
         name: FareID
         description: ''
         required: true
-        example: aliquam
+        example: neque
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2152,7 +1391,7 @@ endpoints:
         name: FlightKey
         description: ''
         required: true
-        example: commodi
+        example: tempore
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2162,7 +1401,7 @@ endpoints:
         name: CustomerContact
         description: 'Must be at least 10 characters. Must not be greater than 10 characters.'
         required: true
-        example: uhzuiepg
+        example: fdenyeyr
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2172,7 +1411,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: aut
+        example: minima
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2182,7 +1421,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: placeat
+        example: voluptatum
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2192,7 +1431,7 @@ endpoints:
         name: adultCount
         description: ''
         required: true
-        example: voluptatem
+        example: animi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2202,7 +1441,7 @@ endpoints:
         name: childCount
         description: ''
         required: true
-        example: qui
+        example: cumque
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2212,22 +1451,22 @@ endpoints:
         name: infantCount
         description: ''
         required: true
-        example: rerum
+        example: quibusdam
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      SearchKey: minus
-      FareID: aliquam
-      FlightKey: commodi
-      CustomerContact: uhzuiepg
-      headersToken: aut
-      headersKey: placeat
-      adultCount: voluptatem
-      childCount: qui
-      infantCount: rerum
+      SearchKey: harum
+      FareID: neque
+      FlightKey: tempore
+      CustomerContact: fdenyeyr
+      headersToken: minima
+      headersKey: voluptatum
+      adultCount: animi
+      childCount: cumque
+      infantCount: quibusdam
     fileParameters: []
     responses: []
     responseFields: []
@@ -2261,7 +1500,7 @@ endpoints:
         name: BookingRef
         description: ''
         required: true
-        example: iure
+        example: autem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2271,7 +1510,7 @@ endpoints:
         name: UserRef
         description: ''
         required: true
-        example: temporibus
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2281,7 +1520,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: soluta
+        example: est
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2291,17 +1530,17 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: eveniet
+        example: aspernatur
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      BookingRef: iure
-      UserRef: temporibus
-      headersToken: soluta
-      headersKey: eveniet
+      BookingRef: autem
+      UserRef: consequatur
+      headersToken: est
+      headersKey: aspernatur
     fileParameters: []
     responses: []
     responseFields: []
@@ -2335,7 +1574,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: veritatis
+        example: recusandae
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2345,7 +1584,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: non
+        example: nemo
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2355,7 +1594,7 @@ endpoints:
         name: bookingRef
         description: ''
         required: true
-        example: ea
+        example: sunt
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2365,7 +1604,7 @@ endpoints:
         name: pnr
         description: ''
         required: true
-        example: repellat
+        example: error
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2375,7 +1614,7 @@ endpoints:
         name: cancelType
         description: ''
         required: true
-        example: mollitia
+        example: officiis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2385,7 +1624,7 @@ endpoints:
         name: cancelCode
         description: '0-Normal Cancel, 1-Full Refund, 2-No Show.'
         required: true
-        example: perspiciatis
+        example: non
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2395,7 +1634,7 @@ endpoints:
         name: remark
         description: ''
         required: true
-        example: repudiandae
+        example: iusto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2416,7 +1655,7 @@ endpoints:
         name: 'ticketCancelDetails[].FlightId'
         description: ''
         required: true
-        example: aut
+        example: nam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2426,7 +1665,7 @@ endpoints:
         name: 'ticketCancelDetails[].PassengerId'
         description: ''
         required: true
-        example: dolorem
+        example: repellendus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2436,25 +1675,25 @@ endpoints:
         name: 'ticketCancelDetails[].SegmentId'
         description: ''
         required: true
-        example: in
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      headersToken: veritatis
-      headersKey: non
-      bookingRef: ea
-      pnr: repellat
-      cancelType: mollitia
-      cancelCode: perspiciatis
-      remark: repudiandae
+      headersToken: recusandae
+      headersKey: nemo
+      bookingRef: sunt
+      pnr: error
+      cancelType: officiis
+      cancelCode: non
+      remark: iusto
       ticketCancelDetails:
         -
-          FlightId: aut
-          PassengerId: dolorem
-          SegmentId: in
+          FlightId: nam
+          PassengerId: repellendus
+          SegmentId: quis
     fileParameters: []
     responses: []
     responseFields: []
@@ -2488,7 +1727,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: quibusdam
+        example: aliquid
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2498,7 +1737,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: blanditiis
+        example: magnam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2508,7 +1747,7 @@ endpoints:
         name: origin
         description: ''
         required: true
-        example: porro
+        example: corporis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2518,7 +1757,7 @@ endpoints:
         name: destination
         description: ''
         required: true
-        example: incidunt
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2528,7 +1767,7 @@ endpoints:
         name: month
         description: ''
         required: true
-        example: natus
+        example: minus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2538,19 +1777,19 @@ endpoints:
         name: year
         description: ''
         required: true
-        example: ab
+        example: in
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      headersToken: quibusdam
-      headersKey: blanditiis
-      origin: porro
-      destination: incidunt
-      month: natus
-      year: ab
+      headersToken: aliquid
+      headersKey: magnam
+      origin: corporis
+      destination: consequatur
+      month: minus
+      year: in
     fileParameters: []
     responses: []
     responseFields: []
@@ -2584,7 +1823,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: saepe
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2594,15 +1833,15 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: sequi
+        example: quaerat
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      headersToken: saepe
-      headersKey: sequi
+      headersToken: architecto
+      headersKey: quaerat
     fileParameters: []
     responses: []
     responseFields: []
@@ -2636,7 +1875,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: nostrum
+        example: ut
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2646,7 +1885,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: earum
+        example: fuga
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2656,7 +1895,7 @@ endpoints:
         name: travelType
         description: ''
         required: true
-        example: vero
+        example: pariatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2666,7 +1905,7 @@ endpoints:
         name: bookingType
         description: ''
         required: true
-        example: velit
+        example: qui
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2676,7 +1915,7 @@ endpoints:
         name: origin
         description: ''
         required: true
-        example: natus
+        example: quibusdam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2686,7 +1925,7 @@ endpoints:
         name: destination
         description: ''
         required: true
-        example: nam
+        example: aut
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2696,7 +1935,7 @@ endpoints:
         name: travelDate
         description: 'Must be a valid date.'
         required: true
-        example: '2024-11-14T13:53:19'
+        example: '2024-11-15T06:18:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2706,7 +1945,7 @@ endpoints:
         name: tripId
         description: ''
         required: true
-        example: et
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2716,7 +1955,7 @@ endpoints:
         name: adultCount
         description: ''
         required: true
-        example: nihil
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2726,7 +1965,7 @@ endpoints:
         name: childCount
         description: ''
         required: true
-        example: consectetur
+        example: blanditiis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2736,7 +1975,7 @@ endpoints:
         name: infantCount
         description: ''
         required: true
-        example: voluptatem
+        example: vel
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2746,25 +1985,25 @@ endpoints:
         name: classOfTravel
         description: ''
         required: true
-        example: est
+        example: quam
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      headersToken: nostrum
-      headersKey: earum
-      travelType: vero
-      bookingType: velit
-      origin: natus
-      destination: nam
-      travelDate: '2024-11-14T13:53:19'
-      tripId: et
-      adultCount: nihil
-      childCount: consectetur
-      infantCount: voluptatem
-      classOfTravel: est
+      headersToken: ut
+      headersKey: fuga
+      travelType: pariatur
+      bookingType: qui
+      origin: quibusdam
+      destination: aut
+      travelDate: '2024-11-15T06:18:50'
+      tripId: quis
+      adultCount: quis
+      childCount: blanditiis
+      infantCount: vel
+      classOfTravel: quam
     fileParameters: []
     responses: []
     responseFields: []
@@ -2867,7 +2106,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: aut
+        example: omnis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2877,7 +2116,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: et
+        example: ut
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2887,7 +2126,7 @@ endpoints:
         name: sourceId
         description: ''
         required: true
-        example: aut
+        example: facere
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2897,7 +2136,7 @@ endpoints:
         name: destinationId
         description: ''
         required: true
-        example: ut
+        example: pariatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2907,7 +2146,7 @@ endpoints:
         name: date
         description: ''
         required: true
-        example: vel
+        example: ipsam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2917,7 +2156,7 @@ endpoints:
         name: AC
         description: ''
         required: false
-        example: officiis
+        example: incidunt
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2927,7 +2166,7 @@ endpoints:
         name: Seater
         description: ''
         required: false
-        example: necessitatibus
+        example: maiores
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2937,7 +2176,7 @@ endpoints:
         name: Sleeper
         description: ''
         required: false
-        example: facere
+        example: repellat
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2947,7 +2186,7 @@ endpoints:
         name: Arrival
         description: ''
         required: false
-        example: aliquam
+        example: blanditiis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2957,23 +2196,23 @@ endpoints:
         name: Departure
         description: ''
         required: false
-        example: soluta
+        example: est
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         custom: []
     cleanBodyParameters:
-      headersToken: aut
-      headersKey: et
-      sourceId: aut
-      destinationId: ut
-      date: vel
-      AC: officiis
-      Seater: necessitatibus
-      Sleeper: facere
-      Arrival: aliquam
-      Departure: soluta
+      headersToken: omnis
+      headersKey: ut
+      sourceId: facere
+      destinationId: pariatur
+      date: ipsam
+      AC: incidunt
+      Seater: maiores
+      Sleeper: repellat
+      Arrival: blanditiis
+      Departure: est
     fileParameters: []
     responses: []
     responseFields: []
@@ -3007,7 +2246,7 @@ endpoints:
         name: tripId
         description: ''
         required: true
-        example: libero
+        example: dolorem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3017,7 +2256,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: sed
+        example: aliquam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3027,16 +2266,16 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: odit
+        example: non
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      tripId: libero
-      headersToken: sed
-      headersKey: odit
+      tripId: dolorem
+      headersToken: aliquam
+      headersKey: non
     fileParameters: []
     responses: []
     responseFields: []
@@ -3070,7 +2309,7 @@ endpoints:
         name: boardingPoint
         description: ''
         required: true
-        example: sit
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3080,7 +2319,7 @@ endpoints:
         name: tripId
         description: ''
         required: true
-        example: tempore
+        example: laudantium
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3090,7 +2329,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: sunt
+        example: deleniti
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3100,17 +2339,17 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: qui
+        example: amet
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      boardingPoint: sit
-      tripId: tempore
-      headersToken: sunt
-      headersKey: qui
+      boardingPoint: consequatur
+      tripId: laudantium
+      headersToken: deleniti
+      headersKey: amet
     fileParameters: []
     responses: []
     responseFields: []
@@ -3144,7 +2383,7 @@ endpoints:
         name: referenceId
         description: ''
         required: true
-        example: dignissimos
+        example: enim
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3154,7 +2393,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: cupiditate
+        example: dolores
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3164,16 +2403,16 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: eligendi
+        example: nesciunt
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      referenceId: dignissimos
-      headersToken: cupiditate
-      headersKey: eligendi
+      referenceId: enim
+      headersToken: dolores
+      headersKey: nesciunt
     fileParameters: []
     responses: []
     responseFields: []
@@ -3207,7 +2446,7 @@ endpoints:
         name: referenceId
         description: ''
         required: true
-        example: aut
+        example: dolor
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3218,7 +2457,7 @@ endpoints:
         description: ''
         required: true
         example:
-          - eum
+          - quibusdam
         type: 'string[]'
         enumValues: []
         exampleWasSpecified: false
@@ -3228,7 +2467,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: voluptate
+        example: fuga
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3238,18 +2477,18 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: blanditiis
+        example: expedita
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      referenceId: aut
+      referenceId: dolor
       seatsToCancel:
-        - eum
-      headersToken: voluptate
-      headersKey: blanditiis
+        - quibusdam
+      headersToken: fuga
+      headersKey: expedita
     fileParameters: []
     responses: []
     responseFields: []
@@ -3283,7 +2522,7 @@ endpoints:
         name: totalCount
         description: ''
         required: true
-        example: et
+        example: est
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3293,7 +2532,7 @@ endpoints:
         name: mobile
         description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
         required: true
-        example: oedxyfijhsbsvlzlkmlvyqvoovvmlbtdrqqwkwcmrjpwbcqsaprmyhqylgf
+        example: kddgtjxvdxlriiuntbteumatgalyhkleibfmypcmmzpelncxxdumozps
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3303,7 +2542,7 @@ endpoints:
         name: whatsApp
         description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
         required: true
-        example: yuweauurlyccsymzltqahvczrefiogebkdhblopdcdjlmftzq
+        example: fkqseasqrgeyywkvbcxwbdpmwkdzbwozllazfegoijaelalkmozktjybqspwxas
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3313,7 +2552,7 @@ endpoints:
         name: email
         description: 'Must be a valid email address.'
         required: true
-        example: nader.michel@example.org
+        example: loma54@example.com
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3333,7 +2572,7 @@ endpoints:
         name: gst.isGst
         description: ''
         required: true
-        example: qui
+        example: non
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3343,7 +2582,7 @@ endpoints:
         name: gst.gstNumber
         description: ''
         required: false
-        example: voluptatem
+        example: assumenda
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3353,7 +2592,7 @@ endpoints:
         name: gst.gstName
         description: ''
         required: false
-        example: est
+        example: perferendis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3363,7 +2602,7 @@ endpoints:
         name: gst.gstAddress
         description: ''
         required: false
-        example: voluptas
+        example: qui
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3373,7 +2612,7 @@ endpoints:
         name: searchKey
         description: ''
         required: true
-        example: ut
+        example: qui
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3383,7 +2622,7 @@ endpoints:
         name: FlightKey
         description: ''
         required: true
-        example: qui
+        example: atque
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3393,7 +2632,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: perspiciatis
+        example: eaque
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3403,7 +2642,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: ipsam
+        example: reiciendis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3424,7 +2663,7 @@ endpoints:
         name: 'passenger_details[].paxType'
         description: ''
         required: true
-        example: '1'
+        example: '0'
         type: integer
         enumValues:
           - '0'
@@ -3437,7 +2676,7 @@ endpoints:
         name: 'passenger_details[].title'
         description: 0-ADT/1-CHD/2-INF.
         required: true
-        example: Mr
+        example: Ms
         type: string
         enumValues:
           - Mr
@@ -3452,7 +2691,7 @@ endpoints:
         name: 'passenger_details[].firstName'
         description: 'MR, MRS, MS; MSTR, MISS for child/infant.'
         required: true
-        example: veritatis
+        example: nihil
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3462,7 +2701,7 @@ endpoints:
         name: 'passenger_details[].lastName'
         description: ''
         required: true
-        example: voluptatibus
+        example: sit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3472,7 +2711,7 @@ endpoints:
         name: 'passenger_details[].age'
         description: ''
         required: false
-        example: 12
+        example: 7
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3494,7 +2733,7 @@ endpoints:
         name: 'passenger_details[].dob'
         description: '0-Male, 1-Female. Must be a valid date.'
         required: true
-        example: '2024-11-14T13:53:20'
+        example: '2024-11-15T06:18:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3504,7 +2743,7 @@ endpoints:
         name: 'passenger_details[].passportNumber'
         description: ''
         required: false
-        example: omnis
+        example: est
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3514,7 +2753,7 @@ endpoints:
         name: 'passenger_details[].passportIssuingAuthority'
         description: ''
         required: false
-        example: et
+        example: fugiat
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3524,7 +2763,7 @@ endpoints:
         name: 'passenger_details[].passportExpire'
         description: 'Must be a valid date.'
         required: false
-        example: '2024-11-14T13:53:20'
+        example: '2024-11-15T06:18:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3534,7 +2773,7 @@ endpoints:
         name: 'passenger_details[].nationality'
         description: ''
         required: false
-        example: aliquid
+        example: est
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3544,7 +2783,7 @@ endpoints:
         name: 'passenger_details[].pancardNumber'
         description: ''
         required: false
-        example: minus
+        example: exercitationem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3554,41 +2793,41 @@ endpoints:
         name: 'passenger_details[].frequentFlyerDetails'
         description: ''
         required: false
-        example: nemo
+        example: sint
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         custom: []
     cleanBodyParameters:
-      totalCount: et
-      mobile: oedxyfijhsbsvlzlkmlvyqvoovvmlbtdrqqwkwcmrjpwbcqsaprmyhqylgf
-      whatsApp: yuweauurlyccsymzltqahvczrefiogebkdhblopdcdjlmftzq
-      email: nader.michel@example.org
+      totalCount: est
+      mobile: kddgtjxvdxlriiuntbteumatgalyhkleibfmypcmmzpelncxxdumozps
+      whatsApp: fkqseasqrgeyywkvbcxwbdpmwkdzbwozllazfegoijaelalkmozktjybqspwxas
+      email: loma54@example.com
       gst:
-        isGst: qui
-        gstNumber: voluptatem
-        gstName: est
-        gstAddress: voluptas
-      searchKey: ut
-      FlightKey: qui
-      headersToken: perspiciatis
-      headersKey: ipsam
+        isGst: non
+        gstNumber: assumenda
+        gstName: perferendis
+        gstAddress: qui
+      searchKey: qui
+      FlightKey: atque
+      headersToken: eaque
+      headersKey: reiciendis
       passenger_details:
         -
-          paxType: '1'
-          title: Mr
-          firstName: veritatis
-          lastName: voluptatibus
-          age: 12
+          paxType: '0'
+          title: Ms
+          firstName: nihil
+          lastName: sit
+          age: 7
           gender: '0'
-          dob: '2024-11-14T13:53:20'
-          passportNumber: omnis
-          passportIssuingAuthority: et
-          passportExpire: '2024-11-14T13:53:20'
-          nationality: aliquid
-          pancardNumber: minus
-          frequentFlyerDetails: nemo
+          dob: '2024-11-15T06:18:52'
+          passportNumber: est
+          passportIssuingAuthority: fugiat
+          passportExpire: '2024-11-15T06:18:52'
+          nationality: est
+          pancardNumber: exercitationem
+          frequentFlyerDetails: sint
     fileParameters: []
     responses: []
     responseFields: []
@@ -3622,7 +2861,7 @@ endpoints:
         name: BookingRef
         description: ''
         required: true
-        example: voluptatem
+        example: vel
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3632,7 +2871,7 @@ endpoints:
         name: UserRef
         description: ''
         required: true
-        example: nobis
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3642,7 +2881,7 @@ endpoints:
         name: TicketingType
         description: ''
         required: true
-        example: et
+        example: tenetur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3652,7 +2891,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: quo
+        example: exercitationem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3662,18 +2901,18 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: dolorem
+        example: id
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      BookingRef: voluptatem
-      UserRef: nobis
-      TicketingType: et
-      headersToken: quo
-      headersKey: dolorem
+      BookingRef: vel
+      UserRef: quis
+      TicketingType: tenetur
+      headersToken: exercitationem
+      headersKey: id
     fileParameters: []
     responses: []
     responseFields: []
@@ -3707,7 +2946,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: enim
+        example: voluptate
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3717,7 +2956,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: ipsa
+        example: recusandae
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3727,7 +2966,7 @@ endpoints:
         name: bookingRef
         description: ''
         required: false
-        example: atque
+        example: minima
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3737,17 +2976,17 @@ endpoints:
         name: pnr
         description: ''
         required: false
-        example: accusamus
+        example: ipsam
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         custom: []
     cleanBodyParameters:
-      headersToken: enim
-      headersKey: ipsa
-      bookingRef: atque
-      pnr: accusamus
+      headersToken: voluptate
+      headersKey: recusandae
+      bookingRef: minima
+      pnr: ipsam
     fileParameters: []
     responses: []
     responseFields: []
@@ -3781,7 +3020,7 @@ endpoints:
         name: boardingPoint
         description: ''
         required: true
-        example: id
+        example: repellendus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3791,7 +3030,7 @@ endpoints:
         name: tripId
         description: ''
         required: true
-        example: est
+        example: doloribus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3801,7 +3040,7 @@ endpoints:
         name: dropingPoint
         description: ''
         required: true
-        example: ab
+        example: veniam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3811,7 +3050,7 @@ endpoints:
         name: source
         description: ''
         required: true
-        example: vel
+        example: et
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3821,7 +3060,7 @@ endpoints:
         name: destination
         description: ''
         required: true
-        example: et
+        example: temporibus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3831,7 +3070,7 @@ endpoints:
         name: serviceCharge
         description: ''
         required: true
-        example: eum
+        example: dolorum
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3841,7 +3080,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: quia
+        example: pariatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3851,7 +3090,7 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: rem
+        example: fugit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3872,7 +3111,7 @@ endpoints:
         name: 'inventoryItems[].seatName'
         description: ''
         required: true
-        example: aut
+        example: modi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3882,7 +3121,7 @@ endpoints:
         name: 'inventoryItems[].fare'
         description: ''
         required: true
-        example: 33.5814
+        example: 6.7363399
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3892,7 +3131,7 @@ endpoints:
         name: 'inventoryItems[].serviceTax'
         description: ''
         required: true
-        example: 75754909.0
+        example: 3372.00479
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3902,7 +3141,7 @@ endpoints:
         name: 'inventoryItems[].operatorServiceCharge'
         description: ''
         required: true
-        example: 1851.58
+        example: 1.199469254
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3912,7 +3151,7 @@ endpoints:
         name: 'inventoryItems[].ladiesSeat'
         description: ''
         required: true
-        example: corporis
+        example: eum
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3932,7 +3171,7 @@ endpoints:
         name: 'inventoryItems[].passenger.name'
         description: ''
         required: true
-        example: ea
+        example: molestiae
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3942,7 +3181,7 @@ endpoints:
         name: 'inventoryItems[].passenger.mobile'
         description: 'Must be at least 10 characters. Must not be greater than 10 characters.'
         required: true
-        example: wmhodzg
+        example: dtt
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3952,7 +3191,7 @@ endpoints:
         name: 'inventoryItems[].passenger.title'
         description: ''
         required: true
-        example: recusandae
+        example: similique
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3962,7 +3201,7 @@ endpoints:
         name: 'inventoryItems[].passenger.email'
         description: ''
         required: true
-        example: wolf.lynn@example.org
+        example: zachariah00@example.org
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3972,7 +3211,7 @@ endpoints:
         name: 'inventoryItems[].passenger.age'
         description: ''
         required: true
-        example: nesciunt
+        example: animi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3982,7 +3221,7 @@ endpoints:
         name: 'inventoryItems[].passenger.gender'
         description: ''
         required: true
-        example: quo
+        example: et
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3992,7 +3231,7 @@ endpoints:
         name: 'inventoryItems[].passenger.address'
         description: ''
         required: true
-        example: quo
+        example: quis
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4002,7 +3241,7 @@ endpoints:
         name: 'inventoryItems[].passenger.idType'
         description: ''
         required: false
-        example: quia
+        example: voluptatem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4012,7 +3251,7 @@ endpoints:
         name: 'inventoryItems[].passenger.idNumber'
         description: ''
         required: false
-        example: rerum
+        example: et
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4022,39 +3261,39 @@ endpoints:
         name: 'inventoryItems[].passenger.primary'
         description: ''
         required: false
-        example: veritatis
+        example: aut
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         custom: []
     cleanBodyParameters:
-      boardingPoint: id
-      tripId: est
-      dropingPoint: ab
-      source: vel
-      destination: et
-      serviceCharge: eum
-      headersToken: quia
-      headersKey: rem
+      boardingPoint: repellendus
+      tripId: doloribus
+      dropingPoint: veniam
+      source: et
+      destination: temporibus
+      serviceCharge: dolorum
+      headersToken: pariatur
+      headersKey: fugit
       inventoryItems:
         -
-          seatName: aut
-          fare: 33.5814
-          serviceTax: 75754909.0
-          operatorServiceCharge: 1851.58
-          ladiesSeat: corporis
+          seatName: modi
+          fare: 6.7363399
+          serviceTax: 3372.00479
+          operatorServiceCharge: 1.199469254
+          ladiesSeat: eum
           passenger:
-            name: ea
-            mobile: wmhodzg
-            title: recusandae
-            email: wolf.lynn@example.org
-            age: nesciunt
-            gender: quo
-            address: quo
-            idType: quia
-            idNumber: rerum
-            primary: veritatis
+            name: molestiae
+            mobile: dtt
+            title: similique
+            email: zachariah00@example.org
+            age: animi
+            gender: et
+            address: quis
+            idType: voluptatem
+            idNumber: et
+            primary: aut
     fileParameters: []
     responses: []
     responseFields: []
@@ -4088,7 +3327,7 @@ endpoints:
         name: userRef
         description: ''
         required: true
-        example: quia
+        example: deserunt
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4098,7 +3337,7 @@ endpoints:
         name: amount
         description: ''
         required: true
-        example: repellendus
+        example: molestiae
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4108,7 +3347,7 @@ endpoints:
         name: baseFare
         description: ''
         required: true
-        example: occaecati
+        example: non
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4118,7 +3357,7 @@ endpoints:
         name: referenceKey
         description: ''
         required: true
-        example: deserunt
+        example: suscipit
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4128,7 +3367,7 @@ endpoints:
         name: passengerPhone
         description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
         required: true
-        example: yrsmmgekygkgfyspeoxdrhnmektfj
+        example: enclvcljhohtasvjmzgsfihqazhkwzdwyeycwvmvciirluvutlouvoywotfummjtsnjgkuwesqmlgg
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4138,7 +3377,7 @@ endpoints:
         name: passengerEmail
         description: 'Must be a valid email address.'
         required: true
-        example: jkuphal@example.com
+        example: quentin43@example.com
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4148,7 +3387,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: et
+        example: enim
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4158,21 +3397,21 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: aut
+        example: laboriosam
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      userRef: quia
-      amount: repellendus
-      baseFare: occaecati
-      referenceKey: deserunt
-      passengerPhone: yrsmmgekygkgfyspeoxdrhnmektfj
-      passengerEmail: jkuphal@example.com
-      headersToken: et
-      headersKey: aut
+      userRef: deserunt
+      amount: molestiae
+      baseFare: non
+      referenceKey: suscipit
+      passengerPhone: enclvcljhohtasvjmzgsfihqazhkwzdwyeycwvmvciirluvutlouvoywotfummjtsnjgkuwesqmlgg
+      passengerEmail: quentin43@example.com
+      headersToken: enim
+      headersKey: laboriosam
     fileParameters: []
     responses: []
     responseFields: []
@@ -4206,7 +3445,7 @@ endpoints:
         name: referenceId
         description: ''
         required: true
-        example: consequatur
+        example: repellendus
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4216,7 +3455,7 @@ endpoints:
         name: headersToken
         description: ''
         required: true
-        example: voluptas
+        example: sequi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4226,16 +3465,16 @@ endpoints:
         name: headersKey
         description: ''
         required: true
-        example: cupiditate
+        example: commodi
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      referenceId: consequatur
-      headersToken: voluptas
-      headersKey: cupiditate
+      referenceId: repellendus
+      headersToken: sequi
+      headersKey: commodi
     fileParameters: []
     responses: []
     responseFields: []

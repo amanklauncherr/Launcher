@@ -15,7 +15,42 @@ use Egulias\EmailValidator\Validation\RFCValidation;
 
 class AdminController extends Controller
 {   
-    //
+    
+    /**
+     * @group AdminAuth
+     *
+     * Register a new admin.
+     *
+     * This endpoint registers a new user with the role of "admin" and returns the user details along with a JWT token upon successful registration.
+     *
+     * @bodyParam name string required The name of the user. Example: John Doe
+     * @bodyParam email string required The email address of the user. Must be unique and follow RFC validation. Example: john.doe@example.com
+     * @bodyParam password string required The password for the user, must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a digit, and a special character. Example: StrongP@ssw0rd
+     *
+     * @response 201 {
+     *     "success": 1
+     *     "admin": {
+     *         "id": 1,
+     *         "name": "John Doe",
+     *         "email": "john.doe@example.com",
+     *         "created_at": "2024-11-11T19:16:43.000000Z",
+     *         "updated_at": "2024-11-11T19:16:43.000000Z",
+     *         "roles": ["admin"]
+     *     },
+     *     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+     * }
+     *
+     * @response 422 {
+     *     "success": 0,
+     *     "error": "The email is invalid."
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "message": "Error while Register",
+     *     "error": "Exception message here"
+     * }
+     */
     public function register(Request $request){
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:50',
@@ -71,6 +106,59 @@ class AdminController extends Controller
         }
     }
 
+    /**
+     * @group AdminAuth
+     *
+     * Admin Login
+     *
+     * This endpoint allows an admin user to log in by providing their email and password.
+     * Only users with the "admin" role are authorized to log in using this endpoint.
+     *
+     * @bodyParam email string required The email address of the user. Example: admin@example.com
+     * @bodyParam password string required The user's password, must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a digit, and a special character. Example: StrongP@ssw0rd
+     *
+     * @response 200 {
+     *     "success": 1
+     *     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+     *     "token_type": "bearer",
+     *     "expires_in": 3600,
+     *     "user" : {
+     *         "id": 1,
+     *         "name": "John Doe",
+     *         "email": "john.doe@example.com",
+     *         "created_at": "2024-11-11T19:16:43.000000Z",
+     *         "updated_at": "2024-11-11T19:16:43.000000Z",
+     *         "roles": ["admin"]
+     *      }
+     *   }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "Password does not match"
+     * }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "Unauthorized Login Role. Only Admin can Login"
+     * }
+     *
+     * @response 404 {
+     *     "success": 0,
+     *     "error": "Email doesn't exist"
+     * }
+     *
+     * @response 422 {
+     *     "success": 0,
+     *     "error": "The email field is required."
+     * }
+     *
+     * @response 500 {
+     *     "success": 0,
+     *     "message": "Error while logging in",
+     *     "error": "Exception message here"
+     * }
+     */
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(),
@@ -122,14 +210,11 @@ class AdminController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-                    //  to check roles
-            // $roles = $user->getRoleNames();
-            // print_r($roles->toArray());die();
-            // $user = User::find($userId);
     }
 
     protected function respondWithToken($token){
         return response()->json([
+            "success" => 1,
             'access_token'=>$token,
             'token_type'=>'bearer',
             'expires_in'=>auth()->guard('api')->factory()->getTTL()*60,
@@ -138,7 +223,162 @@ class AdminController extends Controller
         ], 200);
     }
 
-    // public function refresh()
+    /**
+     * @group AdminAuth
+     *
+     * Get Profile
+     *
+     * Retrieves the authenticated Admin's profile.
+     *
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     *
+     * @response 200 {
+     *     "success": 1,
+     *     "data": {
+     *         "id": 1,
+     *         "name": "Admin User",
+     *         "email": "admin@example.com",
+     *         "created_at": "2024-01-01T00:00:00.000000Z",
+     *         "updated_at": "2024-01-01T00:00:00.000000Z"
+     *     }
+     * }
+     *
+     * @response 401 {
+     *     "success": 0,
+     *     "error": "No User Found"
+     * }
+     */
+
+    public function profile()
+    {
+        $user = Auth::guard('api')->user();
+    
+        if (!$user) {
+            return response()->json(['success' => 0, 'error' => 'No User Found'], 401);
+        }
+        return response()->json(['success' => 1, 'data' => $user], 200);    
+    }
+
+    /**
+     * @group AdminAuth
+     *
+     * Update Admin Profile
+     *
+     * Allows the authenticated admin to update their profile information.
+     * The name, email, and password fields are optional, but if provided,
+     * they must meet the specified validation criteria.
+     *
+     * **Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.
+     * 
+     * **Note:** You will get the access_token after Admin Login
+     * 
+     * @authenticated
+     * 
+     * @header Authorization Bearer {access_token}
+     * 
+     * @bodyParam name string optional The user's name, max 50 characters. Example: John Doe
+     * @bodyParam email string optional The user's email address. Example: newadmin@example.com
+     * @bodyParam password string optional The new password, must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a digit, and a special character. Example: StrongP@ssw0rd
+     *
+     * @response 200 {
+     *     "success" : 1
+     *     "message": "Profile updated successfully",
+     *     "user": {
+     *         "id": 1,
+     *         "name": "Updated Name",
+     *         "email": "updatedemail@example.com",
+     *         "created_at": "2024-01-01T00:00:00.000000Z",
+     *         "updated_at": "2024-01-02T00:00:00.000000Z"
+     *     }
+     * }
+     *
+     * @response 422 {
+     *     "success" : 0 
+     *     "errors" : "The email has already been taken."
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     'success': 0,
+     *     "message": "Record not found"
+     * }
+     *
+     * @response 500 {
+     *     'success': 0,
+     *     "message": "Error while Updating Admin Profile",
+     *     "error": "Exception message here"
+     * }
+     */
+    public function updateProfile(Request $request){
+        $validator = Validator::make($request->all(),[
+            'name'=>'nullable|string|max:50',
+            'email'=>'nullable|email|unique:users,email'.Auth::id(),
+            'password'=>[
+                'nullable',
+                'string',
+                'min:8',
+                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
+            ],
+        ]);
+        if ($validator->fails()) {
+            $error = $validator->errors()->first(); 
+            return response()->json([
+                'success' => 0,
+                'error' => $error
+            ], 422);
+        }
+        try {
+            //code...
+            $user=Auth::user();
+
+            if ($request->filled('name')) {
+                $user->name = $request->name;
+            }
+    
+            if ($request->filled('email')) {
+                $user->email = $request->email;
+            }
+    
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+    
+            $user->save();
+
+            return response()->json([
+                "success" => 1,
+                'message' => 'Profile updated successfully', 'user' => $user
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            // Return a response if the record was not found
+            return response()->json(
+                [
+                    'success'=> 0,
+                    'message' => 'Record not found'
+                ], 404);
+        }catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json([
+                'success'=> 0,
+                'message' => 'Error while Updating Admin Profile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+}
+
+
+
+
+   
+// public function refresh()
     // {
     //     return $this->respondWithToken(JWTAuth::refresh());
     // }
@@ -169,80 +409,22 @@ class AdminController extends Controller
     //     }
     //   }
 
-    public function allUser()
-    {
-        $users= User::all();      
-        if($users->isEmpty())
-        {
-            return response()->json(['error' => 'not found'], 404);
-        }
-        return response()->json(['message'=>$users]);
-    }
+    // public function allUser()
+    // {
+    //     $users= User::all();      
+    //     if($users->isEmpty())
+    //     {
+    //         return response()->json(['error' => 'not found'], 404);
+    //     }
+    //     return response()->json(['message'=>$users]);
+    // }
     
 
-    public function logout()
-    {
-        Auth::guard('api')->logout();
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    public function profile()
-    {
-            $user = Auth::guard('api')->user();
-    
-            if (!$user) {
-                return response()->json(['success' => 0, 'error' => 'Unauthorized. This token is not assigned to any user'], 401);
-            }
-            return response()->json(['success' => 1, 'data' => $user], 200);    
-    }
-
-    public function updateProfile(Request $request){
-        $validator = Validator::make($request->all(),[
-            'name'=>'nullable|string|max:50',
-            'email'=>'nullable|email|unique:users,email'.Auth::id(),
-            'password'=>[
-                'nullable',
-                'string',
-                'min:8',
-                'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/'
-            ],
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        try {
-            //code...
-            $user=Auth::user();
-
-            if ($request->filled('name')) {
-                $user->name = $request->name;
-            }
-    
-            if ($request->filled('email')) {
-                $user->email = $request->email;
-            }
-    
-            if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
-            }
-    
-            $user->save();
-
-            return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
-        } catch (ModelNotFoundException $e) {
-            // Return a response if the record was not found
-            return response()->json(['message' => 'Record not found'], 404);
-        }catch (\Exception $e) {
-            // Handle any exceptions
-            return response()->json([
-                'message' => 'Error while Updating Admin Profile',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-}
-
+    // public function logout()
+    // {
+    //     Auth::guard('api')->logout();
+    //     return response()->json(['message' => 'Successfully logged out']);
+    // }
 
     // try {
     //     // Extract the refresh token from the Authorization header
