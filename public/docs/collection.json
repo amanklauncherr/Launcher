@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Laravel",
-        "_postman_id": "135584ce-87fa-4c42-975a-3865470a3bbf",
+        "_postman_id": "8bbaef66-9d51-427e-a851-73dbe5cb6bed",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -528,6 +528,118 @@
             ]
         },
         {
+            "name": "Cart",
+            "description": "",
+            "item": [
+                {
+                    "name": "Update or add a product to the cart.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/updateCart",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/updateCart"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"product_id\":1,\"product_name\":\"\\\"Laptop\\\"\",\"quantity\":2,\"price\":500}"
+                        },
+                        "description": "This endpoint allows authenticated users to add a product to their cart or update an existing product in the cart. If the quantity is set to zero for an existing product, it will be removed from the cart.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  'success' : 1\n  \"message\": \"Cart updated\",\n  \"Cart\": {\n    \"product_id\": 1,\n    \"product_name\": \"Laptop\",\n    \"quantity\": 2,\n    \"price\": 1000,\n    \"user_id\": 1\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n  'success' : 1\n  \"Message\": \"Quantity should be greater than 0\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n  \"Success\": 0,\n  \"Message\": \"Unauthorized, Login To Add Cart\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  'success': 1\n  \"message\": \"An error occurred while Adding or Updating Cart Section\",\n  \"error\": \"Exception message\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show the user's cart and update quantities.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/showCart",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/showCart"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"products\":[\"reiciendis\"]}"
+                        },
+                        "description": "This endpoint returns the contents of the user's cart, including the subtotal, GST amount, and grand total. It also allows updating the quantity of products if provided in the request body.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  'success' : 1,\n  \"products\": [\n    {\n      \"product_id\": 1,\n      \"product_name\": \"Laptop\",\n      \"quantity\": 2,\n      \"price\": 500,\n      \"sub_total\": 1000\n    }\n  ],\n  \"subTotal\": 1000,\n  \"gstAmt\": 180,\n  \"grand_Total\": 1180\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n  \"success\": 0,\n  \"message\": \"Unauthorized, Login To Check Your Cart\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  'success' : 1,\n  \"message\": \"Please Add Some products in Your Cart\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Client Management",
             "description": "",
             "item": [
@@ -874,6 +986,225 @@
             ]
         },
         {
+            "name": "Coupon Management",
+            "description": "",
+            "item": [
+                {
+                    "name": "API to create a new coupon with specific attributes like code, applicable places, and discount percentage.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Add-Coupon",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Add-Coupon"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {access_token}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"coupon_code\":\"SPRING20\",\"coupon_places\":[\"New York\",\"Los Angeles\"],\"discount\":\"15\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n \"message\": \"Coupon created successfully\",\n \"coupon\": {\n     \"id\": 1,\n     \"coupon_code\": \"SPRING20\",\n     \"coupon_places\": \"[\\\"New York\\\", \\\"Los Angeles\\\"]\",\n     \"discount\": 15,\n     \"created_at\": \"2024-11-14T12:00:00.000Z\",\n     \"updated_at\": \"2024-11-14T12:00:00.000Z\"\n }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n  \"errors\": {\n      \"coupon_code\": [\n          \"The coupon_code field is required.\",\n          \"The coupon_code has already been taken.\"\n      ],\n      \"coupon_places\": [\n          \"The coupon_places field is required.\"\n      ],\n      \"discount\": [\n          \"The discount field is required.\",\n          \"The discount must be between 0 and 100.\"\n      ]\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  \"message\": \"An error occurred while Adding Coupon\",\n  \"error\": \"Error message details\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "API to update an existing coupon.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Update-Coupon\/:coupon_code",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Update-Coupon\/:coupon_code",
+                            "variable": [
+                                {
+                                    "id": "coupon_code",
+                                    "key": "coupon_code",
+                                    "value": "assumenda",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {access_token}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"coupon_places\":\"[\\\"New York\\\", \\\"Los Angeles\\\"]\",\"discount\":\"20\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n  \"message\": \"Coupon updated successfully\",\n  \"coupon\": {\n    \"id\": 1,\n    \"coupon_code\": \"SPRING20\",\n    \"coupon_places\": \"[\\\"New York\\\", \\\"Los Angeles\\\"]\",\n    \"discount\": 20,\n    \"created_at\": \"2024-11-14T12:00:00.000Z\",\n    \"updated_at\": \"2024-11-14T13:00:00.000Z\"\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  \"message\": \"Record not found\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n  \"errors\": {\n    \"coupon_places\": [\"The coupon places field must be an array.\"]\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  \"message\": \"An error occurred while deleting the record\",\n  \"error\": \"<error-message>\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "API to delete an existing coupon by coupon code.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Delete-Coupon\/:coupon_code",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Delete-Coupon\/:coupon_code",
+                            "variable": [
+                                {
+                                    "id": "coupon_code",
+                                    "key": "coupon_code",
+                                    "value": "totam",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {access_token}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"message\": \"Record deleted successfully\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  \"message\": \"Record not found\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  \"message\": \"An error occurred while deleting the record\",\n  \"error\": \"<error-message>\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "API to retrieve all available coupons.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Show-Coupon",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Show-Coupon"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"Coupon\": [\n      {\n          \"id\": 1,\n          \"coupon_code\": \"SPRING20\",\n          \"coupon_places\": \"[\\\"New York\\\", \\\"Los Angeles\\\"]\",\n          \"discount\": 15,\n          \"created_at\": \"2024-11-14T12:00:00.000Z\",\n          \"updated_at\": \"2024-11-14T12:00:00.000Z\"\n      },\n      {\n          \"id\": 2,\n          \"coupon_code\": \"SUMMER30\",\n          \"coupon_places\": \"[\\\"Chicago\\\", \\\"San Francisco\\\"]\",\n          \"discount\": 30,\n          \"created_at\": \"2024-11-14T12:30:00.000Z\",\n          \"updated_at\": \"2024-11-14T12:30:00.000Z\"\n      }\n  ]\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  \"Message\": \"No Coupon Found\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Destination Management",
             "description": "",
             "item": [
@@ -886,12 +1217,12 @@
                             "query": [
                                 {
                                     "key": "id",
-                                    "value": "odit",
+                                    "value": "est",
                                     "description": "optional The ID of the destination to be updated. If not provided, a new destination is created.",
                                     "disabled": false
                                 }
                             ],
-                            "raw": "{{baseUrl}}\/api\/addDestination?id=odit"
+                            "raw": "{{baseUrl}}\/api\/addDestination?id=est"
                         },
                         "method": "POST",
                         "header": [
@@ -937,7 +1268,7 @@
                                 },
                                 {
                                     "key": "images[0]",
-                                    "value": "voluptatum",
+                                    "value": "cupiditate",
                                     "type": "text",
                                     "description": ""
                                 },
@@ -1274,124 +1605,6 @@
                     ]
                 },
                 {
-                    "name": "GET api\/verified\/{uniqueCode}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/verified\/:uniqueCode",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/verified\/:uniqueCode",
-                            "variable": [
-                                {
-                                    "id": "uniqueCode",
-                                    "key": "uniqueCode",
-                                    "value": "fuga",
-                                    "description": ""
-                                }
-                            ]
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 401,
-                            "body": "{\"success\":0,\"message\":\"Not Found\"}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "POST api\/Reset\/Password\/Email",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Reset\/Password\/Email",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Reset\/Password\/Email"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"deonte52@example.net\"}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/Reset\/Password",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Reset\/Password",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Reset\/Password"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"token\":\"rerum\",\"password\":\"<:x`C+]Ep#=obi\\\"9%\"}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
                     "name": "POST api\/term-conditions",
                     "request": {
                         "url": {
@@ -1429,112 +1642,6 @@
                     "response": []
                 },
                 {
-                    "name": "POST api\/Add-Coupon",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Add-Coupon",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Add-Coupon"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"coupon_code\":\"repellat\",\"coupon_places\":[],\"discount\":17}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "PUT api\/Update-Coupon\/{coupon_code}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Update-Coupon\/:coupon_code",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Update-Coupon\/:coupon_code",
-                            "variable": [
-                                {
-                                    "id": "coupon_code",
-                                    "key": "coupon_code",
-                                    "value": "voluptate",
-                                    "description": ""
-                                }
-                            ]
-                        },
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"discount\":5}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "DELETE api\/Delete-Coupon\/{coupon_code}",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Delete-Coupon\/:coupon_code",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Delete-Coupon\/:coupon_code",
-                            "variable": [
-                                {
-                                    "id": "coupon_code",
-                                    "key": "coupon_code",
-                                    "value": "sint",
-                                    "description": ""
-                                }
-                            ]
-                        },
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
                     "name": "GET api\/emp\/{user_id}",
                     "request": {
                         "url": {
@@ -1546,7 +1653,7 @@
                                 {
                                     "id": "user_id",
                                     "key": "user_id",
-                                    "value": "qui",
+                                    "value": "perspiciatis",
                                     "description": "The ID of the user."
                                 }
                             ]
@@ -1619,166 +1726,6 @@
                     "response": []
                 },
                 {
-                    "name": "POST api\/addUserProfile",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/addUserProfile",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/addUserProfile"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/showUserProfile",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/showUserProfile",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/showUserProfile"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 401,
-                            "body": "{\"success\":0,\"error\":\"Token not provided. This Api requires Token\"}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "POST api\/addEnquiry",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/addEnquiry",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/addEnquiry"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/updateCart",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/updateCart",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/updateCart"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "POST api\/showCart",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/showCart",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/showCart"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
                     "name": "POST api\/add\/User\/Subscription",
                     "request": {
                         "url": {
@@ -1800,7 +1747,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"subscription_id\":\"facere\"}"
+                            "raw": "{\"subscription_id\":\"quis\"}"
                         },
                         "description": "",
                         "auth": {
@@ -1958,7 +1905,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"OrderID\":\"placeat\"}"
+                            "raw": "{\"OrderID\":\"vero\"}"
                         },
                         "description": "",
                         "auth": {
@@ -2016,308 +1963,6 @@
                     "response": []
                 },
                 {
-                    "name": "GET api\/showCode",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/showCode",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/showCode"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "{\"success\":1,\"Codes\":[\"+93\",\"+358\",\"+355\",\"+213\",\"+1684\",\"+376\",\"+244\",\"+1264\",\"+672\",\"+1268\",\"+54\",\"+374\",\"+297\",\"+61\",\"+43\",\"+994\",\"+1242\",\"+973\",\"+880\",\"+1246\",\"+375\",\"+32\",\"+501\",\"+229\",\"+1441\",\"+975\",\"+591\",\"+387\",\"+267\",\"+55\",\"+246\",\"+673\",\"+359\",\"+226\",\"+257\",\"+855\",\"+237\",\"+1\",\"+238\",\"+ 345\",\"+236\",\"+235\",\"+56\",\"+86\",\"+61\",\"+61\",\"+57\",\"+269\",\"+242\",\"+243\",\"+682\",\"+506\",\"+225\",\"+385\",\"+53\",\"+357\",\"+420\",\"+45\",\"+253\",\"+1767\",\"+1849\",\"+593\",\"+20\",\"+503\",\"+240\",\"+291\",\"+372\",\"+251\",\"+500\",\"+298\",\"+679\",\"+358\",\"+33\",\"+594\",\"+689\",\"+241\",\"+220\",\"+995\",\"+49\",\"+233\",\"+350\",\"+30\",\"+299\",\"+1473\",\"+590\",\"+1671\",\"+502\",\"+44\",\"+224\",\"+245\",\"+595\",\"+509\",\"+379\",\"+504\",\"+852\",\"+36\",\"+354\",\"+91\",\"+62\",\"+98\",\"+964\",\"+353\",\"+44\",\"+972\",\"+39\",\"+1876\",\"+81\",\"+44\",\"+962\",\"+77\",\"+254\",\"+686\",\"+850\",\"+82\",\"+965\",\"+996\",\"+856\",\"+371\",\"+961\",\"+266\",\"+231\",\"+218\",\"+423\",\"+370\",\"+352\",\"+853\",\"+389\",\"+261\",\"+265\",\"+60\",\"+960\",\"+223\",\"+356\",\"+692\",\"+596\",\"+222\",\"+230\",\"+262\",\"+52\",\"+691\",\"+373\",\"+377\",\"+976\",\"+382\",\"+1664\",\"+212\",\"+258\",\"+95\",\"+264\",\"+674\",\"+977\",\"+31\",\"+599\",\"+687\",\"+64\",\"+505\",\"+227\",\"+234\",\"+683\",\"+672\",\"+1670\",\"+47\",\"+968\",\"+92\",\"+680\",\"+970\",\"+507\",\"+675\",\"+595\",\"+51\",\"+63\",\"+872\",\"+48\",\"+351\",\"+1939\",\"+974\",\"+40\",\"+7\",\"+250\",\"+262\",\"+590\",\"+290\",\"+1869\",\"+1758\",\"+590\",\"+508\",\"+1784\",\"+685\",\"+378\",\"+239\",\"+966\",\"+221\",\"+381\",\"+248\",\"+232\",\"+65\",\"+421\",\"+386\",\"+677\",\"+252\",\"+27\",\"+211\",\"+500\",\"+34\",\"+94\",\"+249\",\"+597\",\"+47\",\"+268\",\"+46\",\"+41\",\"+963\",\"+886\",\"+992\",\"+255\",\"+66\",\"+670\",\"+228\",\"+690\",\"+676\",\"+1868\",\"+216\",\"+90\",\"+993\",\"+1649\",\"+688\",\"+256\",\"+380\",\"+971\",\"+44\",\"+1\",\"+598\",\"+998\",\"+678\",\"+58\",\"+84\",\"+1284\",\"+1340\",\"+681\",\"+967\",\"+260\",\"+263\"]}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "GET api\/showEnquiry",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/showEnquiry",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/showEnquiry"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "{\"success\":1,\"Enquires\":[{\"job_title\":\"Photographer\",\"job_location\":\"North Goa\",\"user_name\":\"Jagdish\",\"user_email\":\"adhikarijagdish@gmail.com\",\"user_phone_no\":9910179393,\"note\":\"Checking Job\"},{\"job_title\":\"Model\",\"job_location\":\"New Delhi\",\"user_name\":\"Jagdish\",\"user_email\":\"adhikarijagdish@gmail.com\",\"user_phone_no\":9910179393,\"note\":null},{\"job_title\":\"Model\",\"job_location\":\"New Delhi\",\"user_name\":\"Test7\",\"user_email\":\"test7@gmail.com\",\"user_phone_no\":null,\"note\":null},{\"job_title\":\"Model\",\"job_location\":\"New Delhi\",\"user_name\":\"nitin\",\"user_email\":\"nitin08837@gmail.com\",\"user_phone_no\":9057498447,\"note\":\"\"},{\"job_title\":\"Photographer\",\"job_location\":\"North Goa\",\"user_name\":\"nitin\",\"user_email\":\"nitin08837@gmail.com\",\"user_phone_no\":9057498447,\"note\":\"\"},{\"job_title\":\"Photographer\",\"job_location\":\"North Goa\",\"user_name\":\"Test7\",\"user_email\":\"test7@gmail.com\",\"user_phone_no\":null,\"note\":\"\"},{\"job_title\":\"Model\",\"job_location\":\"New Delhi\",\"user_name\":\"phunsuk  jatav\",\"user_email\":\"phunsukj@gmail.com\",\"user_phone_no\":8700125886,\"note\":\"\"},{\"job_title\":\"Model\",\"job_location\":\"New Delhi\",\"user_name\":\"Testing User2\",\"user_email\":\"info@TestingUser2.co\",\"user_phone_no\":9876543213,\"note\":\"\"}]}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "POST api\/AddQuiz",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/AddQuiz",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/AddQuiz"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"name\":\"reiciendis\",\"email\":\"larkin.fritz@example.net\",\"phone\":\"odio\",\"answer1\":\"et\",\"answer2\":\"temporibus\",\"answer3\":\"nam\"}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/ShowQuiz",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/ShowQuiz",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/ShowQuiz"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "[{\"id\":1,\"name\":\"Jagdish\",\"email\":\"adhikari@gmail.com\",\"phone\":\"9334452345\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-07-04\",\"updated_at\":\"2024-07-04\"},{\"id\":2,\"name\":\"Jagdish\",\"email\":\"jagidh@gmail.com\",\"phone\":\"9334452344\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-07-04\",\"updated_at\":\"2024-07-04\"},{\"id\":3,\"name\":\"Jagdish bhagat\",\"email\":\"jagidhbahgat@gmail.com\",\"phone\":\"9334452343\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-07-04\",\"updated_at\":\"2024-07-04\"},{\"id\":4,\"name\":\"nitin\",\"email\":\"nitin@g.com\",\"phone\":\"9058294020\",\"answer1\":\"Livin' it up in luxury and relaxation\",\"answer2\":\"Friends Squad for non-stop laughs\",\"answer3\":\"Exploring hiking trails and nature\",\"created_at\":\"2024-07-04\",\"updated_at\":\"2024-07-04\"},{\"id\":5,\"name\":\"nitin\",\"email\":\"nitin@gm.com\",\"phone\":\"7898909890\",\"answer1\":\"Diving deep into culture and history\",\"answer2\":\"Fam for those priceless moments\",\"answer3\":\"Exploring hiking trails and nature\",\"created_at\":\"2024-07-04\",\"updated_at\":\"2024-07-04\"},{\"id\":6,\"name\":\"Megha Khulbe\",\"email\":\"Launcherr.co@gmail.com\",\"phone\":\"9871831224\",\"answer1\":\"Chillin' on sunny beaches\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Exploring hiking trails and nature\",\"created_at\":\"2024-07-10\",\"updated_at\":\"2024-07-10\"},{\"id\":7,\"name\":\"Disha\",\"email\":\"dishakhulbe@gmail.com\",\"phone\":\"5857523588\",\"answer1\":\"Chillin' on sunny beaches\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Exploring hiking trails and nature\",\"created_at\":\"2024-07-12\",\"updated_at\":\"2024-07-12\"},{\"id\":16,\"name\":\"NK\",\"email\":\"N@G.COM\",\"phone\":\"+9109U8897298\",\"answer1\":\"Livin' it up in luxury and relaxation\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Exploring hiking trails and nature\",\"created_at\":\"2024-07-18\",\"updated_at\":\"2024-07-18\"},{\"id\":17,\"name\":\"nik\",\"email\":\"n@h.com\",\"phone\":\"+919067776878\",\"answer1\":\"Livin' it up in luxury and relaxation\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Checking out cool museums and landmarks\",\"created_at\":\"2024-07-18\",\"updated_at\":\"2024-07-18\"},{\"id\":18,\"name\":\"Nitin Saini\",\"email\":\"nitinsaini8030@gmail.com\",\"phone\":\"+919560767761\",\"answer1\":\"Livin' it up in luxury and relaxation\",\"answer2\":\"Friends Squad for non-stop laughs\",\"answer3\":\"Diving into a beach read\",\"created_at\":\"2024-07-29\",\"updated_at\":\"2024-07-29\"},{\"id\":19,\"name\":\"Sarthak\",\"email\":\"Sarthakguptask4@gmail.com\",\"phone\":\"+919521426626\",\"answer1\":\"Diving deep into culture and history\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Checking out cool museums and landmarks\",\"created_at\":\"2024-08-01\",\"updated_at\":\"2024-08-01\"},{\"id\":20,\"name\":\"Sarthak\",\"email\":\"Sarthakguptask4@gmail.com\",\"phone\":\"+919521426626\",\"answer1\":\"Diving deep into culture and history\",\"answer2\":\"Rollin' solo to find your groove\",\"answer3\":\"Checking out cool museums and landmarks\",\"created_at\":\"2024-08-01\",\"updated_at\":\"2024-08-01\"},{\"id\":21,\"name\":\"Manas Tripathi\",\"email\":\"info@StudyLancer.com\",\"phone\":\"+918700125888\",\"answer1\":\"Diving deep into culture and history\",\"answer2\":\"Fam for those priceless moments\",\"answer3\":\"Checking out cool museums and landmarks\",\"created_at\":\"2024-08-01\",\"updated_at\":\"2024-08-01\"},{\"id\":22,\"name\":\"Manas Tripathi\",\"email\":\"spestcontrol02@gmail.com\",\"phone\":\"+919988223377\",\"answer1\":\"Diving deep into culture and history\",\"answer2\":\"Friends Squad for non-stop laughs\",\"answer3\":\"Relaxing with a spa day\",\"created_at\":\"2024-08-01\",\"updated_at\":\"2024-08-01\"},{\"id\":25,\"name\":\"Nitin\",\"email\":\"nitin08837@gmail.com\",\"phone\":\"9334455669\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-08-08\",\"updated_at\":\"2024-08-08\"},{\"id\":30,\"name\":\"Manas\",\"email\":\"manas3431@gmail.com\",\"phone\":\"0000000000\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-08-20\",\"updated_at\":\"2024-08-20\"},{\"id\":32,\"name\":\"Jagdish\",\"email\":\"adhikarijagdish3@gmail.com\",\"phone\":\"0000000002\",\"answer1\":\"Everything is oky\",\"answer2\":\"Hello ji\",\"answer3\":\"hi how are you\",\"created_at\":\"2024-08-20\",\"updated_at\":\"2024-08-20\"},{\"id\":33,\"name\":\"Sarthak\",\"email\":\"sarthakguptask5@gmail.com\",\"phone\":\"+917239867198\",\"answer1\":\"Getting wild with outdoor adventures\",\"answer2\":\"Friends Squad for non-stop laughs\",\"answer3\":\"Checking out cool museums and landmarks\",\"created_at\":\"2024-09-02\",\"updated_at\":\"2024-09-02\"},{\"id\":34,\"name\":\"Nitin Saini\",\"email\":\"nitinsaini@launcherr.co\",\"phone\":\"+918470067761\",\"answer1\":\"Chillin' on sunny beaches\",\"answer2\":\"Friends Squad for non-stop laughs\",\"answer3\":\"Relaxing with a spa day\",\"created_at\":\"2024-10-18\",\"updated_at\":\"2024-10-18\"},{\"id\":35,\"name\":\"Aman\",\"email\":\"amankumar@launcherr.co\",\"phone\":\"+918853309666\",\"answer1\":\"Chillin' on sunny beaches\",\"answer2\":\"Fam for those priceless moments\",\"answer3\":\"Diving into a beach read\",\"created_at\":\"2024-11-13\",\"updated_at\":\"2024-11-13\"},{\"id\":36,\"name\":\"Dipankar Sarkar\",\"email\":\"dipankar.skypoint@gmail.com\",\"phone\":\"+917003824164\",\"answer1\":\"Chillin' on sunny beaches\",\"answer2\":\"Fam for those priceless moments\",\"answer3\":\"Diving into a beach read\",\"created_at\":\"2024-11-14\",\"updated_at\":\"2024-11-14\"}]",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "POST api\/AddEmail",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/AddEmail",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/AddEmail"
-                        },
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\"email\":\"hudson.kemmer@example.net\"}"
-                        },
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "GET api\/ShowEmail",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/ShowEmail",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/ShowEmail"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "[{\"id\":37,\"email\":\"sarthakguptask3@gmail.com\",\"created_at\":\"2024-07-16T15:22:15.000000Z\",\"updated_at\":\"2024-07-16T15:22:15.000000Z\"},{\"id\":65,\"email\":\"adhikarijagdish3@gmail.com\",\"created_at\":\"2024-08-08T11:49:41.000000Z\",\"updated_at\":\"2024-08-08T11:49:41.000000Z\"},{\"id\":66,\"email\":\"nitin08837@gmail.com\",\"created_at\":\"2024-08-08T11:51:38.000000Z\",\"updated_at\":\"2024-08-08T11:51:38.000000Z\"},{\"id\":67,\"email\":\"manas3431@gmail.com\",\"created_at\":\"2024-08-08T11:52:01.000000Z\",\"updated_at\":\"2024-08-08T11:52:01.000000Z\"}]",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
-                    "name": "GET api\/Show-Coupon",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/Show-Coupon",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/Show-Coupon"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "{\"Coupon\":[{\"id\":11,\"coupon_code\":\"LAUNCHERRSVX10\",\"coupon_places\":\"[\\\"products\\\"]\",\"discount\":\"10.00\",\"created_at\":\"2024-07-14\",\"updated_at\":\"2024-07-14\"},{\"id\":12,\"coupon_code\":\"n0in4fon0idwnc213\",\"coupon_places\":\"[\\\"Travel\\\",\\\"Shoping\\\",\\\"Food\\\"]\",\"discount\":\"100.00\",\"created_at\":\"2024-07-14\",\"updated_at\":\"2024-07-14\"},{\"id\":13,\"coupon_code\":\"n0in4fon0idwnc000\",\"coupon_places\":\"[\\\"Travel\\\",\\\"Shoping\\\",\\\"Food\\\"]\",\"discount\":\"100.00\",\"created_at\":\"2024-07-14\",\"updated_at\":\"2024-07-14\"},{\"id\":14,\"coupon_code\":\"n0in4fon0idwnc001\",\"coupon_places\":\"[\\\"Travel\\\",\\\"Shoping\\\",\\\"Food\\\"]\",\"discount\":\"100.00\",\"created_at\":\"2024-07-14\",\"updated_at\":\"2024-07-14\"}]}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
                     "name": "GET api\/Apply-Coupon",
                     "request": {
                         "url": {
@@ -2339,7 +1984,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"coupon_code\":\"vero\",\"place\":\"amet\"}"
+                            "raw": "{\"coupon_code\":\"perspiciatis\",\"place\":\"culpa\"}"
                         },
                         "description": "",
                         "auth": {
@@ -2513,6 +2158,54 @@
                     ]
                 },
                 {
+                    "name": "GET api\/showState",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/showState",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/showState"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"success\":1,\"states\":[\"Andhra Pradesh\",\"Arunachal Pradesh\",\"Assam\",\"Bihar\",\"Chandigarh (UT)\",\"Chhattisgarh\",\"Dadra and Nagar Haveli (UT)\",\"Daman and Diu (UT)\",\"Delhi (NCT)\",\"Goa\",\"Gujarat\",\"Haryana\",\"Himachal Pradesh\",\"Jammu and Kashmir\",\"Jharkhand\",\"Karnataka\",\"Kerala\",\"Lakshadweep (UT)\",\"Madhya Pradesh\",\"Maharashtra\",\"Manipur\",\"Meghalaya\",\"Mizoram\",\"Nagaland\",\"Odisha\",\"Puducherry (UT)\",\"Punjab\",\"Rajasthan\",\"Sikkim\",\"Tamil Nadu\",\"Telangana\",\"Tripura\",\"Uttarakhand\",\"Uttar Pradesh\",\"West Bengal\"]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
                     "name": "GET api\/CITIES",
                     "request": {
                         "url": {
@@ -2556,6 +2249,54 @@
                             ],
                             "code": 404,
                             "body": "{\"success\":0,\"message\":\"Please Select A State\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "GET api\/showCode",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/showCode",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/showCode"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"success\":1,\"Codes\":[\"+93\",\"+358\",\"+355\",\"+213\",\"+1684\",\"+376\",\"+244\",\"+1264\",\"+672\",\"+1268\",\"+54\",\"+374\",\"+297\",\"+61\",\"+43\",\"+994\",\"+1242\",\"+973\",\"+880\",\"+1246\",\"+375\",\"+32\",\"+501\",\"+229\",\"+1441\",\"+975\",\"+591\",\"+387\",\"+267\",\"+55\",\"+246\",\"+673\",\"+359\",\"+226\",\"+257\",\"+855\",\"+237\",\"+1\",\"+238\",\"+ 345\",\"+236\",\"+235\",\"+56\",\"+86\",\"+61\",\"+61\",\"+57\",\"+269\",\"+242\",\"+243\",\"+682\",\"+506\",\"+225\",\"+385\",\"+53\",\"+357\",\"+420\",\"+45\",\"+253\",\"+1767\",\"+1849\",\"+593\",\"+20\",\"+503\",\"+240\",\"+291\",\"+372\",\"+251\",\"+500\",\"+298\",\"+679\",\"+358\",\"+33\",\"+594\",\"+689\",\"+241\",\"+220\",\"+995\",\"+49\",\"+233\",\"+350\",\"+30\",\"+299\",\"+1473\",\"+590\",\"+1671\",\"+502\",\"+44\",\"+224\",\"+245\",\"+595\",\"+509\",\"+379\",\"+504\",\"+852\",\"+36\",\"+354\",\"+91\",\"+62\",\"+98\",\"+964\",\"+353\",\"+44\",\"+972\",\"+39\",\"+1876\",\"+81\",\"+44\",\"+962\",\"+77\",\"+254\",\"+686\",\"+850\",\"+82\",\"+965\",\"+996\",\"+856\",\"+371\",\"+961\",\"+266\",\"+231\",\"+218\",\"+423\",\"+370\",\"+352\",\"+853\",\"+389\",\"+261\",\"+265\",\"+60\",\"+960\",\"+223\",\"+356\",\"+692\",\"+596\",\"+222\",\"+230\",\"+262\",\"+52\",\"+691\",\"+373\",\"+377\",\"+976\",\"+382\",\"+1664\",\"+212\",\"+258\",\"+95\",\"+264\",\"+674\",\"+977\",\"+31\",\"+599\",\"+687\",\"+64\",\"+505\",\"+227\",\"+234\",\"+683\",\"+672\",\"+1670\",\"+47\",\"+968\",\"+92\",\"+680\",\"+970\",\"+507\",\"+675\",\"+595\",\"+51\",\"+63\",\"+872\",\"+48\",\"+351\",\"+1939\",\"+974\",\"+40\",\"+7\",\"+250\",\"+262\",\"+590\",\"+290\",\"+1869\",\"+1758\",\"+590\",\"+508\",\"+1784\",\"+685\",\"+378\",\"+239\",\"+966\",\"+221\",\"+381\",\"+248\",\"+232\",\"+65\",\"+421\",\"+386\",\"+677\",\"+252\",\"+27\",\"+211\",\"+500\",\"+34\",\"+94\",\"+249\",\"+597\",\"+47\",\"+268\",\"+46\",\"+41\",\"+963\",\"+886\",\"+992\",\"+255\",\"+66\",\"+670\",\"+228\",\"+690\",\"+676\",\"+1868\",\"+216\",\"+90\",\"+993\",\"+1649\",\"+688\",\"+256\",\"+380\",\"+971\",\"+44\",\"+1\",\"+598\",\"+998\",\"+678\",\"+58\",\"+84\",\"+1284\",\"+1340\",\"+681\",\"+967\",\"+260\",\"+263\"]}",
                             "name": ""
                         }
                     ]
@@ -2753,54 +2494,6 @@
                     ]
                 },
                 {
-                    "name": "GET api\/showState",
-                    "request": {
-                        "url": {
-                            "host": "{{baseUrl}}",
-                            "path": "api\/showState",
-                            "query": [],
-                            "raw": "{{baseUrl}}\/api\/showState"
-                        },
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application\/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application\/json"
-                            }
-                        ],
-                        "body": null,
-                        "description": "",
-                        "auth": {
-                            "type": "noauth"
-                        }
-                    },
-                    "response": [
-                        {
-                            "header": [
-                                {
-                                    "key": "cache-control",
-                                    "value": "no-cache, private"
-                                },
-                                {
-                                    "key": "content-type",
-                                    "value": "application\/json"
-                                },
-                                {
-                                    "key": "access-control-allow-origin",
-                                    "value": "*"
-                                }
-                            ],
-                            "code": 200,
-                            "body": "{\"success\":1,\"states\":[\"Andhra Pradesh\",\"Arunachal Pradesh\",\"Assam\",\"Bihar\",\"Chandigarh (UT)\",\"Chhattisgarh\",\"Dadra and Nagar Haveli (UT)\",\"Daman and Diu (UT)\",\"Delhi (NCT)\",\"Goa\",\"Gujarat\",\"Haryana\",\"Himachal Pradesh\",\"Jammu and Kashmir\",\"Jharkhand\",\"Karnataka\",\"Kerala\",\"Lakshadweep (UT)\",\"Madhya Pradesh\",\"Maharashtra\",\"Manipur\",\"Meghalaya\",\"Mizoram\",\"Nagaland\",\"Odisha\",\"Puducherry (UT)\",\"Punjab\",\"Rajasthan\",\"Sikkim\",\"Tamil Nadu\",\"Telangana\",\"Tripura\",\"Uttarakhand\",\"Uttar Pradesh\",\"West Bengal\"]}",
-                            "name": ""
-                        }
-                    ]
-                },
-                {
                     "name": "POST api\/paypal",
                     "request": {
                         "url": {
@@ -2967,7 +2660,7 @@
                                 }
                             ],
                             "code": 400,
-                            "body": "{\"success\":false,\"message\":\"Failed to fetch token\",\"error\":\"{\\\"status\\\":false,\\\"status_code\\\":\\\"IFR\\\",\\\"request_id\\\":\\\"NjczNjAwY2VlNTk0NTIwMjQtMTEtMTQgMTk6MjM6MTg=\\\",\\\"payloads\\\":{\\\"errors\\\":{\\\"mobileNumber\\\":[\\\"The mobile number field is required.\\\"],\\\"password\\\":[\\\"The password field is required.\\\"]},\\\"data\\\":[],\\\"transaction\\\":[]},\\\"message\\\":\\\"Please share all required fields\\\"}\"}",
+                            "body": "{\"success\":false,\"message\":\"Failed to fetch token\",\"error\":\"{\\\"status\\\":false,\\\"status_code\\\":\\\"IFR\\\",\\\"request_id\\\":\\\"NjczNmU3Yzk4YWVjYzIwMjQtMTEtMTUgMTE6NDg6NDk=\\\",\\\"payloads\\\":{\\\"errors\\\":{\\\"mobileNumber\\\":[\\\"The mobile number field is required.\\\"],\\\"password\\\":[\\\"The password field is required.\\\"]},\\\"data\\\":[],\\\"transaction\\\":[]},\\\"message\\\":\\\"Please share all required fields\\\"}\"}",
                             "name": ""
                         }
                     ]
@@ -2994,7 +2687,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"TYPE\":\"ONEWAY\",\"tripInfo\":[{\"origin\":\"eaque\",\"destination\":\"quam\",\"travelDate\":\"11\\\/14\\\/2024\",\"tripId\":\"1\"}],\"travelType\":\"1\",\"adultCount\":\"et\",\"childCount\":\"omnis\",\"infantCount\":\"pariatur\",\"classOfTravel\":\"0\",\"airlineCode\":\"inventore\",\"Arrival\":\"voluptatem\",\"Departure\":\"ab\",\"Refundable\":false,\"Stops\":\"1\",\"Price\":12,\"headersToken\":\"expedita\",\"headersKey\":\"exercitationem\"}"
+                            "raw": "{\"TYPE\":\"ROUNDTRIP\",\"tripInfo\":[{\"origin\":\"pariatur\",\"destination\":\"officiis\",\"travelDate\":\"11\\\/15\\\/2024\",\"tripId\":\"1\"}],\"travelType\":\"1\",\"adultCount\":\"velit\",\"childCount\":\"voluptas\",\"infantCount\":\"nisi\",\"classOfTravel\":\"1\",\"airlineCode\":\"distinctio\",\"Arrival\":\"et\",\"Departure\":\"sit\",\"Refundable\":false,\"Stops\":\"2\",\"Price\":7,\"headersToken\":\"velit\",\"headersKey\":\"iusto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3025,7 +2718,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"SearchKey\":\"placeat\",\"FareID\":\"cumque\",\"FlightKey\":\"non\",\"headersToken\":\"et\",\"headersKey\":\"alias\"}"
+                            "raw": "{\"SearchKey\":\"eius\",\"FareID\":\"maxime\",\"FlightKey\":\"ab\",\"headersToken\":\"aut\",\"headersKey\":\"exercitationem\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3056,7 +2749,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"SearchKey\":\"minus\",\"FareID\":\"aliquam\",\"FlightKey\":\"commodi\",\"CustomerContact\":\"uhzuiepg\",\"headersToken\":\"aut\",\"headersKey\":\"placeat\",\"adultCount\":\"voluptatem\",\"childCount\":\"qui\",\"infantCount\":\"rerum\"}"
+                            "raw": "{\"SearchKey\":\"harum\",\"FareID\":\"neque\",\"FlightKey\":\"tempore\",\"CustomerContact\":\"fdenyeyr\",\"headersToken\":\"minima\",\"headersKey\":\"voluptatum\",\"adultCount\":\"animi\",\"childCount\":\"cumque\",\"infantCount\":\"quibusdam\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3087,7 +2780,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"BookingRef\":\"iure\",\"UserRef\":\"temporibus\",\"headersToken\":\"soluta\",\"headersKey\":\"eveniet\"}"
+                            "raw": "{\"BookingRef\":\"autem\",\"UserRef\":\"consequatur\",\"headersToken\":\"est\",\"headersKey\":\"aspernatur\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3118,7 +2811,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"veritatis\",\"headersKey\":\"non\",\"bookingRef\":\"ea\",\"pnr\":\"repellat\",\"cancelType\":\"mollitia\",\"cancelCode\":\"perspiciatis\",\"remark\":\"repudiandae\",\"ticketCancelDetails\":[{\"FlightId\":\"aut\",\"PassengerId\":\"dolorem\",\"SegmentId\":\"in\"}]}"
+                            "raw": "{\"headersToken\":\"recusandae\",\"headersKey\":\"nemo\",\"bookingRef\":\"sunt\",\"pnr\":\"error\",\"cancelType\":\"officiis\",\"cancelCode\":\"non\",\"remark\":\"iusto\",\"ticketCancelDetails\":[{\"FlightId\":\"nam\",\"PassengerId\":\"repellendus\",\"SegmentId\":\"quis\"}]}"
                         },
                         "description": "",
                         "auth": {
@@ -3149,7 +2842,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"quibusdam\",\"headersKey\":\"blanditiis\",\"origin\":\"porro\",\"destination\":\"incidunt\",\"month\":\"natus\",\"year\":\"ab\"}"
+                            "raw": "{\"headersToken\":\"aliquid\",\"headersKey\":\"magnam\",\"origin\":\"corporis\",\"destination\":\"consequatur\",\"month\":\"minus\",\"year\":\"in\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3180,7 +2873,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"saepe\",\"headersKey\":\"sequi\"}"
+                            "raw": "{\"headersToken\":\"architecto\",\"headersKey\":\"quaerat\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3211,7 +2904,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"nostrum\",\"headersKey\":\"earum\",\"travelType\":\"vero\",\"bookingType\":\"velit\",\"origin\":\"natus\",\"destination\":\"nam\",\"travelDate\":\"2024-11-14T13:53:19\",\"tripId\":\"et\",\"adultCount\":\"nihil\",\"childCount\":\"consectetur\",\"infantCount\":\"voluptatem\",\"classOfTravel\":\"est\"}"
+                            "raw": "{\"headersToken\":\"ut\",\"headersKey\":\"fuga\",\"travelType\":\"pariatur\",\"bookingType\":\"qui\",\"origin\":\"quibusdam\",\"destination\":\"aut\",\"travelDate\":\"2024-11-15T06:18:50\",\"tripId\":\"quis\",\"adultCount\":\"quis\",\"childCount\":\"blanditiis\",\"infantCount\":\"vel\",\"classOfTravel\":\"quam\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3318,7 +3011,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"aut\",\"headersKey\":\"et\",\"sourceId\":\"aut\",\"destinationId\":\"ut\",\"date\":\"vel\",\"AC\":\"officiis\",\"Seater\":\"necessitatibus\",\"Sleeper\":\"facere\",\"Arrival\":\"aliquam\",\"Departure\":\"soluta\"}"
+                            "raw": "{\"headersToken\":\"omnis\",\"headersKey\":\"ut\",\"sourceId\":\"facere\",\"destinationId\":\"pariatur\",\"date\":\"ipsam\",\"AC\":\"incidunt\",\"Seater\":\"maiores\",\"Sleeper\":\"repellat\",\"Arrival\":\"blanditiis\",\"Departure\":\"est\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3349,7 +3042,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"tripId\":\"libero\",\"headersToken\":\"sed\",\"headersKey\":\"odit\"}"
+                            "raw": "{\"tripId\":\"dolorem\",\"headersToken\":\"aliquam\",\"headersKey\":\"non\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3380,7 +3073,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"boardingPoint\":\"sit\",\"tripId\":\"tempore\",\"headersToken\":\"sunt\",\"headersKey\":\"qui\"}"
+                            "raw": "{\"boardingPoint\":\"consequatur\",\"tripId\":\"laudantium\",\"headersToken\":\"deleniti\",\"headersKey\":\"amet\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3411,7 +3104,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"referenceId\":\"dignissimos\",\"headersToken\":\"cupiditate\",\"headersKey\":\"eligendi\"}"
+                            "raw": "{\"referenceId\":\"enim\",\"headersToken\":\"dolores\",\"headersKey\":\"nesciunt\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3442,7 +3135,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"referenceId\":\"aut\",\"seatsToCancel\":[\"eum\"],\"headersToken\":\"voluptate\",\"headersKey\":\"blanditiis\"}"
+                            "raw": "{\"referenceId\":\"dolor\",\"seatsToCancel\":[\"quibusdam\"],\"headersToken\":\"fuga\",\"headersKey\":\"expedita\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3473,7 +3166,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"totalCount\":\"et\",\"mobile\":\"oedxyfijhsbsvlzlkmlvyqvoovvmlbtdrqqwkwcmrjpwbcqsaprmyhqylgf\",\"whatsApp\":\"yuweauurlyccsymzltqahvczrefiogebkdhblopdcdjlmftzq\",\"email\":\"nader.michel@example.org\",\"gst\":{\"isGst\":\"qui\",\"gstNumber\":\"voluptatem\",\"gstName\":\"est\",\"gstAddress\":\"voluptas\"},\"searchKey\":\"ut\",\"FlightKey\":\"qui\",\"headersToken\":\"perspiciatis\",\"headersKey\":\"ipsam\",\"passenger_details\":[{\"paxType\":\"1\",\"title\":\"Mr\",\"firstName\":\"veritatis\",\"lastName\":\"voluptatibus\",\"age\":12,\"gender\":\"0\",\"dob\":\"2024-11-14T13:53:20\",\"passportNumber\":\"omnis\",\"passportIssuingAuthority\":\"et\",\"passportExpire\":\"2024-11-14T13:53:20\",\"nationality\":\"aliquid\",\"pancardNumber\":\"minus\",\"frequentFlyerDetails\":\"nemo\"}]}"
+                            "raw": "{\"totalCount\":\"est\",\"mobile\":\"kddgtjxvdxlriiuntbteumatgalyhkleibfmypcmmzpelncxxdumozps\",\"whatsApp\":\"fkqseasqrgeyywkvbcxwbdpmwkdzbwozllazfegoijaelalkmozktjybqspwxas\",\"email\":\"loma54@example.com\",\"gst\":{\"isGst\":\"non\",\"gstNumber\":\"assumenda\",\"gstName\":\"perferendis\",\"gstAddress\":\"qui\"},\"searchKey\":\"qui\",\"FlightKey\":\"atque\",\"headersToken\":\"eaque\",\"headersKey\":\"reiciendis\",\"passenger_details\":[{\"paxType\":\"0\",\"title\":\"Ms\",\"firstName\":\"nihil\",\"lastName\":\"sit\",\"age\":7,\"gender\":\"0\",\"dob\":\"2024-11-15T06:18:52\",\"passportNumber\":\"est\",\"passportIssuingAuthority\":\"fugiat\",\"passportExpire\":\"2024-11-15T06:18:52\",\"nationality\":\"est\",\"pancardNumber\":\"exercitationem\",\"frequentFlyerDetails\":\"sint\"}]}"
                         },
                         "description": "",
                         "auth": {
@@ -3504,7 +3197,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"BookingRef\":\"voluptatem\",\"UserRef\":\"nobis\",\"TicketingType\":\"et\",\"headersToken\":\"quo\",\"headersKey\":\"dolorem\"}"
+                            "raw": "{\"BookingRef\":\"vel\",\"UserRef\":\"quis\",\"TicketingType\":\"tenetur\",\"headersToken\":\"exercitationem\",\"headersKey\":\"id\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3535,7 +3228,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"headersToken\":\"enim\",\"headersKey\":\"ipsa\",\"bookingRef\":\"atque\",\"pnr\":\"accusamus\"}"
+                            "raw": "{\"headersToken\":\"voluptate\",\"headersKey\":\"recusandae\",\"bookingRef\":\"minima\",\"pnr\":\"ipsam\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3566,7 +3259,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"boardingPoint\":\"id\",\"tripId\":\"est\",\"dropingPoint\":\"ab\",\"source\":\"vel\",\"destination\":\"et\",\"serviceCharge\":\"eum\",\"headersToken\":\"quia\",\"headersKey\":\"rem\",\"inventoryItems\":[{\"seatName\":\"aut\",\"fare\":33.5814,\"serviceTax\":75754909,\"operatorServiceCharge\":1851.58,\"ladiesSeat\":\"corporis\",\"passenger\":{\"name\":\"ea\",\"mobile\":\"wmhodzg\",\"title\":\"recusandae\",\"email\":\"wolf.lynn@example.org\",\"age\":\"nesciunt\",\"gender\":\"quo\",\"address\":\"quo\",\"idType\":\"quia\",\"idNumber\":\"rerum\",\"primary\":\"veritatis\"}}]}"
+                            "raw": "{\"boardingPoint\":\"repellendus\",\"tripId\":\"doloribus\",\"dropingPoint\":\"veniam\",\"source\":\"et\",\"destination\":\"temporibus\",\"serviceCharge\":\"dolorum\",\"headersToken\":\"pariatur\",\"headersKey\":\"fugit\",\"inventoryItems\":[{\"seatName\":\"modi\",\"fare\":6.7363399,\"serviceTax\":3372.00479,\"operatorServiceCharge\":1.199469254,\"ladiesSeat\":\"eum\",\"passenger\":{\"name\":\"molestiae\",\"mobile\":\"dtt\",\"title\":\"similique\",\"email\":\"zachariah00@example.org\",\"age\":\"animi\",\"gender\":\"et\",\"address\":\"quis\",\"idType\":\"voluptatem\",\"idNumber\":\"et\",\"primary\":\"aut\"}}]}"
                         },
                         "description": "",
                         "auth": {
@@ -3597,7 +3290,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"userRef\":\"quia\",\"amount\":\"repellendus\",\"baseFare\":\"occaecati\",\"referenceKey\":\"deserunt\",\"passengerPhone\":\"yrsmmgekygkgfyspeoxdrhnmektfj\",\"passengerEmail\":\"jkuphal@example.com\",\"headersToken\":\"et\",\"headersKey\":\"aut\"}"
+                            "raw": "{\"userRef\":\"deserunt\",\"amount\":\"molestiae\",\"baseFare\":\"non\",\"referenceKey\":\"suscipit\",\"passengerPhone\":\"enclvcljhohtasvjmzgsfihqazhkwzdwyeycwvmvciirluvutlouvoywotfummjtsnjgkuwesqmlgg\",\"passengerEmail\":\"quentin43@example.com\",\"headersToken\":\"enim\",\"headersKey\":\"laboriosam\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3628,7 +3321,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"referenceId\":\"consequatur\",\"headersToken\":\"voluptas\",\"headersKey\":\"cupiditate\"}"
+                            "raw": "{\"referenceId\":\"repellendus\",\"headersToken\":\"sequi\",\"headersKey\":\"commodi\"}"
                         },
                         "description": "",
                         "auth": {
@@ -3636,6 +3329,115 @@
                         }
                     },
                     "response": []
+                }
+            ]
+        },
+        {
+            "name": "Enquiry",
+            "description": "",
+            "item": [
+                {
+                    "name": "Retrieve all job enquiries.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/showEnquiry",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/showEnquiry"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "This endpoint returns a list of all job enquiries, including job title, location, user name, email, phone number, and any notes.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"success\": 1,\n  \"Enquires\": [\n    {\n      \"job_title\": \"Web Developer\",\n      \"job_location\": \"Remote\",\n      \"user_name\": \"John Doe\",\n      \"user_email\": \"john@example.com\",\n      \"user_phone_no\": \"1234567890\",\n      \"note\": \"Looking forward to discussing further.\"\n    }\n  ]\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  \"success\": 0,\n  \"error\": \"No Data Found\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Gig Enquiry",
+            "description": "",
+            "item": [
+                {
+                    "name": "Add a new enquiry for a job posting.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/addEnquiry",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/addEnquiry"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"gigID\":1,\"note\":\"sapiente\"}"
+                        },
+                        "description": "This endpoint allows authenticated users to add an enquiry for a specific job posting. Users with a \"public\" token cannot access this endpoint.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n  \"success\": 1,\n  \"enquiry\": {\n    \"userID\": 1,\n    \"gigID\": 1,\n    \"note\": \"Looking forward to discussing further.\"\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n  \"success\": 0,\n  \"message\": \"Unauthorized, Login To Add Enquiry\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n  \"success\": 0,\n  \"message\": \"User has already enquired for this Gig\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  \"success\": 0,\n  \"message\": \"An error occurred while Adding Enquiry\",\n  \"error\": \"Exception message\"\n}",
+                            "name": ""
+                        }
+                    ]
                 }
             ]
         },
@@ -4202,6 +4004,103 @@
             ]
         },
         {
+            "name": "Newsletter Management",
+            "description": "",
+            "item": [
+                {
+                    "name": "API to add a new email address to the newsletter subscription list. A confirmation email is sent upon successful addition.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/AddEmail",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/AddEmail"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"johndoe@example.com\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n 'success' : 1,\n \"message\": \"Email Added Successfully\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n  \"errors\": {\n      \"email\": [\n          \"The email field is required.\",\n          \"The email must be a valid email address.\",\n          \"The email has already been taken.\"\n      ]\n  }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n  'success' : 0,\n  \"message\": \"An error occurred while Adding Email\",\n  \"error\": \"Error message details\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "API to retrieve all email addresses subscribed to the newsletter.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/ShowEmail",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/ShowEmail"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "[\n\n {\n     \"id\": 1,\n     \"email\": \"johndoe@example.com\",\n     \"created_at\": \"2024-11-14T12:00:00.000Z\",\n     \"updated_at\": \"2024-11-14T12:00:00.000Z\"\n }\n]",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n 'success': 0\n  \"message\": \"No Quiz Response found\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "name": "Question and Answer Management",
             "description": "",
             "item": [
@@ -4408,6 +4307,103 @@
                             "header": [],
                             "code": 404,
                             "body": "{\n' success':0,\n  \"message\": \"No Questions found\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Quiz Management",
+            "description": "",
+            "item": [
+                {
+                    "name": "API to add a quiz response. Validates the user input, saves the data, and sends a confirmation email.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/AddQuiz",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/AddQuiz"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"John Doe\",\"email\":\"johndoe@example.com\",\"phone\":\"+1234567890\",\"answer1\":\"Option A\",\"answer2\":\"Option B\",\"answer3\":\"Option C\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n 'success' : 0,\n \"message\": \"Quiz Answered Properly\",\n \"User\": {\n     \"name\": \"John Doe\",\n     \"email\": \"johndoe@example.com\",\n     \"phone\": \"+1234567890\"\n },\n \"Answer\": {\n     \"Answer1\": \"Option A\",\n     \"Answer2\": \"Option B\",\n     \"Answer3\": \"Option C\"\n }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n  \"success\": 0,\n  \"error\": \"The email has already been taken.\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n 'success' : 0,\n \"message\": \"An error occurred while Adding or Updating About info\",\n \"error\": \"Error message details\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "API to retrieve all quiz responses. Returns an array of responses.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/ShowQuiz",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/ShowQuiz"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "[\n {\n     \"id\": 1,\n     \"name\": \"John Doe\",\n     \"email\": \"johndoe@example.com\",\n     \"phone\": \"+1234567890\",\n     \"answer1\": \"Option A\",\n     \"answer2\": \"Option B\",\n     \"answer3\": \"Option C\",\n     \"created_at\": \"2024-11-14T12:00:00.000Z\",\n     \"updated_at\": \"2024-11-14T12:00:00.000Z\"\n }\n]",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 404,
+                            "body": "{\n  'success'=>0\n  \"message\": \"No Quiz Response found\"\n}",
                             "name": ""
                         }
                     ]
@@ -4672,7 +4668,7 @@
         },
         {
             "name": "User Management",
-            "description": "",
+            "description": "**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after User Login",
             "item": [
                 {
                     "name": "Register a new user.",
@@ -4696,7 +4692,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"John\",\"last_name\":\"Doe\",\"email\":\"john.doe@example.com\",\"password\":\"30lq?0ta#\"}"
+                            "raw": "{\"name\":\"John\",\"last_name\":\"Doe\",\"email\":\"john.doe@example.com\",\"password\":\"t=a=>e\\\"9y&yS\"}"
                         },
                         "description": "This endpoint registers a new user with the provided details.\nIt requires a name, last name, email, and password, validates the input,\nand sends an email verification link if the registration is successful.",
                         "auth": {
@@ -4746,7 +4742,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"email\":\"john.doe@example.com\",\"password\":\"FM,ON_?r)x8\\\/pF\"}"
+                            "raw": "{\"email\":\"john.doe@example.com\",\"password\":\",i5J3N\"}"
                         },
                         "description": "This endpoint authenticates a user with their email and password.\nIt validates the credentials, checks if the user is verified, ensures they have the 'user' role,\nand returns an access token if successful.",
                         "auth": {
@@ -4794,6 +4790,154 @@
                             "header": [],
                             "code": 500,
                             "body": "{\n    \"success\": 0,\n    \"message\": \"Error while Login\",\n    \"error\": \"Detailed error message\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Verify user by unique code.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/verified\/:uniqueCode",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/verified\/:uniqueCode",
+                            "variable": [
+                                {
+                                    "id": "uniqueCode",
+                                    "key": "uniqueCode",
+                                    "value": "nostrum",
+                                    "description": "The unique code provided to verify the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "This endpoint verifies a user using a unique code. If the code is valid, the user's verification status is updated.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n   \"success\": 1,\n   \"message\": \"User successfully verified\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n   \"success\": 0,\n   \"message\": \"Not Found\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Add or update the user profile.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/addUserProfile",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/addUserProfile"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {access_token}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"user_Number\":9,\"user_Address\":\"nam\",\"user_City\":\"asperiores\",\"user_State\":\"et\",\"user_Country\":\"voluptas\",\"user_PinCode\":\"illum\",\"user_AboutMe\":\"odit\"}"
+                        },
+                        "description": "This endpoint allows an authenticated user to create or update their profile.\nIf the profile exists, it will be updated with the provided details."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 201,
+                            "body": "{\n   \"success\": 1,\n   \"message\": \"Profile created successfully\",\n   \"profile\": {\n      \"user_id\": 1,\n      \"user_Number\": \"1234567890\",\n      \"user_Address\": \"123 Main St\",\n      \"user_City\": \"New York\",\n      \"user_State\": \"NY\",\n      \"user_Country\": \"USA\",\n      \"user_PinCode\": \"10001\",\n      \"user_AboutMe\": \"Hello, I am a developer.\"\n   }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n   \"success\": 0,\n   \"message\": \"Unauthorized, Login To Update Your Profile\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n   \"errors\": \"Validation error message here\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show the user's profile information.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/showUserProfile",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/showUserProfile"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {access_token}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "This endpoint allows an authenticated user to view their profile information.\nIf the user profile doesn't exist, a message prompting them to create one is returned."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n   \"success\": 1,\n   \"user\": {\n      \"id\": 1,\n      \"name\": \"John Doe\",\n      \"email\": \"john@example.com\"\n   },\n   \"userprofile\": {\n      \"user_id\": 1,\n      \"user_Number\": \"1234567890\",\n      \"user_Address\": \"123 Main St\",\n      \"user_City\": \"New York\",\n      \"user_State\": \"NY\",\n      \"user_Country\": \"USA\",\n      \"user_PinCode\": \"10001\",\n      \"user_AboutMe\": \"Hello, I am a developer.\"\n   }\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n   \"success\": 1,\n   \"user\": {\n      \"id\": 1,\n      \"name\": \"John Doe\",\n      \"email\": \"john@example.com\"\n   },\n   \"userprofile\": \"Please add your personal information in your profile\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n   \"success\": 0,\n   \"message\": \"Unauthorized, Login To Update Your Profile\"\n}",
                             "name": ""
                         }
                     ]
@@ -4862,6 +5006,130 @@
                             "header": [],
                             "code": 500,
                             "body": "{\n    \"message\": \"Error while Updating User Profile\",\n    \"error\": \"Detailed error message\"\n}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "User Password Reset",
+            "description": "",
+            "item": [
+                {
+                    "name": "Send a password reset email.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Reset\/Password\/Email",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Reset\/Password\/Email"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"chamill@example.org\"}"
+                        },
+                        "description": "This endpoint allows a user to request a password reset by providing their email address.\nIf the email is valid and belongs to a user with the \"user\" role, an encrypted token is sent to the email.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n   \"success\": 1,\n   \"message\": \"Mail Sent Successfully. Check Your mail\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"No User Exists with provided email\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"Unauthorized Email Role. Only User email can access\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"Validation error message here\"\n}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Reset the user's password.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/Reset\/Password",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/Reset\/Password"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"token\":\"harum\",\"password\":\",ip`N8dp3ASV(\"}"
+                        },
+                        "description": "This endpoint allows a user to reset their password using a token sent to their email.\nThe token is validated, and if it has not expired, the user's password is updated.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n   \"success\": 1,\n   \"message\": \"Password Updated Successfully\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 400,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"Your Link has Expired create a new one\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 401,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"Unauthorized Email Role. Only User email can access\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 422,
+                            "body": "{\n   \"success\": 0,\n   \"error\": \"Validation error message here\"\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 500,
+                            "body": "{\n   \"success\": false,\n   \"message\": \"An error occurred while updating the password\"\n}",
                             "name": ""
                         }
                     ]

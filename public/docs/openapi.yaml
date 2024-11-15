@@ -747,6 +747,138 @@ paths:
                 - Card_No
                 - Card_Heading
                 - Card_Subheading
+  /api/updateCart:
+    post:
+      summary: 'Update or add a product to the cart.'
+      operationId: updateOrAddAProductToTheCart
+      description: 'This endpoint allows authenticated users to add a product to their cart or update an existing product in the cart. If the quantity is set to zero for an existing product, it will be removed from the cart.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success' : 1\n  \"message\": \"Cart updated\",\n  \"Cart\": {\n    \"product_id\": 1,\n    \"product_name\": \"Laptop\",\n    \"quantity\": 2,\n    \"price\": 1000,\n    \"user_id\": 1\n  }\n}"
+        400:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success' : 1\n  \"Message\": \"Quantity should be greater than 0\"\n}"
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  Success: 0
+                  Message: 'Unauthorized, Login To Add Cart'
+                properties:
+                  Success:
+                    type: integer
+                    example: 0
+                  Message:
+                    type: string
+                    example: 'Unauthorized, Login To Add Cart'
+        500:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success': 1\n  \"message\": \"An error occurred while Adding or Updating Cart Section\",\n  \"error\": \"Exception message\"\n}"
+      tags:
+        - Cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                  description: 'The ID of the product.'
+                  example: 1
+                  nullable: false
+                product_name:
+                  type: string
+                  description: 'The name of the product if it does not already exist in the cart.'
+                  example: '"Laptop"'
+                  nullable: false
+                quantity:
+                  type: integer
+                  description: 'The quantity of the product (0 or more). If set to 0, the product will be removed from the cart.'
+                  example: 2
+                  nullable: false
+                price:
+                  type: integer
+                  description: 'The price of a single unit of the product (must be at least 1).'
+                  example: 500
+                  nullable: false
+              required:
+                - product_name
+                - quantity
+                - price
+      security: []
+  /api/showCart:
+    post:
+      summary: "Show the user's cart and update quantities."
+      operationId: showTheUsersCartAndUpdateQuantities
+      description: "This endpoint returns the contents of the user's cart, including the subtotal, GST amount, and grand total. It also allows updating the quantity of products if provided in the request body."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success' : 1,\n  \"products\": [\n    {\n      \"product_id\": 1,\n      \"product_name\": \"Laptop\",\n      \"quantity\": 2,\n      \"price\": 500,\n      \"sub_total\": 1000\n    }\n  ],\n  \"subTotal\": 1000,\n  \"gstAmt\": 180,\n  \"grand_Total\": 1180\n}"
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'Unauthorized, Login To Check Your Cart'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'Unauthorized, Login To Check Your Cart'
+        404:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success' : 1,\n  \"message\": \"Please Add Some products in Your Cart\"\n}"
+      tags:
+        - Cart
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  description: 'An array of products to update with their `product_id`, `quantity`, and `price`. Only products with quantities greater than zero are retained.'
+                  example:
+                    - reiciendis
+                  items:
+                    type: string
+      security: []
   /api/Add-Client:
     post:
       summary: "Add a New Client\n\nThis endpoint allows you to add a new client with an image. If no URL is provided, it defaults to 'null'.\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
@@ -1129,6 +1261,404 @@ paths:
       tags:
         - 'Company Details Management'
       security: []
+  /api/Add-Coupon:
+    post:
+      summary: "API to create a new coupon with specific attributes like code, applicable places, and discount percentage.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
+      operationId: aPIToCreateANewCouponWithSpecificAttributesLikeCodeApplicablePlacesAndDiscountPercentageNoteThisEndpointRequiresAnAuthorizationBeareraccessTokenHeaderNoteYouWillGetTheAccessTokenAfterAdminLogin
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Coupon created successfully'
+                  coupon:
+                    id: 1
+                    coupon_code: SPRING20
+                    coupon_places: '["New York", "Los Angeles"]'
+                    discount: 15
+                    created_at: '2024-11-14T12:00:00.000Z'
+                    updated_at: '2024-11-14T12:00:00.000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Coupon created successfully'
+                  coupon:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      coupon_code:
+                        type: string
+                        example: SPRING20
+                      coupon_places:
+                        type: string
+                        example: '["New York", "Los Angeles"]'
+                      discount:
+                        type: integer
+                        example: 15
+                      created_at:
+                        type: string
+                        example: '2024-11-14T12:00:00.000Z'
+                      updated_at:
+                        type: string
+                        example: '2024-11-14T12:00:00.000Z'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  errors:
+                    coupon_code:
+                      - 'The coupon_code field is required.'
+                      - 'The coupon_code has already been taken.'
+                    coupon_places:
+                      - 'The coupon_places field is required.'
+                    discount:
+                      - 'The discount field is required.'
+                      - 'The discount must be between 0 and 100.'
+                properties:
+                  errors:
+                    type: object
+                    properties:
+                      coupon_code:
+                        type: array
+                        example:
+                          - 'The coupon_code field is required.'
+                          - 'The coupon_code has already been taken.'
+                        items:
+                          type: string
+                      coupon_places:
+                        type: array
+                        example:
+                          - 'The coupon_places field is required.'
+                        items:
+                          type: string
+                      discount:
+                        type: array
+                        example:
+                          - 'The discount field is required.'
+                          - 'The discount must be between 0 and 100.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'An error occurred while Adding Coupon'
+                  error: 'Error message details'
+                properties:
+                  message:
+                    type: string
+                    example: 'An error occurred while Adding Coupon'
+                  error:
+                    type: string
+                    example: 'Error message details'
+      tags:
+        - 'Coupon Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coupon_code:
+                  type: string
+                  description: 'Unique code for the coupon.'
+                  example: SPRING20
+                  nullable: false
+                coupon_places:
+                  type: array
+                  description: 'Array of applicable places where the coupon can be used.'
+                  example:
+                    - 'New York'
+                    - 'Los Angeles'
+                  items:
+                    type: string
+                discount:
+                  type: numeric
+                  description: 'Discount percentage for the coupon. Must be between 0 and 100.'
+                  example: '15'
+                  nullable: false
+              required:
+                - coupon_code
+                - coupon_places
+                - discount
+  '/api/Update-Coupon/{coupon_code}':
+    put:
+      summary: "API to update an existing coupon.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
+      operationId: aPIToUpdateAnExistingCouponNoteThisEndpointRequiresAnAuthorizationBeareraccessTokenHeaderNoteYouWillGetTheAccessTokenAfterAdminLogin
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Coupon updated successfully'
+                  coupon:
+                    id: 1
+                    coupon_code: SPRING20
+                    coupon_places: '["New York", "Los Angeles"]'
+                    discount: 20
+                    created_at: '2024-11-14T12:00:00.000Z'
+                    updated_at: '2024-11-14T13:00:00.000Z'
+                properties:
+                  message:
+                    type: string
+                    example: 'Coupon updated successfully'
+                  coupon:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      coupon_code:
+                        type: string
+                        example: SPRING20
+                      coupon_places:
+                        type: string
+                        example: '["New York", "Los Angeles"]'
+                      discount:
+                        type: integer
+                        example: 20
+                      created_at:
+                        type: string
+                        example: '2024-11-14T12:00:00.000Z'
+                      updated_at:
+                        type: string
+                        example: '2024-11-14T13:00:00.000Z'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Record not found'
+                properties:
+                  message:
+                    type: string
+                    example: 'Record not found'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  errors:
+                    coupon_places:
+                      - 'The coupon places field must be an array.'
+                properties:
+                  errors:
+                    type: object
+                    properties:
+                      coupon_places:
+                        type: array
+                        example:
+                          - 'The coupon places field must be an array.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'An error occurred while deleting the record'
+                  error: '<error-message>'
+                properties:
+                  message:
+                    type: string
+                    example: 'An error occurred while deleting the record'
+                  error:
+                    type: string
+                    example: '<error-message>'
+      tags:
+        - 'Coupon Management'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coupon_places:
+                  type: array|null
+                  description: 'List of places where the coupon can be applied.'
+                  example: '["New York", "Los Angeles"]'
+                  nullable: true
+                discount:
+                  type: numeric|null
+                  description: 'Discount percentage for the coupon.'
+                  example: '20'
+                  nullable: true
+    parameters:
+      -
+        in: path
+        name: coupon_code
+        description: ''
+        example: assumenda
+        required: true
+        schema:
+          type: string
+  '/api/Delete-Coupon/{coupon_code}':
+    delete:
+      summary: "API to delete an existing coupon by coupon code.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
+      operationId: aPIToDeleteAnExistingCouponByCouponCodeNoteThisEndpointRequiresAnAuthorizationBeareraccessTokenHeaderNoteYouWillGetTheAccessTokenAfterAdminLogin
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Record deleted successfully'
+                properties:
+                  message:
+                    type: string
+                    example: 'Record deleted successfully'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Record not found'
+                properties:
+                  message:
+                    type: string
+                    example: 'Record not found'
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'An error occurred while deleting the record'
+                  error: '<error-message>'
+                properties:
+                  message:
+                    type: string
+                    example: 'An error occurred while deleting the record'
+                  error:
+                    type: string
+                    example: '<error-message>'
+      tags:
+        - 'Coupon Management'
+    parameters:
+      -
+        in: path
+        name: coupon_code
+        description: ''
+        example: totam
+        required: true
+        schema:
+          type: string
+  /api/Show-Coupon:
+    get:
+      summary: 'API to retrieve all available coupons.'
+      operationId: aPIToRetrieveAllAvailableCoupons
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  Coupon:
+                    -
+                      id: 1
+                      coupon_code: SPRING20
+                      coupon_places: '["New York", "Los Angeles"]'
+                      discount: 15
+                      created_at: '2024-11-14T12:00:00.000Z'
+                      updated_at: '2024-11-14T12:00:00.000Z'
+                    -
+                      id: 2
+                      coupon_code: SUMMER30
+                      coupon_places: '["Chicago", "San Francisco"]'
+                      discount: 30
+                      created_at: '2024-11-14T12:30:00.000Z'
+                      updated_at: '2024-11-14T12:30:00.000Z'
+                properties:
+                  Coupon:
+                    type: array
+                    example:
+                      -
+                        id: 1
+                        coupon_code: SPRING20
+                        coupon_places: '["New York", "Los Angeles"]'
+                        discount: 15
+                        created_at: '2024-11-14T12:00:00.000Z'
+                        updated_at: '2024-11-14T12:00:00.000Z'
+                      -
+                        id: 2
+                        coupon_code: SUMMER30
+                        coupon_places: '["Chicago", "San Francisco"]'
+                        discount: 30
+                        created_at: '2024-11-14T12:30:00.000Z'
+                        updated_at: '2024-11-14T12:30:00.000Z'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        coupon_code:
+                          type: string
+                          example: SPRING20
+                        coupon_places:
+                          type: string
+                          example: '["New York", "Los Angeles"]'
+                        discount:
+                          type: integer
+                          example: 15
+                        created_at:
+                          type: string
+                          example: '2024-11-14T12:00:00.000Z'
+                        updated_at:
+                          type: string
+                          example: '2024-11-14T12:00:00.000Z'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  Message: 'No Coupon Found'
+                properties:
+                  Message:
+                    type: string
+                    example: 'No Coupon Found'
+      tags:
+        - 'Coupon Management'
+      security: []
   /api/addDestination:
     post:
       summary: "Add or update a destination.\n\nThis endpoint allows adding a new destination or updating an existing one, depending on whether an ID is provided. \nIf the destination already exists (based on the provided ID), it will be updated with the new details.\nThe endpoint accepts destination details such as name, city, state, images, and more.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
@@ -1139,12 +1669,12 @@ paths:
           in: query
           name: id
           description: 'optional The ID of the destination to be updated. If not provided, a new destination is created.'
-          example: odit
+          example: est
           required: false
           schema:
             type: string
             description: 'optional The ID of the destination to be updated. If not provided, a new destination is created.'
-            example: odit
+            example: est
             nullable: false
       responses:
         200:
@@ -1226,7 +1756,7 @@ paths:
                   type: array
                   description: 'Array of images for the destination. Each image must be of type jpeg, png, jpg, gif, or svg.'
                   example:
-                    - voluptatum
+                    - cupiditate
                   items:
                     type: string
                 short_description:
@@ -1764,95 +2294,6 @@ paths:
       tags:
         - Endpoints
       security: []
-  '/api/verified/{uniqueCode}':
-    get:
-      summary: ''
-      operationId: getApiVerifiedUniqueCode
-      description: ''
-      parameters: []
-      responses:
-        401:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: 0
-                  message: 'Not Found'
-                properties:
-                  success:
-                    type: integer
-                    example: 0
-                  message:
-                    type: string
-                    example: 'Not Found'
-      tags:
-        - Endpoints
-      security: []
-    parameters:
-      -
-        in: path
-        name: uniqueCode
-        description: ''
-        example: fuga
-        required: true
-        schema:
-          type: string
-  /api/Reset/Password/Email:
-    post:
-      summary: ''
-      operationId: postApiResetPasswordEmail
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: ''
-                  example: deonte52@example.net
-                  nullable: false
-              required:
-                - email
-      security: []
-  /api/Reset/Password:
-    post:
-      summary: ''
-      operationId: postApiResetPassword
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: ''
-                  example: rerum
-                  nullable: false
-                password:
-                  type: string
-                  description: 'Must match the regex /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/. Must be at least 8 characters.'
-                  example: '<:x`C+]Ep#=obi"9%'
-                  nullable: false
-              required:
-                - token
-                - password
-      security: []
   /api/term-conditions:
     post:
       summary: ''
@@ -1900,99 +2341,6 @@ paths:
       tags:
         - Endpoints
       security: []
-  /api/Add-Coupon:
-    post:
-      summary: ''
-      operationId: postApiAddCoupon
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                coupon_code:
-                  type: string
-                  description: ''
-                  example: repellat
-                  nullable: false
-                coupon_places:
-                  type: object
-                  description: ''
-                  example: []
-                  nullable: false
-                  properties: {  }
-                discount:
-                  type: number
-                  description: 'Must be at least 0. Must not be greater than 100.'
-                  example: 17
-                  nullable: false
-              required:
-                - coupon_code
-                - coupon_places
-                - discount
-      security: []
-  '/api/Update-Coupon/{coupon_code}':
-    put:
-      summary: ''
-      operationId: putApiUpdateCouponCoupon_code
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                coupon_places:
-                  type: object
-                  description: ''
-                  example: null
-                  nullable: true
-                  properties: {  }
-                discount:
-                  type: number
-                  description: 'Must be at least 0.'
-                  example: 5
-                  nullable: true
-      security: []
-    parameters:
-      -
-        in: path
-        name: coupon_code
-        description: ''
-        example: voluptate
-        required: true
-        schema:
-          type: string
-  '/api/Delete-Coupon/{coupon_code}':
-    delete:
-      summary: ''
-      operationId: deleteApiDeleteCouponCoupon_code
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-    parameters:
-      -
-        in: path
-        name: coupon_code
-        description: ''
-        example: sint
-        required: true
-        schema:
-          type: string
   '/api/emp/{user_id}':
     get:
       summary: ''
@@ -2024,7 +2372,7 @@ paths:
         in: path
         name: user_id
         description: 'The ID of the user.'
-        example: qui
+        example: perspiciatis
         required: true
         schema:
           type: string
@@ -2032,72 +2380,6 @@ paths:
     post:
       summary: ''
       operationId: postApiAddSubscription
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/addUserProfile:
-    post:
-      summary: ''
-      operationId: postApiAddUserProfile
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/showUserProfile:
-    get:
-      summary: ''
-      operationId: getApiShowUserProfile
-      description: ''
-      parameters: []
-      responses:
-        401:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: 0
-                  error: 'Token not provided. This Api requires Token'
-                properties:
-                  success:
-                    type: integer
-                    example: 0
-                  error:
-                    type: string
-                    example: 'Token not provided. This Api requires Token'
-      tags:
-        - Endpoints
-      security: []
-  /api/addEnquiry:
-    post:
-      summary: ''
-      operationId: postApiAddEnquiry
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/updateCart:
-    post:
-      summary: ''
-      operationId: postApiUpdateCart
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/showCart:
-    post:
-      summary: ''
-      operationId: postApiShowCart
       description: ''
       parameters: []
       responses: {  }
@@ -2123,7 +2405,7 @@ paths:
                 subscription_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the subscription_details table.'
-                  example: facere
+                  example: quis
                   nullable: false
               required:
                 - subscription_id
@@ -2240,7 +2522,7 @@ paths:
                 OrderID:
                   type: string
                   description: ''
-                  example: placeat
+                  example: vero
                   nullable: false
               required:
                 - OrderID
@@ -2252,1122 +2534,6 @@ paths:
       description: ''
       parameters: []
       responses: {  }
-      tags:
-        - Endpoints
-      security: []
-  /api/showCode:
-    get:
-      summary: ''
-      operationId: getApiShowCode
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: 1
-                  Codes:
-                    - '+93'
-                    - '+358'
-                    - '+355'
-                    - '+213'
-                    - '+1684'
-                    - '+376'
-                    - '+244'
-                    - '+1264'
-                    - '+672'
-                    - '+1268'
-                    - '+54'
-                    - '+374'
-                    - '+297'
-                    - '+61'
-                    - '+43'
-                    - '+994'
-                    - '+1242'
-                    - '+973'
-                    - '+880'
-                    - '+1246'
-                    - '+375'
-                    - '+32'
-                    - '+501'
-                    - '+229'
-                    - '+1441'
-                    - '+975'
-                    - '+591'
-                    - '+387'
-                    - '+267'
-                    - '+55'
-                    - '+246'
-                    - '+673'
-                    - '+359'
-                    - '+226'
-                    - '+257'
-                    - '+855'
-                    - '+237'
-                    - '+1'
-                    - '+238'
-                    - '+ 345'
-                    - '+236'
-                    - '+235'
-                    - '+56'
-                    - '+86'
-                    - '+61'
-                    - '+61'
-                    - '+57'
-                    - '+269'
-                    - '+242'
-                    - '+243'
-                    - '+682'
-                    - '+506'
-                    - '+225'
-                    - '+385'
-                    - '+53'
-                    - '+357'
-                    - '+420'
-                    - '+45'
-                    - '+253'
-                    - '+1767'
-                    - '+1849'
-                    - '+593'
-                    - '+20'
-                    - '+503'
-                    - '+240'
-                    - '+291'
-                    - '+372'
-                    - '+251'
-                    - '+500'
-                    - '+298'
-                    - '+679'
-                    - '+358'
-                    - '+33'
-                    - '+594'
-                    - '+689'
-                    - '+241'
-                    - '+220'
-                    - '+995'
-                    - '+49'
-                    - '+233'
-                    - '+350'
-                    - '+30'
-                    - '+299'
-                    - '+1473'
-                    - '+590'
-                    - '+1671'
-                    - '+502'
-                    - '+44'
-                    - '+224'
-                    - '+245'
-                    - '+595'
-                    - '+509'
-                    - '+379'
-                    - '+504'
-                    - '+852'
-                    - '+36'
-                    - '+354'
-                    - '+91'
-                    - '+62'
-                    - '+98'
-                    - '+964'
-                    - '+353'
-                    - '+44'
-                    - '+972'
-                    - '+39'
-                    - '+1876'
-                    - '+81'
-                    - '+44'
-                    - '+962'
-                    - '+77'
-                    - '+254'
-                    - '+686'
-                    - '+850'
-                    - '+82'
-                    - '+965'
-                    - '+996'
-                    - '+856'
-                    - '+371'
-                    - '+961'
-                    - '+266'
-                    - '+231'
-                    - '+218'
-                    - '+423'
-                    - '+370'
-                    - '+352'
-                    - '+853'
-                    - '+389'
-                    - '+261'
-                    - '+265'
-                    - '+60'
-                    - '+960'
-                    - '+223'
-                    - '+356'
-                    - '+692'
-                    - '+596'
-                    - '+222'
-                    - '+230'
-                    - '+262'
-                    - '+52'
-                    - '+691'
-                    - '+373'
-                    - '+377'
-                    - '+976'
-                    - '+382'
-                    - '+1664'
-                    - '+212'
-                    - '+258'
-                    - '+95'
-                    - '+264'
-                    - '+674'
-                    - '+977'
-                    - '+31'
-                    - '+599'
-                    - '+687'
-                    - '+64'
-                    - '+505'
-                    - '+227'
-                    - '+234'
-                    - '+683'
-                    - '+672'
-                    - '+1670'
-                    - '+47'
-                    - '+968'
-                    - '+92'
-                    - '+680'
-                    - '+970'
-                    - '+507'
-                    - '+675'
-                    - '+595'
-                    - '+51'
-                    - '+63'
-                    - '+872'
-                    - '+48'
-                    - '+351'
-                    - '+1939'
-                    - '+974'
-                    - '+40'
-                    - '+7'
-                    - '+250'
-                    - '+262'
-                    - '+590'
-                    - '+290'
-                    - '+1869'
-                    - '+1758'
-                    - '+590'
-                    - '+508'
-                    - '+1784'
-                    - '+685'
-                    - '+378'
-                    - '+239'
-                    - '+966'
-                    - '+221'
-                    - '+381'
-                    - '+248'
-                    - '+232'
-                    - '+65'
-                    - '+421'
-                    - '+386'
-                    - '+677'
-                    - '+252'
-                    - '+27'
-                    - '+211'
-                    - '+500'
-                    - '+34'
-                    - '+94'
-                    - '+249'
-                    - '+597'
-                    - '+47'
-                    - '+268'
-                    - '+46'
-                    - '+41'
-                    - '+963'
-                    - '+886'
-                    - '+992'
-                    - '+255'
-                    - '+66'
-                    - '+670'
-                    - '+228'
-                    - '+690'
-                    - '+676'
-                    - '+1868'
-                    - '+216'
-                    - '+90'
-                    - '+993'
-                    - '+1649'
-                    - '+688'
-                    - '+256'
-                    - '+380'
-                    - '+971'
-                    - '+44'
-                    - '+1'
-                    - '+598'
-                    - '+998'
-                    - '+678'
-                    - '+58'
-                    - '+84'
-                    - '+1284'
-                    - '+1340'
-                    - '+681'
-                    - '+967'
-                    - '+260'
-                    - '+263'
-                properties:
-                  success:
-                    type: integer
-                    example: 1
-                  Codes:
-                    type: array
-                    example:
-                      - '+93'
-                      - '+358'
-                      - '+355'
-                      - '+213'
-                      - '+1684'
-                      - '+376'
-                      - '+244'
-                      - '+1264'
-                      - '+672'
-                      - '+1268'
-                      - '+54'
-                      - '+374'
-                      - '+297'
-                      - '+61'
-                      - '+43'
-                      - '+994'
-                      - '+1242'
-                      - '+973'
-                      - '+880'
-                      - '+1246'
-                      - '+375'
-                      - '+32'
-                      - '+501'
-                      - '+229'
-                      - '+1441'
-                      - '+975'
-                      - '+591'
-                      - '+387'
-                      - '+267'
-                      - '+55'
-                      - '+246'
-                      - '+673'
-                      - '+359'
-                      - '+226'
-                      - '+257'
-                      - '+855'
-                      - '+237'
-                      - '+1'
-                      - '+238'
-                      - '+ 345'
-                      - '+236'
-                      - '+235'
-                      - '+56'
-                      - '+86'
-                      - '+61'
-                      - '+61'
-                      - '+57'
-                      - '+269'
-                      - '+242'
-                      - '+243'
-                      - '+682'
-                      - '+506'
-                      - '+225'
-                      - '+385'
-                      - '+53'
-                      - '+357'
-                      - '+420'
-                      - '+45'
-                      - '+253'
-                      - '+1767'
-                      - '+1849'
-                      - '+593'
-                      - '+20'
-                      - '+503'
-                      - '+240'
-                      - '+291'
-                      - '+372'
-                      - '+251'
-                      - '+500'
-                      - '+298'
-                      - '+679'
-                      - '+358'
-                      - '+33'
-                      - '+594'
-                      - '+689'
-                      - '+241'
-                      - '+220'
-                      - '+995'
-                      - '+49'
-                      - '+233'
-                      - '+350'
-                      - '+30'
-                      - '+299'
-                      - '+1473'
-                      - '+590'
-                      - '+1671'
-                      - '+502'
-                      - '+44'
-                      - '+224'
-                      - '+245'
-                      - '+595'
-                      - '+509'
-                      - '+379'
-                      - '+504'
-                      - '+852'
-                      - '+36'
-                      - '+354'
-                      - '+91'
-                      - '+62'
-                      - '+98'
-                      - '+964'
-                      - '+353'
-                      - '+44'
-                      - '+972'
-                      - '+39'
-                      - '+1876'
-                      - '+81'
-                      - '+44'
-                      - '+962'
-                      - '+77'
-                      - '+254'
-                      - '+686'
-                      - '+850'
-                      - '+82'
-                      - '+965'
-                      - '+996'
-                      - '+856'
-                      - '+371'
-                      - '+961'
-                      - '+266'
-                      - '+231'
-                      - '+218'
-                      - '+423'
-                      - '+370'
-                      - '+352'
-                      - '+853'
-                      - '+389'
-                      - '+261'
-                      - '+265'
-                      - '+60'
-                      - '+960'
-                      - '+223'
-                      - '+356'
-                      - '+692'
-                      - '+596'
-                      - '+222'
-                      - '+230'
-                      - '+262'
-                      - '+52'
-                      - '+691'
-                      - '+373'
-                      - '+377'
-                      - '+976'
-                      - '+382'
-                      - '+1664'
-                      - '+212'
-                      - '+258'
-                      - '+95'
-                      - '+264'
-                      - '+674'
-                      - '+977'
-                      - '+31'
-                      - '+599'
-                      - '+687'
-                      - '+64'
-                      - '+505'
-                      - '+227'
-                      - '+234'
-                      - '+683'
-                      - '+672'
-                      - '+1670'
-                      - '+47'
-                      - '+968'
-                      - '+92'
-                      - '+680'
-                      - '+970'
-                      - '+507'
-                      - '+675'
-                      - '+595'
-                      - '+51'
-                      - '+63'
-                      - '+872'
-                      - '+48'
-                      - '+351'
-                      - '+1939'
-                      - '+974'
-                      - '+40'
-                      - '+7'
-                      - '+250'
-                      - '+262'
-                      - '+590'
-                      - '+290'
-                      - '+1869'
-                      - '+1758'
-                      - '+590'
-                      - '+508'
-                      - '+1784'
-                      - '+685'
-                      - '+378'
-                      - '+239'
-                      - '+966'
-                      - '+221'
-                      - '+381'
-                      - '+248'
-                      - '+232'
-                      - '+65'
-                      - '+421'
-                      - '+386'
-                      - '+677'
-                      - '+252'
-                      - '+27'
-                      - '+211'
-                      - '+500'
-                      - '+34'
-                      - '+94'
-                      - '+249'
-                      - '+597'
-                      - '+47'
-                      - '+268'
-                      - '+46'
-                      - '+41'
-                      - '+963'
-                      - '+886'
-                      - '+992'
-                      - '+255'
-                      - '+66'
-                      - '+670'
-                      - '+228'
-                      - '+690'
-                      - '+676'
-                      - '+1868'
-                      - '+216'
-                      - '+90'
-                      - '+993'
-                      - '+1649'
-                      - '+688'
-                      - '+256'
-                      - '+380'
-                      - '+971'
-                      - '+44'
-                      - '+1'
-                      - '+598'
-                      - '+998'
-                      - '+678'
-                      - '+58'
-                      - '+84'
-                      - '+1284'
-                      - '+1340'
-                      - '+681'
-                      - '+967'
-                      - '+260'
-                      - '+263'
-                    items:
-                      type: string
-      tags:
-        - Endpoints
-      security: []
-  /api/showEnquiry:
-    get:
-      summary: ''
-      operationId: getApiShowEnquiry
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: 1
-                  Enquires:
-                    -
-                      job_title: Photographer
-                      job_location: 'North Goa'
-                      user_name: Jagdish
-                      user_email: adhikarijagdish@gmail.com
-                      user_phone_no: 9910179393
-                      note: 'Checking Job'
-                    -
-                      job_title: Model
-                      job_location: 'New Delhi'
-                      user_name: Jagdish
-                      user_email: adhikarijagdish@gmail.com
-                      user_phone_no: 9910179393
-                      note: null
-                    -
-                      job_title: Model
-                      job_location: 'New Delhi'
-                      user_name: Test7
-                      user_email: test7@gmail.com
-                      user_phone_no: null
-                      note: null
-                    -
-                      job_title: Model
-                      job_location: 'New Delhi'
-                      user_name: nitin
-                      user_email: nitin08837@gmail.com
-                      user_phone_no: 9057498447
-                      note: ''
-                    -
-                      job_title: Photographer
-                      job_location: 'North Goa'
-                      user_name: nitin
-                      user_email: nitin08837@gmail.com
-                      user_phone_no: 9057498447
-                      note: ''
-                    -
-                      job_title: Photographer
-                      job_location: 'North Goa'
-                      user_name: Test7
-                      user_email: test7@gmail.com
-                      user_phone_no: null
-                      note: ''
-                    -
-                      job_title: Model
-                      job_location: 'New Delhi'
-                      user_name: 'phunsuk  jatav'
-                      user_email: phunsukj@gmail.com
-                      user_phone_no: 8700125886
-                      note: ''
-                    -
-                      job_title: Model
-                      job_location: 'New Delhi'
-                      user_name: 'Testing User2'
-                      user_email: info@TestingUser2.co
-                      user_phone_no: 9876543213
-                      note: ''
-                properties:
-                  success:
-                    type: integer
-                    example: 1
-                  Enquires:
-                    type: array
-                    example:
-                      -
-                        job_title: Photographer
-                        job_location: 'North Goa'
-                        user_name: Jagdish
-                        user_email: adhikarijagdish@gmail.com
-                        user_phone_no: 9910179393
-                        note: 'Checking Job'
-                      -
-                        job_title: Model
-                        job_location: 'New Delhi'
-                        user_name: Jagdish
-                        user_email: adhikarijagdish@gmail.com
-                        user_phone_no: 9910179393
-                        note: null
-                      -
-                        job_title: Model
-                        job_location: 'New Delhi'
-                        user_name: Test7
-                        user_email: test7@gmail.com
-                        user_phone_no: null
-                        note: null
-                      -
-                        job_title: Model
-                        job_location: 'New Delhi'
-                        user_name: nitin
-                        user_email: nitin08837@gmail.com
-                        user_phone_no: 9057498447
-                        note: ''
-                      -
-                        job_title: Photographer
-                        job_location: 'North Goa'
-                        user_name: nitin
-                        user_email: nitin08837@gmail.com
-                        user_phone_no: 9057498447
-                        note: ''
-                      -
-                        job_title: Photographer
-                        job_location: 'North Goa'
-                        user_name: Test7
-                        user_email: test7@gmail.com
-                        user_phone_no: null
-                        note: ''
-                      -
-                        job_title: Model
-                        job_location: 'New Delhi'
-                        user_name: 'phunsuk  jatav'
-                        user_email: phunsukj@gmail.com
-                        user_phone_no: 8700125886
-                        note: ''
-                      -
-                        job_title: Model
-                        job_location: 'New Delhi'
-                        user_name: 'Testing User2'
-                        user_email: info@TestingUser2.co
-                        user_phone_no: 9876543213
-                        note: ''
-                    items:
-                      type: object
-                      properties:
-                        job_title:
-                          type: string
-                          example: Photographer
-                        job_location:
-                          type: string
-                          example: 'North Goa'
-                        user_name:
-                          type: string
-                          example: Jagdish
-                        user_email:
-                          type: string
-                          example: adhikarijagdish@gmail.com
-                        user_phone_no:
-                          type: integer
-                          example: 9910179393
-                        note:
-                          type: string
-                          example: 'Checking Job'
-      tags:
-        - Endpoints
-      security: []
-  /api/AddQuiz:
-    post:
-      summary: ''
-      operationId: postApiAddQuiz
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: ''
-                  example: reiciendis
-                  nullable: false
-                email:
-                  type: string
-                  description: 'Must be a valid email address.'
-                  example: larkin.fritz@example.net
-                  nullable: false
-                phone:
-                  type: string
-                  description: ''
-                  example: odio
-                  nullable: false
-                answer1:
-                  type: string
-                  description: ''
-                  example: et
-                  nullable: false
-                answer2:
-                  type: string
-                  description: ''
-                  example: temporibus
-                  nullable: false
-                answer3:
-                  type: string
-                  description: ''
-                  example: nam
-                  nullable: false
-              required:
-                - name
-                - email
-                - phone
-                - answer1
-                - answer2
-                - answer3
-      security: []
-  /api/ShowQuiz:
-    get:
-      summary: ''
-      operationId: getApiShowQuiz
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                example:
-                  -
-                    id: 1
-                    name: Jagdish
-                    email: adhikari@gmail.com
-                    phone: '9334452345'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-07-04'
-                    updated_at: '2024-07-04'
-                  -
-                    id: 2
-                    name: Jagdish
-                    email: jagidh@gmail.com
-                    phone: '9334452344'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-07-04'
-                    updated_at: '2024-07-04'
-                  -
-                    id: 3
-                    name: 'Jagdish bhagat'
-                    email: jagidhbahgat@gmail.com
-                    phone: '9334452343'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-07-04'
-                    updated_at: '2024-07-04'
-                  -
-                    id: 4
-                    name: nitin
-                    email: nitin@g.com
-                    phone: '9058294020'
-                    answer1: "Livin' it up in luxury and relaxation"
-                    answer2: 'Friends Squad for non-stop laughs'
-                    answer3: 'Exploring hiking trails and nature'
-                    created_at: '2024-07-04'
-                    updated_at: '2024-07-04'
-                  -
-                    id: 5
-                    name: nitin
-                    email: nitin@gm.com
-                    phone: '7898909890'
-                    answer1: 'Diving deep into culture and history'
-                    answer2: 'Fam for those priceless moments'
-                    answer3: 'Exploring hiking trails and nature'
-                    created_at: '2024-07-04'
-                    updated_at: '2024-07-04'
-                  -
-                    id: 6
-                    name: 'Megha Khulbe'
-                    email: Launcherr.co@gmail.com
-                    phone: '9871831224'
-                    answer1: "Chillin' on sunny beaches"
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Exploring hiking trails and nature'
-                    created_at: '2024-07-10'
-                    updated_at: '2024-07-10'
-                  -
-                    id: 7
-                    name: Disha
-                    email: dishakhulbe@gmail.com
-                    phone: '5857523588'
-                    answer1: "Chillin' on sunny beaches"
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Exploring hiking trails and nature'
-                    created_at: '2024-07-12'
-                    updated_at: '2024-07-12'
-                  -
-                    id: 16
-                    name: NK
-                    email: N@G.COM
-                    phone: +9109U8897298
-                    answer1: "Livin' it up in luxury and relaxation"
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Exploring hiking trails and nature'
-                    created_at: '2024-07-18'
-                    updated_at: '2024-07-18'
-                  -
-                    id: 17
-                    name: nik
-                    email: n@h.com
-                    phone: '+919067776878'
-                    answer1: "Livin' it up in luxury and relaxation"
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Checking out cool museums and landmarks'
-                    created_at: '2024-07-18'
-                    updated_at: '2024-07-18'
-                  -
-                    id: 18
-                    name: 'Nitin Saini'
-                    email: nitinsaini8030@gmail.com
-                    phone: '+919560767761'
-                    answer1: "Livin' it up in luxury and relaxation"
-                    answer2: 'Friends Squad for non-stop laughs'
-                    answer3: 'Diving into a beach read'
-                    created_at: '2024-07-29'
-                    updated_at: '2024-07-29'
-                  -
-                    id: 19
-                    name: Sarthak
-                    email: Sarthakguptask4@gmail.com
-                    phone: '+919521426626'
-                    answer1: 'Diving deep into culture and history'
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Checking out cool museums and landmarks'
-                    created_at: '2024-08-01'
-                    updated_at: '2024-08-01'
-                  -
-                    id: 20
-                    name: Sarthak
-                    email: Sarthakguptask4@gmail.com
-                    phone: '+919521426626'
-                    answer1: 'Diving deep into culture and history'
-                    answer2: "Rollin' solo to find your groove"
-                    answer3: 'Checking out cool museums and landmarks'
-                    created_at: '2024-08-01'
-                    updated_at: '2024-08-01'
-                  -
-                    id: 21
-                    name: 'Manas Tripathi'
-                    email: info@StudyLancer.com
-                    phone: '+918700125888'
-                    answer1: 'Diving deep into culture and history'
-                    answer2: 'Fam for those priceless moments'
-                    answer3: 'Checking out cool museums and landmarks'
-                    created_at: '2024-08-01'
-                    updated_at: '2024-08-01'
-                  -
-                    id: 22
-                    name: 'Manas Tripathi'
-                    email: spestcontrol02@gmail.com
-                    phone: '+919988223377'
-                    answer1: 'Diving deep into culture and history'
-                    answer2: 'Friends Squad for non-stop laughs'
-                    answer3: 'Relaxing with a spa day'
-                    created_at: '2024-08-01'
-                    updated_at: '2024-08-01'
-                  -
-                    id: 25
-                    name: Nitin
-                    email: nitin08837@gmail.com
-                    phone: '9334455669'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-08-08'
-                    updated_at: '2024-08-08'
-                  -
-                    id: 30
-                    name: Manas
-                    email: manas3431@gmail.com
-                    phone: '0000000000'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-08-20'
-                    updated_at: '2024-08-20'
-                  -
-                    id: 32
-                    name: Jagdish
-                    email: adhikarijagdish3@gmail.com
-                    phone: '0000000002'
-                    answer1: 'Everything is oky'
-                    answer2: 'Hello ji'
-                    answer3: 'hi how are you'
-                    created_at: '2024-08-20'
-                    updated_at: '2024-08-20'
-                  -
-                    id: 33
-                    name: Sarthak
-                    email: sarthakguptask5@gmail.com
-                    phone: '+917239867198'
-                    answer1: 'Getting wild with outdoor adventures'
-                    answer2: 'Friends Squad for non-stop laughs'
-                    answer3: 'Checking out cool museums and landmarks'
-                    created_at: '2024-09-02'
-                    updated_at: '2024-09-02'
-                  -
-                    id: 34
-                    name: 'Nitin Saini'
-                    email: nitinsaini@launcherr.co
-                    phone: '+918470067761'
-                    answer1: "Chillin' on sunny beaches"
-                    answer2: 'Friends Squad for non-stop laughs'
-                    answer3: 'Relaxing with a spa day'
-                    created_at: '2024-10-18'
-                    updated_at: '2024-10-18'
-                  -
-                    id: 35
-                    name: Aman
-                    email: amankumar@launcherr.co
-                    phone: '+918853309666'
-                    answer1: "Chillin' on sunny beaches"
-                    answer2: 'Fam for those priceless moments'
-                    answer3: 'Diving into a beach read'
-                    created_at: '2024-11-13'
-                    updated_at: '2024-11-13'
-                  -
-                    id: 36
-                    name: 'Dipankar Sarkar'
-                    email: dipankar.skypoint@gmail.com
-                    phone: '+917003824164'
-                    answer1: "Chillin' on sunny beaches"
-                    answer2: 'Fam for those priceless moments'
-                    answer3: 'Diving into a beach read'
-                    created_at: '2024-11-14'
-                    updated_at: '2024-11-14'
-      tags:
-        - Endpoints
-      security: []
-  /api/AddEmail:
-    post:
-      summary: ''
-      operationId: postApiAddEmail
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Endpoints
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: 'Must be a valid email address. Must not be greater than 35 characters.'
-                  example: hudson.kemmer@example.net
-                  nullable: false
-              required:
-                - email
-      security: []
-  /api/ShowEmail:
-    get:
-      summary: ''
-      operationId: getApiShowEmail
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                example:
-                  -
-                    id: 37
-                    email: sarthakguptask3@gmail.com
-                    created_at: '2024-07-16T15:22:15.000000Z'
-                    updated_at: '2024-07-16T15:22:15.000000Z'
-                  -
-                    id: 65
-                    email: adhikarijagdish3@gmail.com
-                    created_at: '2024-08-08T11:49:41.000000Z'
-                    updated_at: '2024-08-08T11:49:41.000000Z'
-                  -
-                    id: 66
-                    email: nitin08837@gmail.com
-                    created_at: '2024-08-08T11:51:38.000000Z'
-                    updated_at: '2024-08-08T11:51:38.000000Z'
-                  -
-                    id: 67
-                    email: manas3431@gmail.com
-                    created_at: '2024-08-08T11:52:01.000000Z'
-                    updated_at: '2024-08-08T11:52:01.000000Z'
-      tags:
-        - Endpoints
-      security: []
-  /api/Show-Coupon:
-    get:
-      summary: ''
-      operationId: getApiShowCoupon
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  Coupon:
-                    -
-                      id: 11
-                      coupon_code: LAUNCHERRSVX10
-                      coupon_places: '["products"]'
-                      discount: '10.00'
-                      created_at: '2024-07-14'
-                      updated_at: '2024-07-14'
-                    -
-                      id: 12
-                      coupon_code: n0in4fon0idwnc213
-                      coupon_places: '["Travel","Shoping","Food"]'
-                      discount: '100.00'
-                      created_at: '2024-07-14'
-                      updated_at: '2024-07-14'
-                    -
-                      id: 13
-                      coupon_code: n0in4fon0idwnc000
-                      coupon_places: '["Travel","Shoping","Food"]'
-                      discount: '100.00'
-                      created_at: '2024-07-14'
-                      updated_at: '2024-07-14'
-                    -
-                      id: 14
-                      coupon_code: n0in4fon0idwnc001
-                      coupon_places: '["Travel","Shoping","Food"]'
-                      discount: '100.00'
-                      created_at: '2024-07-14'
-                      updated_at: '2024-07-14'
-                properties:
-                  Coupon:
-                    type: array
-                    example:
-                      -
-                        id: 11
-                        coupon_code: LAUNCHERRSVX10
-                        coupon_places: '["products"]'
-                        discount: '10.00'
-                        created_at: '2024-07-14'
-                        updated_at: '2024-07-14'
-                      -
-                        id: 12
-                        coupon_code: n0in4fon0idwnc213
-                        coupon_places: '["Travel","Shoping","Food"]'
-                        discount: '100.00'
-                        created_at: '2024-07-14'
-                        updated_at: '2024-07-14'
-                      -
-                        id: 13
-                        coupon_code: n0in4fon0idwnc000
-                        coupon_places: '["Travel","Shoping","Food"]'
-                        discount: '100.00'
-                        created_at: '2024-07-14'
-                        updated_at: '2024-07-14'
-                      -
-                        id: 14
-                        coupon_code: n0in4fon0idwnc001
-                        coupon_places: '["Travel","Shoping","Food"]'
-                        discount: '100.00'
-                        created_at: '2024-07-14'
-                        updated_at: '2024-07-14'
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          example: 11
-                        coupon_code:
-                          type: string
-                          example: LAUNCHERRSVX10
-                        coupon_places:
-                          type: string
-                          example: '["products"]'
-                        discount:
-                          type: string
-                          example: '10.00'
-                        created_at:
-                          type: string
-                          example: '2024-07-14'
-                        updated_at:
-                          type: string
-                          example: '2024-07-14'
       tags:
         - Endpoints
       security: []
@@ -3410,12 +2576,12 @@ paths:
                 coupon_code:
                   type: string
                   description: 'The <code>coupon_code</code> of an existing record in the coupons table.'
-                  example: vero
+                  example: perspiciatis
                   nullable: false
                 place:
                   type: string
                   description: ''
-                  example: amet
+                  example: culpa
                   nullable: false
               required:
                 - coupon_code
@@ -4179,6 +3345,104 @@ paths:
       tags:
         - Endpoints
       security: []
+  /api/showState:
+    get:
+      summary: ''
+      operationId: getApiShowState
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  states:
+                    - 'Andhra Pradesh'
+                    - 'Arunachal Pradesh'
+                    - Assam
+                    - Bihar
+                    - 'Chandigarh (UT)'
+                    - Chhattisgarh
+                    - 'Dadra and Nagar Haveli (UT)'
+                    - 'Daman and Diu (UT)'
+                    - 'Delhi (NCT)'
+                    - Goa
+                    - Gujarat
+                    - Haryana
+                    - 'Himachal Pradesh'
+                    - 'Jammu and Kashmir'
+                    - Jharkhand
+                    - Karnataka
+                    - Kerala
+                    - 'Lakshadweep (UT)'
+                    - 'Madhya Pradesh'
+                    - Maharashtra
+                    - Manipur
+                    - Meghalaya
+                    - Mizoram
+                    - Nagaland
+                    - Odisha
+                    - 'Puducherry (UT)'
+                    - Punjab
+                    - Rajasthan
+                    - Sikkim
+                    - 'Tamil Nadu'
+                    - Telangana
+                    - Tripura
+                    - Uttarakhand
+                    - 'Uttar Pradesh'
+                    - 'West Bengal'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  states:
+                    type: array
+                    example:
+                      - 'Andhra Pradesh'
+                      - 'Arunachal Pradesh'
+                      - Assam
+                      - Bihar
+                      - 'Chandigarh (UT)'
+                      - Chhattisgarh
+                      - 'Dadra and Nagar Haveli (UT)'
+                      - 'Daman and Diu (UT)'
+                      - 'Delhi (NCT)'
+                      - Goa
+                      - Gujarat
+                      - Haryana
+                      - 'Himachal Pradesh'
+                      - 'Jammu and Kashmir'
+                      - Jharkhand
+                      - Karnataka
+                      - Kerala
+                      - 'Lakshadweep (UT)'
+                      - 'Madhya Pradesh'
+                      - Maharashtra
+                      - Manipur
+                      - Meghalaya
+                      - Mizoram
+                      - Nagaland
+                      - Odisha
+                      - 'Puducherry (UT)'
+                      - Punjab
+                      - Rajasthan
+                      - Sikkim
+                      - 'Tamil Nadu'
+                      - Telangana
+                      - Tripura
+                      - Uttarakhand
+                      - 'Uttar Pradesh'
+                      - 'West Bengal'
+                    items:
+                      type: string
+      tags:
+        - Endpoints
+      security: []
   /api/CITIES:
     get:
       summary: ''
@@ -4202,6 +3466,518 @@ paths:
                   message:
                     type: string
                     example: 'Please Select A State'
+      tags:
+        - Endpoints
+      security: []
+  /api/showCode:
+    get:
+      summary: ''
+      operationId: getApiShowCode
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  Codes:
+                    - '+93'
+                    - '+358'
+                    - '+355'
+                    - '+213'
+                    - '+1684'
+                    - '+376'
+                    - '+244'
+                    - '+1264'
+                    - '+672'
+                    - '+1268'
+                    - '+54'
+                    - '+374'
+                    - '+297'
+                    - '+61'
+                    - '+43'
+                    - '+994'
+                    - '+1242'
+                    - '+973'
+                    - '+880'
+                    - '+1246'
+                    - '+375'
+                    - '+32'
+                    - '+501'
+                    - '+229'
+                    - '+1441'
+                    - '+975'
+                    - '+591'
+                    - '+387'
+                    - '+267'
+                    - '+55'
+                    - '+246'
+                    - '+673'
+                    - '+359'
+                    - '+226'
+                    - '+257'
+                    - '+855'
+                    - '+237'
+                    - '+1'
+                    - '+238'
+                    - '+ 345'
+                    - '+236'
+                    - '+235'
+                    - '+56'
+                    - '+86'
+                    - '+61'
+                    - '+61'
+                    - '+57'
+                    - '+269'
+                    - '+242'
+                    - '+243'
+                    - '+682'
+                    - '+506'
+                    - '+225'
+                    - '+385'
+                    - '+53'
+                    - '+357'
+                    - '+420'
+                    - '+45'
+                    - '+253'
+                    - '+1767'
+                    - '+1849'
+                    - '+593'
+                    - '+20'
+                    - '+503'
+                    - '+240'
+                    - '+291'
+                    - '+372'
+                    - '+251'
+                    - '+500'
+                    - '+298'
+                    - '+679'
+                    - '+358'
+                    - '+33'
+                    - '+594'
+                    - '+689'
+                    - '+241'
+                    - '+220'
+                    - '+995'
+                    - '+49'
+                    - '+233'
+                    - '+350'
+                    - '+30'
+                    - '+299'
+                    - '+1473'
+                    - '+590'
+                    - '+1671'
+                    - '+502'
+                    - '+44'
+                    - '+224'
+                    - '+245'
+                    - '+595'
+                    - '+509'
+                    - '+379'
+                    - '+504'
+                    - '+852'
+                    - '+36'
+                    - '+354'
+                    - '+91'
+                    - '+62'
+                    - '+98'
+                    - '+964'
+                    - '+353'
+                    - '+44'
+                    - '+972'
+                    - '+39'
+                    - '+1876'
+                    - '+81'
+                    - '+44'
+                    - '+962'
+                    - '+77'
+                    - '+254'
+                    - '+686'
+                    - '+850'
+                    - '+82'
+                    - '+965'
+                    - '+996'
+                    - '+856'
+                    - '+371'
+                    - '+961'
+                    - '+266'
+                    - '+231'
+                    - '+218'
+                    - '+423'
+                    - '+370'
+                    - '+352'
+                    - '+853'
+                    - '+389'
+                    - '+261'
+                    - '+265'
+                    - '+60'
+                    - '+960'
+                    - '+223'
+                    - '+356'
+                    - '+692'
+                    - '+596'
+                    - '+222'
+                    - '+230'
+                    - '+262'
+                    - '+52'
+                    - '+691'
+                    - '+373'
+                    - '+377'
+                    - '+976'
+                    - '+382'
+                    - '+1664'
+                    - '+212'
+                    - '+258'
+                    - '+95'
+                    - '+264'
+                    - '+674'
+                    - '+977'
+                    - '+31'
+                    - '+599'
+                    - '+687'
+                    - '+64'
+                    - '+505'
+                    - '+227'
+                    - '+234'
+                    - '+683'
+                    - '+672'
+                    - '+1670'
+                    - '+47'
+                    - '+968'
+                    - '+92'
+                    - '+680'
+                    - '+970'
+                    - '+507'
+                    - '+675'
+                    - '+595'
+                    - '+51'
+                    - '+63'
+                    - '+872'
+                    - '+48'
+                    - '+351'
+                    - '+1939'
+                    - '+974'
+                    - '+40'
+                    - '+7'
+                    - '+250'
+                    - '+262'
+                    - '+590'
+                    - '+290'
+                    - '+1869'
+                    - '+1758'
+                    - '+590'
+                    - '+508'
+                    - '+1784'
+                    - '+685'
+                    - '+378'
+                    - '+239'
+                    - '+966'
+                    - '+221'
+                    - '+381'
+                    - '+248'
+                    - '+232'
+                    - '+65'
+                    - '+421'
+                    - '+386'
+                    - '+677'
+                    - '+252'
+                    - '+27'
+                    - '+211'
+                    - '+500'
+                    - '+34'
+                    - '+94'
+                    - '+249'
+                    - '+597'
+                    - '+47'
+                    - '+268'
+                    - '+46'
+                    - '+41'
+                    - '+963'
+                    - '+886'
+                    - '+992'
+                    - '+255'
+                    - '+66'
+                    - '+670'
+                    - '+228'
+                    - '+690'
+                    - '+676'
+                    - '+1868'
+                    - '+216'
+                    - '+90'
+                    - '+993'
+                    - '+1649'
+                    - '+688'
+                    - '+256'
+                    - '+380'
+                    - '+971'
+                    - '+44'
+                    - '+1'
+                    - '+598'
+                    - '+998'
+                    - '+678'
+                    - '+58'
+                    - '+84'
+                    - '+1284'
+                    - '+1340'
+                    - '+681'
+                    - '+967'
+                    - '+260'
+                    - '+263'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  Codes:
+                    type: array
+                    example:
+                      - '+93'
+                      - '+358'
+                      - '+355'
+                      - '+213'
+                      - '+1684'
+                      - '+376'
+                      - '+244'
+                      - '+1264'
+                      - '+672'
+                      - '+1268'
+                      - '+54'
+                      - '+374'
+                      - '+297'
+                      - '+61'
+                      - '+43'
+                      - '+994'
+                      - '+1242'
+                      - '+973'
+                      - '+880'
+                      - '+1246'
+                      - '+375'
+                      - '+32'
+                      - '+501'
+                      - '+229'
+                      - '+1441'
+                      - '+975'
+                      - '+591'
+                      - '+387'
+                      - '+267'
+                      - '+55'
+                      - '+246'
+                      - '+673'
+                      - '+359'
+                      - '+226'
+                      - '+257'
+                      - '+855'
+                      - '+237'
+                      - '+1'
+                      - '+238'
+                      - '+ 345'
+                      - '+236'
+                      - '+235'
+                      - '+56'
+                      - '+86'
+                      - '+61'
+                      - '+61'
+                      - '+57'
+                      - '+269'
+                      - '+242'
+                      - '+243'
+                      - '+682'
+                      - '+506'
+                      - '+225'
+                      - '+385'
+                      - '+53'
+                      - '+357'
+                      - '+420'
+                      - '+45'
+                      - '+253'
+                      - '+1767'
+                      - '+1849'
+                      - '+593'
+                      - '+20'
+                      - '+503'
+                      - '+240'
+                      - '+291'
+                      - '+372'
+                      - '+251'
+                      - '+500'
+                      - '+298'
+                      - '+679'
+                      - '+358'
+                      - '+33'
+                      - '+594'
+                      - '+689'
+                      - '+241'
+                      - '+220'
+                      - '+995'
+                      - '+49'
+                      - '+233'
+                      - '+350'
+                      - '+30'
+                      - '+299'
+                      - '+1473'
+                      - '+590'
+                      - '+1671'
+                      - '+502'
+                      - '+44'
+                      - '+224'
+                      - '+245'
+                      - '+595'
+                      - '+509'
+                      - '+379'
+                      - '+504'
+                      - '+852'
+                      - '+36'
+                      - '+354'
+                      - '+91'
+                      - '+62'
+                      - '+98'
+                      - '+964'
+                      - '+353'
+                      - '+44'
+                      - '+972'
+                      - '+39'
+                      - '+1876'
+                      - '+81'
+                      - '+44'
+                      - '+962'
+                      - '+77'
+                      - '+254'
+                      - '+686'
+                      - '+850'
+                      - '+82'
+                      - '+965'
+                      - '+996'
+                      - '+856'
+                      - '+371'
+                      - '+961'
+                      - '+266'
+                      - '+231'
+                      - '+218'
+                      - '+423'
+                      - '+370'
+                      - '+352'
+                      - '+853'
+                      - '+389'
+                      - '+261'
+                      - '+265'
+                      - '+60'
+                      - '+960'
+                      - '+223'
+                      - '+356'
+                      - '+692'
+                      - '+596'
+                      - '+222'
+                      - '+230'
+                      - '+262'
+                      - '+52'
+                      - '+691'
+                      - '+373'
+                      - '+377'
+                      - '+976'
+                      - '+382'
+                      - '+1664'
+                      - '+212'
+                      - '+258'
+                      - '+95'
+                      - '+264'
+                      - '+674'
+                      - '+977'
+                      - '+31'
+                      - '+599'
+                      - '+687'
+                      - '+64'
+                      - '+505'
+                      - '+227'
+                      - '+234'
+                      - '+683'
+                      - '+672'
+                      - '+1670'
+                      - '+47'
+                      - '+968'
+                      - '+92'
+                      - '+680'
+                      - '+970'
+                      - '+507'
+                      - '+675'
+                      - '+595'
+                      - '+51'
+                      - '+63'
+                      - '+872'
+                      - '+48'
+                      - '+351'
+                      - '+1939'
+                      - '+974'
+                      - '+40'
+                      - '+7'
+                      - '+250'
+                      - '+262'
+                      - '+590'
+                      - '+290'
+                      - '+1869'
+                      - '+1758'
+                      - '+590'
+                      - '+508'
+                      - '+1784'
+                      - '+685'
+                      - '+378'
+                      - '+239'
+                      - '+966'
+                      - '+221'
+                      - '+381'
+                      - '+248'
+                      - '+232'
+                      - '+65'
+                      - '+421'
+                      - '+386'
+                      - '+677'
+                      - '+252'
+                      - '+27'
+                      - '+211'
+                      - '+500'
+                      - '+34'
+                      - '+94'
+                      - '+249'
+                      - '+597'
+                      - '+47'
+                      - '+268'
+                      - '+46'
+                      - '+41'
+                      - '+963'
+                      - '+886'
+                      - '+992'
+                      - '+255'
+                      - '+66'
+                      - '+670'
+                      - '+228'
+                      - '+690'
+                      - '+676'
+                      - '+1868'
+                      - '+216'
+                      - '+90'
+                      - '+993'
+                      - '+1649'
+                      - '+688'
+                      - '+256'
+                      - '+380'
+                      - '+971'
+                      - '+44'
+                      - '+1'
+                      - '+598'
+                      - '+998'
+                      - '+678'
+                      - '+58'
+                      - '+84'
+                      - '+1284'
+                      - '+1340'
+                      - '+681'
+                      - '+967'
+                      - '+260'
+                      - '+263'
+                    items:
+                      type: string
       tags:
         - Endpoints
       security: []
@@ -74356,104 +74132,6 @@ paths:
       tags:
         - Endpoints
       security: []
-  /api/showState:
-    get:
-      summary: ''
-      operationId: getApiShowState
-      description: ''
-      parameters: []
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: 1
-                  states:
-                    - 'Andhra Pradesh'
-                    - 'Arunachal Pradesh'
-                    - Assam
-                    - Bihar
-                    - 'Chandigarh (UT)'
-                    - Chhattisgarh
-                    - 'Dadra and Nagar Haveli (UT)'
-                    - 'Daman and Diu (UT)'
-                    - 'Delhi (NCT)'
-                    - Goa
-                    - Gujarat
-                    - Haryana
-                    - 'Himachal Pradesh'
-                    - 'Jammu and Kashmir'
-                    - Jharkhand
-                    - Karnataka
-                    - Kerala
-                    - 'Lakshadweep (UT)'
-                    - 'Madhya Pradesh'
-                    - Maharashtra
-                    - Manipur
-                    - Meghalaya
-                    - Mizoram
-                    - Nagaland
-                    - Odisha
-                    - 'Puducherry (UT)'
-                    - Punjab
-                    - Rajasthan
-                    - Sikkim
-                    - 'Tamil Nadu'
-                    - Telangana
-                    - Tripura
-                    - Uttarakhand
-                    - 'Uttar Pradesh'
-                    - 'West Bengal'
-                properties:
-                  success:
-                    type: integer
-                    example: 1
-                  states:
-                    type: array
-                    example:
-                      - 'Andhra Pradesh'
-                      - 'Arunachal Pradesh'
-                      - Assam
-                      - Bihar
-                      - 'Chandigarh (UT)'
-                      - Chhattisgarh
-                      - 'Dadra and Nagar Haveli (UT)'
-                      - 'Daman and Diu (UT)'
-                      - 'Delhi (NCT)'
-                      - Goa
-                      - Gujarat
-                      - Haryana
-                      - 'Himachal Pradesh'
-                      - 'Jammu and Kashmir'
-                      - Jharkhand
-                      - Karnataka
-                      - Kerala
-                      - 'Lakshadweep (UT)'
-                      - 'Madhya Pradesh'
-                      - Maharashtra
-                      - Manipur
-                      - Meghalaya
-                      - Mizoram
-                      - Nagaland
-                      - Odisha
-                      - 'Puducherry (UT)'
-                      - Punjab
-                      - Rajasthan
-                      - Sikkim
-                      - 'Tamil Nadu'
-                      - Telangana
-                      - Tripura
-                      - Uttarakhand
-                      - 'Uttar Pradesh'
-                      - 'West Bengal'
-                    items:
-                      type: string
-      tags:
-        - Endpoints
-      security: []
   /api/paypal:
     post:
       summary: ''
@@ -74532,7 +74210,7 @@ paths:
                 example:
                   success: false
                   message: 'Failed to fetch token'
-                  error: '{"status":false,"status_code":"IFR","request_id":"NjczNjAwY2VlNTk0NTIwMjQtMTEtMTQgMTk6MjM6MTg=","payloads":{"errors":{"mobileNumber":["The mobile number field is required."],"password":["The password field is required."]},"data":[],"transaction":[]},"message":"Please share all required fields"}'
+                  error: '{"status":false,"status_code":"IFR","request_id":"NjczNmU3Yzk4YWVjYzIwMjQtMTEtMTUgMTE6NDg6NDk=","payloads":{"errors":{"mobileNumber":["The mobile number field is required."],"password":["The password field is required."]},"data":[],"transaction":[]},"message":"Please share all required fields"}'
                 properties:
                   success:
                     type: boolean
@@ -74542,7 +74220,7 @@ paths:
                     example: 'Failed to fetch token'
                   error:
                     type: string
-                    example: '{"status":false,"status_code":"IFR","request_id":"NjczNjAwY2VlNTk0NTIwMjQtMTEtMTQgMTk6MjM6MTg=","payloads":{"errors":{"mobileNumber":["The mobile number field is required."],"password":["The password field is required."]},"data":[],"transaction":[]},"message":"Please share all required fields"}'
+                    example: '{"status":false,"status_code":"IFR","request_id":"NjczNmU3Yzk4YWVjYzIwMjQtMTEtMTUgMTE6NDg6NDk=","payloads":{"errors":{"mobileNumber":["The mobile number field is required."],"password":["The password field is required."]},"data":[],"transaction":[]},"message":"Please share all required fields"}'
       tags:
         - Endpoints
       security: []
@@ -74565,7 +74243,7 @@ paths:
                 TYPE:
                   type: string
                   description: ''
-                  example: ONEWAY
+                  example: ROUNDTRIP
                   nullable: false
                   enum:
                     - ONEWAY
@@ -74582,17 +74260,17 @@ paths:
                       origin:
                         type: string
                         description: ''
-                        example: eaque
+                        example: pariatur
                         nullable: false
                       destination:
                         type: string
                         description: ''
-                        example: quam
+                        example: officiis
                         nullable: false
                       travelDate:
                         type: string
                         description: 'Must be a valid date in the format <code>m/d/Y</code>.'
-                        example: 11/14/2024
+                        example: 11/15/2024
                         nullable: false
                       tripId:
                         type: string
@@ -74617,22 +74295,22 @@ paths:
                 adultCount:
                   type: string
                   description: "0 for domestic, 1 for international\n\"bookingType\" => \"required|string|in:0,1,2,3\", // 0 for one way, 1 for round trip."
-                  example: et
+                  example: velit
                   nullable: false
                 childCount:
                   type: string
                   description: ''
-                  example: omnis
+                  example: voluptas
                   nullable: false
                 infantCount:
                   type: string
                   description: ''
-                  example: pariatur
+                  example: nisi
                   nullable: false
                 classOfTravel:
                   type: string
                   description: ''
-                  example: '0'
+                  example: '1'
                   nullable: false
                   enum:
                     - '0'
@@ -74642,17 +74320,17 @@ paths:
                 airlineCode:
                   type: string
                   description: ''
-                  example: inventore
+                  example: distinctio
                   nullable: true
                 Arrival:
                   type: string
                   description: ''
-                  example: voluptatem
+                  example: et
                   nullable: true
                 Departure:
                   type: string
                   description: ''
-                  example: ab
+                  example: sit
                   nullable: true
                 Refundable:
                   type: boolean
@@ -74662,7 +74340,7 @@ paths:
                 Stops:
                   type: string
                   description: ''
-                  example: '1'
+                  example: '2'
                   nullable: true
                   enum:
                     - '0'
@@ -74671,17 +74349,17 @@ paths:
                 Price:
                   type: integer
                   description: ''
-                  example: 12
+                  example: 7
                   nullable: true
                 headersToken:
                   type: string
                   description: ''
-                  example: expedita
+                  example: velit
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: exercitationem
+                  example: iusto
                   nullable: false
               required:
                 - TYPE
@@ -74713,27 +74391,27 @@ paths:
                 SearchKey:
                   type: string
                   description: ''
-                  example: placeat
+                  example: eius
                   nullable: false
                 FareID:
                   type: string
                   description: ''
-                  example: cumque
+                  example: maxime
                   nullable: false
                 FlightKey:
                   type: string
                   description: ''
-                  example: non
+                  example: ab
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: et
+                  example: aut
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: alias
+                  example: exercitationem
                   nullable: false
               required:
                 - SearchKey
@@ -74761,47 +74439,47 @@ paths:
                 SearchKey:
                   type: string
                   description: ''
-                  example: minus
+                  example: harum
                   nullable: false
                 FareID:
                   type: string
                   description: ''
-                  example: aliquam
+                  example: neque
                   nullable: false
                 FlightKey:
                   type: string
                   description: ''
-                  example: commodi
+                  example: tempore
                   nullable: false
                 CustomerContact:
                   type: string
                   description: 'Must be at least 10 characters. Must not be greater than 10 characters.'
-                  example: uhzuiepg
+                  example: fdenyeyr
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: aut
+                  example: minima
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: placeat
+                  example: voluptatum
                   nullable: false
                 adultCount:
                   type: string
                   description: ''
-                  example: voluptatem
+                  example: animi
                   nullable: false
                 childCount:
                   type: string
                   description: ''
-                  example: qui
+                  example: cumque
                   nullable: false
                 infantCount:
                   type: string
                   description: ''
-                  example: rerum
+                  example: quibusdam
                   nullable: false
               required:
                 - SearchKey
@@ -74833,22 +74511,22 @@ paths:
                 BookingRef:
                   type: string
                   description: ''
-                  example: iure
+                  example: autem
                   nullable: false
                 UserRef:
                   type: string
                   description: ''
-                  example: temporibus
+                  example: consequatur
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: soluta
+                  example: est
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: eveniet
+                  example: aspernatur
                   nullable: false
               required:
                 - BookingRef
@@ -74875,37 +74553,37 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: veritatis
+                  example: recusandae
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: non
+                  example: nemo
                   nullable: false
                 bookingRef:
                   type: string
                   description: ''
-                  example: ea
+                  example: sunt
                   nullable: false
                 pnr:
                   type: string
                   description: ''
-                  example: repellat
+                  example: error
                   nullable: false
                 cancelType:
                   type: string
                   description: ''
-                  example: mollitia
+                  example: officiis
                   nullable: false
                 cancelCode:
                   type: string
                   description: '0-Normal Cancel, 1-Full Refund, 2-No Show.'
-                  example: perspiciatis
+                  example: non
                   nullable: false
                 remark:
                   type: string
                   description: ''
-                  example: repudiandae
+                  example: iusto
                   nullable: false
                 ticketCancelDetails:
                   type: array
@@ -74918,17 +74596,17 @@ paths:
                       FlightId:
                         type: string
                         description: ''
-                        example: aut
+                        example: nam
                         nullable: false
                       PassengerId:
                         type: string
                         description: ''
-                        example: dolorem
+                        example: repellendus
                         nullable: false
                       SegmentId:
                         type: string
                         description: ''
-                        example: in
+                        example: quis
                         nullable: false
                     required:
                       - FlightId
@@ -74962,32 +74640,32 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: quibusdam
+                  example: aliquid
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: blanditiis
+                  example: magnam
                   nullable: false
                 origin:
                   type: string
                   description: ''
-                  example: porro
+                  example: corporis
                   nullable: false
                 destination:
                   type: string
                   description: ''
-                  example: incidunt
+                  example: consequatur
                   nullable: false
                 month:
                   type: string
                   description: ''
-                  example: natus
+                  example: minus
                   nullable: false
                 year:
                   type: string
                   description: ''
-                  example: ab
+                  example: in
                   nullable: false
               required:
                 - headersToken
@@ -75016,12 +74694,12 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: saepe
+                  example: architecto
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: sequi
+                  example: quaerat
                   nullable: false
               required:
                 - headersToken
@@ -75046,62 +74724,62 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: nostrum
+                  example: ut
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: earum
+                  example: fuga
                   nullable: false
                 travelType:
                   type: string
                   description: ''
-                  example: vero
+                  example: pariatur
                   nullable: false
                 bookingType:
                   type: string
                   description: ''
-                  example: velit
+                  example: qui
                   nullable: false
                 origin:
                   type: string
                   description: ''
-                  example: natus
+                  example: quibusdam
                   nullable: false
                 destination:
                   type: string
                   description: ''
-                  example: nam
+                  example: aut
                   nullable: false
                 travelDate:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2024-11-14T13:53:19'
+                  example: '2024-11-15T06:18:50'
                   nullable: false
                 tripId:
                   type: string
                   description: ''
-                  example: et
+                  example: quis
                   nullable: false
                 adultCount:
                   type: string
                   description: ''
-                  example: nihil
+                  example: quis
                   nullable: false
                 childCount:
                   type: string
                   description: ''
-                  example: consectetur
+                  example: blanditiis
                   nullable: false
                 infantCount:
                   type: string
                   description: ''
-                  example: voluptatem
+                  example: vel
                   nullable: false
                 classOfTravel:
                   type: string
                   description: ''
-                  example: est
+                  example: quam
                   nullable: false
               required:
                 - headersToken
@@ -75172,52 +74850,52 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: aut
+                  example: omnis
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: et
+                  example: ut
                   nullable: false
                 sourceId:
                   type: string
                   description: ''
-                  example: aut
+                  example: facere
                   nullable: false
                 destinationId:
                   type: string
                   description: ''
-                  example: ut
+                  example: pariatur
                   nullable: false
                 date:
                   type: string
                   description: ''
-                  example: vel
+                  example: ipsam
                   nullable: false
                 AC:
                   type: string
                   description: ''
-                  example: officiis
+                  example: incidunt
                   nullable: true
                 Seater:
                   type: string
                   description: ''
-                  example: necessitatibus
+                  example: maiores
                   nullable: true
                 Sleeper:
                   type: string
                   description: ''
-                  example: facere
+                  example: repellat
                   nullable: true
                 Arrival:
                   type: string
                   description: ''
-                  example: aliquam
+                  example: blanditiis
                   nullable: true
                 Departure:
                   type: string
                   description: ''
-                  example: soluta
+                  example: est
                   nullable: true
               required:
                 - headersToken
@@ -75245,17 +74923,17 @@ paths:
                 tripId:
                   type: string
                   description: ''
-                  example: libero
+                  example: dolorem
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: sed
+                  example: aliquam
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: odit
+                  example: non
                   nullable: false
               required:
                 - tripId
@@ -75281,22 +74959,22 @@ paths:
                 boardingPoint:
                   type: string
                   description: ''
-                  example: sit
+                  example: consequatur
                   nullable: false
                 tripId:
                   type: string
                   description: ''
-                  example: tempore
+                  example: laudantium
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: sunt
+                  example: deleniti
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: qui
+                  example: amet
                   nullable: false
               required:
                 - boardingPoint
@@ -75323,17 +75001,17 @@ paths:
                 referenceId:
                   type: string
                   description: ''
-                  example: dignissimos
+                  example: enim
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: cupiditate
+                  example: dolores
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: eligendi
+                  example: nesciunt
                   nullable: false
               required:
                 - referenceId
@@ -75359,24 +75037,24 @@ paths:
                 referenceId:
                   type: string
                   description: ''
-                  example: aut
+                  example: dolor
                   nullable: false
                 seatsToCancel:
                   type: array
                   description: ''
                   example:
-                    - eum
+                    - quibusdam
                   items:
                     type: string
                 headersToken:
                   type: string
                   description: ''
-                  example: voluptate
+                  example: fuga
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: blanditiis
+                  example: expedita
                   nullable: false
               required:
                 - referenceId
@@ -75403,22 +75081,22 @@ paths:
                 totalCount:
                   type: string
                   description: ''
-                  example: et
+                  example: est
                   nullable: false
                 mobile:
                   type: string
                   description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
-                  example: oedxyfijhsbsvlzlkmlvyqvoovvmlbtdrqqwkwcmrjpwbcqsaprmyhqylgf
+                  example: kddgtjxvdxlriiuntbteumatgalyhkleibfmypcmmzpelncxxdumozps
                   nullable: false
                 whatsApp:
                   type: string
                   description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
-                  example: yuweauurlyccsymzltqahvczrefiogebkdhblopdcdjlmftzq
+                  example: fkqseasqrgeyywkvbcxwbdpmwkdzbwozllazfegoijaelalkmozktjybqspwxas
                   nullable: false
                 email:
                   type: string
                   description: 'Must be a valid email address.'
-                  example: nader.michel@example.org
+                  example: loma54@example.com
                   nullable: false
                 gst:
                   type: object
@@ -75429,42 +75107,42 @@ paths:
                     isGst:
                       type: string
                       description: ''
-                      example: qui
+                      example: non
                       nullable: false
                     gstNumber:
                       type: string
                       description: ''
-                      example: voluptatem
+                      example: assumenda
                       nullable: true
                     gstName:
                       type: string
                       description: ''
-                      example: est
+                      example: perferendis
                       nullable: true
                     gstAddress:
                       type: string
                       description: ''
-                      example: voluptas
+                      example: qui
                       nullable: true
                 searchKey:
                   type: string
                   description: ''
-                  example: ut
+                  example: qui
                   nullable: false
                 FlightKey:
                   type: string
                   description: ''
-                  example: qui
+                  example: atque
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: perspiciatis
+                  example: eaque
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: ipsam
+                  example: reiciendis
                   nullable: false
                 passenger_details:
                   type: array
@@ -75477,7 +75155,7 @@ paths:
                       paxType:
                         type: integer
                         description: ''
-                        example: '1'
+                        example: '0'
                         nullable: false
                         enum:
                           - '0'
@@ -75486,7 +75164,7 @@ paths:
                       title:
                         type: string
                         description: 0-ADT/1-CHD/2-INF.
-                        example: Mr
+                        example: Ms
                         nullable: false
                         enum:
                           - Mr
@@ -75497,17 +75175,17 @@ paths:
                       firstName:
                         type: string
                         description: 'MR, MRS, MS; MSTR, MISS for child/infant.'
-                        example: veritatis
+                        example: nihil
                         nullable: false
                       lastName:
                         type: string
                         description: ''
-                        example: voluptatibus
+                        example: sit
                         nullable: false
                       age:
                         type: integer
                         description: ''
-                        example: 12
+                        example: 7
                         nullable: true
                       gender:
                         type: integer
@@ -75520,37 +75198,37 @@ paths:
                       dob:
                         type: string
                         description: '0-Male, 1-Female. Must be a valid date.'
-                        example: '2024-11-14T13:53:20'
+                        example: '2024-11-15T06:18:52'
                         nullable: false
                       passportNumber:
                         type: string
                         description: ''
-                        example: omnis
+                        example: est
                         nullable: true
                       passportIssuingAuthority:
                         type: string
                         description: ''
-                        example: et
+                        example: fugiat
                         nullable: true
                       passportExpire:
                         type: string
                         description: 'Must be a valid date.'
-                        example: '2024-11-14T13:53:20'
+                        example: '2024-11-15T06:18:52'
                         nullable: true
                       nationality:
                         type: string
                         description: ''
-                        example: aliquid
+                        example: est
                         nullable: true
                       pancardNumber:
                         type: string
                         description: ''
-                        example: minus
+                        example: exercitationem
                         nullable: true
                       frequentFlyerDetails:
                         type: string
                         description: ''
-                        example: nemo
+                        example: sint
                         nullable: true
                     required:
                       - paxType
@@ -75588,27 +75266,27 @@ paths:
                 BookingRef:
                   type: string
                   description: ''
-                  example: voluptatem
+                  example: vel
                   nullable: false
                 UserRef:
                   type: string
                   description: ''
-                  example: nobis
+                  example: quis
                   nullable: false
                 TicketingType:
                   type: string
                   description: ''
-                  example: et
+                  example: tenetur
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: quo
+                  example: exercitationem
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: dolorem
+                  example: id
                   nullable: false
               required:
                 - BookingRef
@@ -75636,22 +75314,22 @@ paths:
                 headersToken:
                   type: string
                   description: ''
-                  example: enim
+                  example: voluptate
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: ipsa
+                  example: recusandae
                   nullable: false
                 bookingRef:
                   type: string
                   description: ''
-                  example: atque
+                  example: minima
                   nullable: true
                 pnr:
                   type: string
                   description: ''
-                  example: accusamus
+                  example: ipsam
                   nullable: true
               required:
                 - headersToken
@@ -75676,42 +75354,42 @@ paths:
                 boardingPoint:
                   type: string
                   description: ''
-                  example: id
+                  example: repellendus
                   nullable: false
                 tripId:
                   type: string
                   description: ''
-                  example: est
+                  example: doloribus
                   nullable: false
                 dropingPoint:
                   type: string
                   description: ''
-                  example: ab
+                  example: veniam
                   nullable: false
                 source:
                   type: string
                   description: ''
-                  example: vel
+                  example: et
                   nullable: false
                 destination:
                   type: string
                   description: ''
-                  example: et
+                  example: temporibus
                   nullable: false
                 serviceCharge:
                   type: string
                   description: ''
-                  example: eum
+                  example: dolorum
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: quia
+                  example: pariatur
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: rem
+                  example: fugit
                   nullable: false
                 inventoryItems:
                   type: array
@@ -75724,27 +75402,27 @@ paths:
                       seatName:
                         type: string
                         description: ''
-                        example: aut
+                        example: modi
                         nullable: false
                       fare:
                         type: number
                         description: ''
-                        example: 33.5814
+                        example: 6.7363399
                         nullable: false
                       serviceTax:
                         type: number
                         description: ''
-                        example: 75754909.0
+                        example: 3372.00479
                         nullable: false
                       operatorServiceCharge:
                         type: number
                         description: ''
-                        example: 1851.58
+                        example: 1.199469254
                         nullable: false
                       ladiesSeat:
                         type: string
                         description: ''
-                        example: corporis
+                        example: eum
                         nullable: false
                       passenger:
                         type: object
@@ -75755,52 +75433,52 @@ paths:
                           name:
                             type: string
                             description: ''
-                            example: ea
+                            example: molestiae
                             nullable: false
                           mobile:
                             type: string
                             description: 'Must be at least 10 characters. Must not be greater than 10 characters.'
-                            example: wmhodzg
+                            example: dtt
                             nullable: false
                           title:
                             type: string
                             description: ''
-                            example: recusandae
+                            example: similique
                             nullable: false
                           email:
                             type: string
                             description: ''
-                            example: wolf.lynn@example.org
+                            example: zachariah00@example.org
                             nullable: false
                           age:
                             type: string
                             description: ''
-                            example: nesciunt
+                            example: animi
                             nullable: false
                           gender:
                             type: string
                             description: ''
-                            example: quo
+                            example: et
                             nullable: false
                           address:
                             type: string
                             description: ''
-                            example: quo
+                            example: quis
                             nullable: false
                           idType:
                             type: string
                             description: ''
-                            example: quia
+                            example: voluptatem
                             nullable: true
                           idNumber:
                             type: string
                             description: ''
-                            example: rerum
+                            example: et
                             nullable: true
                           primary:
                             type: string
                             description: ''
-                            example: veritatis
+                            example: aut
                             nullable: true
                     required:
                       - seatName
@@ -75837,42 +75515,42 @@ paths:
                 userRef:
                   type: string
                   description: ''
-                  example: quia
+                  example: deserunt
                   nullable: false
                 amount:
                   type: string
                   description: ''
-                  example: repellendus
+                  example: molestiae
                   nullable: false
                 baseFare:
                   type: string
                   description: ''
-                  example: occaecati
+                  example: non
                   nullable: false
                 referenceKey:
                   type: string
                   description: ''
-                  example: deserunt
+                  example: suscipit
                   nullable: false
                 passengerPhone:
                   type: string
                   description: 'Must not be greater than 10 characters. Must be at least 10 characters.'
-                  example: yrsmmgekygkgfyspeoxdrhnmektfj
+                  example: enclvcljhohtasvjmzgsfihqazhkwzdwyeycwvmvciirluvutlouvoywotfummjtsnjgkuwesqmlgg
                   nullable: false
                 passengerEmail:
                   type: string
                   description: 'Must be a valid email address.'
-                  example: jkuphal@example.com
+                  example: quentin43@example.com
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: et
+                  example: enim
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: aut
+                  example: laboriosam
                   nullable: false
               required:
                 - userRef
@@ -75903,22 +75581,208 @@ paths:
                 referenceId:
                   type: string
                   description: ''
-                  example: consequatur
+                  example: repellendus
                   nullable: false
                 headersToken:
                   type: string
                   description: ''
-                  example: voluptas
+                  example: sequi
                   nullable: false
                 headersKey:
                   type: string
                   description: ''
-                  example: cupiditate
+                  example: commodi
                   nullable: false
               required:
                 - referenceId
                 - headersToken
                 - headersKey
+      security: []
+  /api/showEnquiry:
+    get:
+      summary: 'Retrieve all job enquiries.'
+      operationId: retrieveAllJobEnquiries
+      description: 'This endpoint returns a list of all job enquiries, including job title, location, user name, email, phone number, and any notes.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  Enquires:
+                    -
+                      job_title: 'Web Developer'
+                      job_location: Remote
+                      user_name: 'John Doe'
+                      user_email: john@example.com
+                      user_phone_no: '1234567890'
+                      note: 'Looking forward to discussing further.'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  Enquires:
+                    type: array
+                    example:
+                      -
+                        job_title: 'Web Developer'
+                        job_location: Remote
+                        user_name: 'John Doe'
+                        user_email: john@example.com
+                        user_phone_no: '1234567890'
+                        note: 'Looking forward to discussing further.'
+                    items:
+                      type: object
+                      properties:
+                        job_title:
+                          type: string
+                          example: 'Web Developer'
+                        job_location:
+                          type: string
+                          example: Remote
+                        user_name:
+                          type: string
+                          example: 'John Doe'
+                        user_email:
+                          type: string
+                          example: john@example.com
+                        user_phone_no:
+                          type: string
+                          example: '1234567890'
+                        note:
+                          type: string
+                          example: 'Looking forward to discussing further.'
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'No Data Found'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'No Data Found'
+      tags:
+        - Enquiry
+      security: []
+  /api/addEnquiry:
+    post:
+      summary: 'Add a new enquiry for a job posting.'
+      operationId: addANewEnquiryForAJobPosting
+      description: 'This endpoint allows authenticated users to add an enquiry for a specific job posting. Users with a "public" token cannot access this endpoint.'
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  enquiry:
+                    userID: 1
+                    gigID: 1
+                    note: 'Looking forward to discussing further.'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  enquiry:
+                    type: object
+                    properties:
+                      userID:
+                        type: integer
+                        example: 1
+                      gigID:
+                        type: integer
+                        example: 1
+                      note:
+                        type: string
+                        example: 'Looking forward to discussing further.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'Unauthorized, Login To Add Enquiry'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'Unauthorized, Login To Add Enquiry'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'User has already enquired for this Gig'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'User has already enquired for this Gig'
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'An error occurred while Adding Enquiry'
+                  error: 'Exception message'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'An error occurred while Adding Enquiry'
+                  error:
+                    type: string
+                    example: 'Exception message'
+      tags:
+        - 'Gig Enquiry'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gigID:
+                  type: integer
+                  description: 'The ID of the job posting.'
+                  example: 1
+                  nullable: false
+                note:
+                  type: string
+                  description: 'An optional note for the enquiry.'
+                  example: sapiente
+                  nullable: false
+              required:
+                - gigID
       security: []
   /api/addJob:
     post:
@@ -76812,6 +76676,99 @@ paths:
       tags:
         - 'Join Offer Management'
       security: []
+  /api/AddEmail:
+    post:
+      summary: 'API to add a new email address to the newsletter subscription list. A confirmation email is sent upon successful addition.'
+      operationId: aPIToAddANewEmailAddressToTheNewsletterSubscriptionListAConfirmationEmailIsSentUponSuccessfulAddition
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n 'success' : 1,\n \"message\": \"Email Added Successfully\"\n}"
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  errors:
+                    email:
+                      - 'The email field is required.'
+                      - 'The email must be a valid email address.'
+                      - 'The email has already been taken.'
+                properties:
+                  errors:
+                    type: object
+                    properties:
+                      email:
+                        type: array
+                        example:
+                          - 'The email field is required.'
+                          - 'The email must be a valid email address.'
+                          - 'The email has already been taken.'
+                        items:
+                          type: string
+        500:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success' : 0,\n  \"message\": \"An error occurred while Adding Email\",\n  \"error\": \"Error message details\"\n}"
+      tags:
+        - 'Newsletter Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: 'Email address to be subscribed to the newsletter. Must be unique.'
+                  example: johndoe@example.com
+                  nullable: false
+              required:
+                - email
+      security: []
+  /api/ShowEmail:
+    get:
+      summary: 'API to retrieve all email addresses subscribed to the newsletter.'
+      operationId: aPIToRetrieveAllEmailAddressesSubscribedToTheNewsletter
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                example:
+                  -
+                    id: 1
+                    email: johndoe@example.com
+                    created_at: '2024-11-14T12:00:00.000Z'
+                    updated_at: '2024-11-14T12:00:00.000Z'
+        404:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n 'success': 0\n  \"message\": \"No Quiz Response found\"\n}"
+      tags:
+        - 'Newsletter Management'
+      security: []
   /api/Add-QueAndAns:
     post:
       summary: "Add a Question and Answer\n\nThis endpoint allows you to add a new question and answer pair.\n\n**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after Admin Login"
@@ -77011,6 +76968,126 @@ paths:
                 example: "{\n' success':0,\n  \"message\": \"No Questions found\"\n}"
       tags:
         - 'Question and Answer Management'
+      security: []
+  /api/AddQuiz:
+    post:
+      summary: 'API to add a quiz response. Validates the user input, saves the data, and sends a confirmation email.'
+      operationId: aPIToAddAQuizResponseValidatesTheUserInputSavesTheDataAndSendsAConfirmationEmail
+      description: ''
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n 'success' : 0,\n \"message\": \"Quiz Answered Properly\",\n \"User\": {\n     \"name\": \"John Doe\",\n     \"email\": \"johndoe@example.com\",\n     \"phone\": \"+1234567890\"\n },\n \"Answer\": {\n     \"Answer1\": \"Option A\",\n     \"Answer2\": \"Option B\",\n     \"Answer3\": \"Option C\"\n }\n}"
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'The email has already been taken.'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'The email has already been taken.'
+        500:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n 'success' : 0,\n \"message\": \"An error occurred while Adding or Updating About info\",\n \"error\": \"Error message details\"\n}"
+      tags:
+        - 'Quiz Management'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Name of the user.'
+                  example: 'John Doe'
+                  nullable: false
+                email:
+                  type: string
+                  description: 'Email address of the user. Must be unique.'
+                  example: johndoe@example.com
+                  nullable: false
+                phone:
+                  type: string
+                  description: 'Phone number of the user. Must be unique.'
+                  example: '+1234567890'
+                  nullable: false
+                answer1:
+                  type: string
+                  description: 'Answer to the first quiz question.'
+                  example: 'Option A'
+                  nullable: false
+                answer2:
+                  type: string
+                  description: 'Answer to the second quiz question.'
+                  example: 'Option B'
+                  nullable: false
+                answer3:
+                  type: string
+                  description: 'Answer to the third quiz question.'
+                  example: 'Option C'
+                  nullable: false
+              required:
+                - name
+                - email
+                - phone
+                - answer1
+                - answer2
+                - answer3
+      security: []
+  /api/ShowQuiz:
+    get:
+      summary: 'API to retrieve all quiz responses. Returns an array of responses.'
+      operationId: aPIToRetrieveAllQuizResponsesReturnsAnArrayOfResponses
+      description: ''
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                example:
+                  -
+                    id: 1
+                    name: 'John Doe'
+                    email: johndoe@example.com
+                    phone: '+1234567890'
+                    answer1: 'Option A'
+                    answer2: 'Option B'
+                    answer3: 'Option C'
+                    created_at: '2024-11-14T12:00:00.000Z'
+                    updated_at: '2024-11-14T12:00:00.000Z'
+        404:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "{\n  'success'=>0\n  \"message\": \"No Quiz Response found\"\n}"
+      tags:
+        - 'Quiz Management'
       security: []
   /api/Add-Section:
     post:
@@ -77475,7 +77552,7 @@ paths:
                 password:
                   type: string
                   description: 'The password for the user account. Must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
-                  example: '30lq?0ta#'
+                  example: 't=a=>e"9y&yS'
                   nullable: false
               required:
                 - name
@@ -77652,12 +77729,315 @@ paths:
                 password:
                   type: string
                   description: "The user's password. Must be at least 8 characters, containing at least one uppercase letter, one lowercase letter, one number, and one special character."
-                  example: 'FM,ON_?r)x8/pF'
+                  example: ',i5J3N'
                   nullable: false
               required:
                 - email
                 - password
       security: []
+  '/api/verified/{uniqueCode}':
+    get:
+      summary: 'Verify user by unique code.'
+      operationId: verifyUserByUniqueCode
+      description: "This endpoint verifies a user using a unique code. If the code is valid, the user's verification status is updated."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  message: 'User successfully verified'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: 'User successfully verified'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'Not Found'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'Not Found'
+      tags:
+        - 'User Management'
+      security: []
+    parameters:
+      -
+        in: path
+        name: uniqueCode
+        description: 'The unique code provided to verify the user.'
+        example: nostrum
+        required: true
+        schema:
+          type: string
+  /api/addUserProfile:
+    post:
+      summary: 'Add or update the user profile.'
+      operationId: addOrUpdateTheUserProfile
+      description: "This endpoint allows an authenticated user to create or update their profile.\nIf the profile exists, it will be updated with the provided details."
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  message: 'Profile created successfully'
+                  profile:
+                    user_id: 1
+                    user_Number: '1234567890'
+                    user_Address: '123 Main St'
+                    user_City: 'New York'
+                    user_State: NY
+                    user_Country: USA
+                    user_PinCode: '10001'
+                    user_AboutMe: 'Hello, I am a developer.'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: 'Profile created successfully'
+                  profile:
+                    type: object
+                    properties:
+                      user_id:
+                        type: integer
+                        example: 1
+                      user_Number:
+                        type: string
+                        example: '1234567890'
+                      user_Address:
+                        type: string
+                        example: '123 Main St'
+                      user_City:
+                        type: string
+                        example: 'New York'
+                      user_State:
+                        type: string
+                        example: NY
+                      user_Country:
+                        type: string
+                        example: USA
+                      user_PinCode:
+                        type: string
+                        example: '10001'
+                      user_AboutMe:
+                        type: string
+                        example: 'Hello, I am a developer.'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'Unauthorized, Login To Update Your Profile'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'Unauthorized, Login To Update Your Profile'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  errors: 'Validation error message here'
+                properties:
+                  errors:
+                    type: string
+                    example: 'Validation error message here'
+      tags:
+        - 'User Management'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_Number:
+                  type: integer
+                  description: "The user's phone number. Required if creating a profile, else optional."
+                  example: 9
+                  nullable: false
+                user_Address:
+                  type: string
+                  description: "The user's address. Required if creating a profile, else optional."
+                  example: nam
+                  nullable: false
+                user_City:
+                  type: string
+                  description: "The user's city. Required if creating a profile, else optional."
+                  example: asperiores
+                  nullable: false
+                user_State:
+                  type: string
+                  description: "The user's state. Required if creating a profile, else optional."
+                  example: et
+                  nullable: false
+                user_Country:
+                  type: string
+                  description: "The user's country. Required if creating a profile, else optional."
+                  example: voluptas
+                  nullable: false
+                user_PinCode:
+                  type: string
+                  description: "The user's postal code. Required if creating a profile, else optional."
+                  example: illum
+                  nullable: false
+                user_AboutMe:
+                  type: string
+                  description: "The user's bio or description. Required if creating a profile, else optional."
+                  example: odit
+                  nullable: false
+  /api/showUserProfile:
+    get:
+      summary: "Show the user's profile information."
+      operationId: showTheUsersProfileInformation
+      description: "This endpoint allows an authenticated user to view their profile information.\nIf the user profile doesn't exist, a message prompting them to create one is returned."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: 1
+                      user:
+                        id: 1
+                        name: 'John Doe'
+                        email: john@example.com
+                      userprofile:
+                        user_id: 1
+                        user_Number: '1234567890'
+                        user_Address: '123 Main St'
+                        user_City: 'New York'
+                        user_State: NY
+                        user_Country: USA
+                        user_PinCode: '10001'
+                        user_AboutMe: 'Hello, I am a developer.'
+                    properties:
+                      success:
+                        type: integer
+                        example: 1
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: 'John Doe'
+                          email:
+                            type: string
+                            example: john@example.com
+                      userprofile:
+                        type: object
+                        properties:
+                          user_id:
+                            type: integer
+                            example: 1
+                          user_Number:
+                            type: string
+                            example: '1234567890'
+                          user_Address:
+                            type: string
+                            example: '123 Main St'
+                          user_City:
+                            type: string
+                            example: 'New York'
+                          user_State:
+                            type: string
+                            example: NY
+                          user_Country:
+                            type: string
+                            example: USA
+                          user_PinCode:
+                            type: string
+                            example: '10001'
+                          user_AboutMe:
+                            type: string
+                            example: 'Hello, I am a developer.'
+                  -
+                    description: ''
+                    type: object
+                    example:
+                      success: 1
+                      user:
+                        id: 1
+                        name: 'John Doe'
+                        email: john@example.com
+                      userprofile: 'Please add your personal information in your profile'
+                    properties:
+                      success:
+                        type: integer
+                        example: 1
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          name:
+                            type: string
+                            example: 'John Doe'
+                          email:
+                            type: string
+                            example: john@example.com
+                      userprofile:
+                        type: string
+                        example: 'Please add your personal information in your profile'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  message: 'Unauthorized, Login To Update Your Profile'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: 'Unauthorized, Login To Update Your Profile'
+      tags:
+        - 'User Management'
   /api/userPasswordUpdate:
     put:
       summary: 'Update User Password'
@@ -77793,6 +78173,204 @@ paths:
                 - new_password
                 - confirm_new_password
       security: []
+  /api/Reset/Password/Email:
+    post:
+      summary: 'Send a password reset email.'
+      operationId: sendAPasswordResetEmail
+      description: "This endpoint allows a user to request a password reset by providing their email address.\nIf the email is valid and belongs to a user with the \"user\" role, an encrypted token is sent to the email."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  message: 'Mail Sent Successfully. Check Your mail'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: 'Mail Sent Successfully. Check Your mail'
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'No User Exists with provided email'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'No User Exists with provided email'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'Unauthorized Email Role. Only User email can access'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'Unauthorized Email Role. Only User email can access'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'Validation error message here'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'Validation error message here'
+      tags:
+        - 'User Password Reset'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "The user's email address."
+                  example: chamill@example.org
+                  nullable: false
+              required:
+                - email
+      security: []
+  /api/Reset/Password:
+    post:
+      summary: "Reset the user's password."
+      operationId: resetTheUsersPassword
+      description: "This endpoint allows a user to reset their password using a token sent to their email.\nThe token is validated, and if it has not expired, the user's password is updated."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 1
+                  message: 'Password Updated Successfully'
+                properties:
+                  success:
+                    type: integer
+                    example: 1
+                  message:
+                    type: string
+                    example: 'Password Updated Successfully'
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'Your Link has Expired create a new one'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'Your Link has Expired create a new one'
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'Unauthorized Email Role. Only User email can access'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'Unauthorized Email Role. Only User email can access'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: 0
+                  error: 'Validation error message here'
+                properties:
+                  success:
+                    type: integer
+                    example: 0
+                  error:
+                    type: string
+                    example: 'Validation error message here'
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'An error occurred while updating the password'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'An error occurred while updating the password'
+      tags:
+        - 'User Password Reset'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: "The token sent to the user's email for verification."
+                  example: harum
+                  nullable: false
+                password:
+                  type: string
+                  description: 'The new password (minimum 8 characters, must include at least one uppercase letter, one lowercase letter, one number, and one special character).'
+                  example: ',ip`N8dp3ASV('
+                  nullable: false
+              required:
+                - token
+                - password
+      security: []
 tags:
   -
     name: 'About Section Management'
@@ -77807,10 +78385,16 @@ tags:
     name: 'Card Management'
     description: ''
   -
+    name: Cart
+    description: ''
+  -
     name: 'Client Management'
     description: ''
   -
     name: 'Company Details Management'
+    description: ''
+  -
+    name: 'Coupon Management'
     description: ''
   -
     name: 'Destination Management'
@@ -77819,13 +78403,25 @@ tags:
     name: Endpoints
     description: ''
   -
+    name: Enquiry
+    description: ''
+  -
+    name: 'Gig Enquiry'
+    description: ''
+  -
     name: 'Job Management'
     description: "**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after User Login"
   -
     name: 'Join Offer Management'
     description: ''
   -
+    name: 'Newsletter Management'
+    description: ''
+  -
     name: 'Question and Answer Management'
+    description: ''
+  -
+    name: 'Quiz Management'
     description: ''
   -
     name: 'Section Management'
@@ -77835,4 +78431,7 @@ tags:
     description: ''
   -
     name: 'User Management'
+    description: "**Note:** This endpoint requires an `Authorization: Bearer <access_token>` header.\n\n**Note:** You will get the access_token after User Login"
+  -
+    name: 'User Password Reset'
     description: ''
