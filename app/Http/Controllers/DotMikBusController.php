@@ -303,7 +303,7 @@ class DotMikBusController extends Controller
                         'status_code' => $status_code,
                         'request_id' =>$request_id,
                         'payloads' => $payloads,
-                        'result' => $result;
+                        'result' => $result,
                     ],$response->status());
                 } else {
                     return response()->json([
