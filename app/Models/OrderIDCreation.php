@@ -10,7 +10,9 @@ class OrderIDCreation extends Model
     use HasFactory;
 
     protected $fillable=[
+        'user_id',
         'OrderDetails',
-        'OrderID'
+        'OrderID',
+        'Status'
     ];
 }
