@@ -16,6 +16,40 @@ use DateTime;
 
 class DotMikController extends Controller
 {
+    /**
+     * Search Flights
+     * 
+     * This endpoint allows users to search for flights based on their travel preferences, including one-way, round-trip, or multi-state travel.
+     * 
+     * @group Flights
+     * 
+     * @bodyParam TYPE string required The type of flight. Must be one of: `ONEWAY`, `ROUNDTRIP`, `MULTISTATE`. Example: ONEWAY
+     * @bodyParam tripInfo array required An array of trip details.
+     * @bodyParam tripInfo.*.origin string required The origin airport code. Example: DEL
+     * @bodyParam tripInfo.*.destination string required The destination airport code. Example: BOM
+     * @bodyParam tripInfo.*.travelDate date required The travel date in `m/d/Y` format. Example: 12/15/2024
+     * @bodyParam tripInfo.*.tripId string The trip ID. Example: 0
+     * @bodyParam travelType string required The travel type. `0` for domestic, `1` for international. Example: 1
+     * @bodyParam adultCount string required The number of adults traveling. Example: 2
+     * @bodyParam childCount string required The number of children traveling. Example: 1
+     * @bodyParam infantCount string required The number of infants traveling. Example: 0
+     * @bodyParam classOfTravel string required The class of travel. Must be one of: `0`, `1`, `2`, `3` (e.g., economy, business). Example: 1
+     * @bodyParam airlineCode string Optional airline code for filtering flights. Example: AI
+     * @bodyParam Arrival string Optional arrival time filter. One of: `12AM6AM`, `6AM12PM`, `12PM6PM`, `6PM12AM`. Example: 12AM6AM
+     * @bodyParam Departure string Optional departure time filter. Example: 6AM12PM
+     * @bodyParam Refundable boolean Optional filter for refundable flights. Example: true
+     * @bodyParam Stops string Optional filter for the number of stops. One of: `0`, `1`, `2`. Example: 1
+     * @bodyParam Price integer Optional filter for maximum price. Example: 5000
+     * @bodyParam headersToken string required The secret token for the request header. Example: abc123
+     * @bodyParam headersKey string required The secret key for the request header. Example: xyz456
+     * 
+     * 
+     * 
+     * @response 422 {
+     *   "success": false,
+     *   "message": "The TYPE field is required."
+     * }
+    */
     public function SearchFlight(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -298,20 +332,6 @@ class DotMikController extends Controller
                         }
                     }
                 }
-                    // else if($data['Stops'] === "2")
-                    // {
-                    //     foreach ($Flights as $filteration) {        
-                    //         if(count($filteration['Segments']) > 1)
-                    //         {
-                    //             if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] != $data['tripInfo'][0]['destination']  && $filteration['Segments'][1]['Destination'] != $data['tripInfo'][0]['destination'])
-                    //             {
-                    //                 $Filtered[]=$filteration;
-                    //             }
-                    //         }        
-                    //     }
-                    //     $Flights=$Filtered;
-                    // }
-               
                 if (isset($data['Arrival'])) 
                 {        
                     $Filtered=[];
@@ -617,7 +637,7 @@ class DotMikController extends Controller
     }
 
    public function RePrice(Request $request)
-    {
+   {
         $validator = Validator::make($request->all(),[
             'SearchKey' => 'required|string',
             'FareID' => 'required|string',
@@ -776,7 +796,7 @@ class DotMikController extends Controller
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
-                        'launcherAmount' => $LauncherAmount,
+                        'launcherAmount' => ceil($LauncherAmount),
                         'data' => $result,
                     ], $statusCode);
                 } else {
@@ -795,7 +815,7 @@ class DotMikController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
-    }
+   }
 
     public function TemporaryBooking(Request $request)
     {
@@ -965,7 +985,6 @@ class DotMikController extends Controller
             ], 500);
         }        
     }
-
 
     public function CheckWallet(Request $request)
     {
@@ -1153,235 +1172,233 @@ class DotMikController extends Controller
     {
 
         $htmlCode = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Flight Ticket</title>
-    <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        h2, h3 {
-            text-align: center;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #e0e0e0;
-            padding: 15px;
-            text-align: left;
-        }
-        th {
-            background-color: #f7f7f7;
-            color: #555;
-            font-weight: bold;
-        }
-        td {
-            color: #333;
-        }
-        .info-section {
-            margin-bottom: 20px;
-        }
-        .fare-rules h4 {
-            margin-top: 0;
-            color: #555;
-        }
-        .fare-rules p {
-            font-size: 0.9em;
-            color: #777;
-        }
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: #4caf50;
-            color: white;
-            border-radius: 5px;
-            font-size: 0.85em;
-        }
-        .ticket-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        .ticket-header img {
-            height: 50px;
-        }
-    </style>
-</head>
-<body>
-<div class='container'>
-    <div class='ticket-header'>
-        <h2>Flight Ticket</h2>
-        <img src='https://via.placeholder.com/100x50?text=Logo' alt='Airline Logo'>
-    </div>";
+            <html lang='en'>
+            <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Flight Ticket</title>
+            <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
+            <style>
+                body {
+                    font-family: 'Roboto', sans-serif;
+                    background-color: #f0f2f5;
+                    margin: 0;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+                .container {
+                    max-width: 800px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                }
+                h2, h3 {
+                    text-align: center;
+                    color: #333;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                table, th, td {
+                    border: 1px solid #e0e0e0;
+                    padding: 15px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f7f7f7;
+                    color: #555;
+                    font-weight: bold;
+                }
+                td {
+                    color: #333;
+                }
+                .info-section {
+                    margin-bottom: 20px;
+                }
+                .fare-rules h4 {
+                    margin-top: 0;
+                    color: #555;
+                }
+                .fare-rules p {
+                    font-size: 0.9em;
+                    color: #777;
+                }
+                .badge {
+                    display: inline-block;
+                    padding: 5px 10px;
+                    background-color: #4caf50;
+                    color: white;
+                    border-radius: 5px;
+                    font-size: 0.85em;
+                }
+                .ticket-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 2px solid #e0e0e0;
+                }
+                .ticket-header img {
+                    height: 50px;
+                }
+            </style>
+        </head>
+        <body>
+        <div class='container'>
+            <div class='ticket-header'>
+                <h2>Flight Ticket</h2>
+                <img src='https://via.placeholder.com/100x50?text=Logo' alt='Airline Logo'>
+            </div>";
 
-    foreach ($Segment as $Seg) {
-        $htmlCode .= "<div class='info-section'>
+            foreach ($Segment as $Seg) {
+                $htmlCode .= "<div class='info-section'>
+                    <table>
+                        <tr>
+                            <th>Flight</th>
+                            <td>{$Seg['Airline_Code']}-{$Seg['Flight_Number']}</td>
+                            <th>Class</th>
+                            <td>{$flight_type}</td>
+                        </tr>
+                        <tr>
+                            <th>Aircraft Type</th>
+                            <td>Airbus A{$Seg['Aircraft_Type']}</td>
+                        </tr>
+                    </table>
+                    <table>
+                        <tr>
+                            <th>Depart</th>
+                            <td>{$Seg['Origin_City']} ({$Seg['Origin']}) - {$Seg['Departure_DateTime']}, Terminal {$Seg['Origin_Terminal']}</td>
+                            <th>Arrive</th>
+                            <td>{$Seg['Destination_City']} ({$Seg['Destination']}) - {$Seg['Arrival_DateTime']}, Terminal {$Seg['Destination_Terminal']}</td>
+                        </tr>
+                        <tr>
+                            <th>Duration/Stops</th>
+                            <td>{$Seg['Duration']}</td>
+                            <th>Status</th>
+                            <td><span class='badge'>Confirmed</span></td>
+                        </tr>
+                        <tr>
+                            <th>Cabin</th>
+                            <td>{$Cabin}</td>
+                            <th>Check-In</th>
+                            <td>{$CheckIn}</td>
+                        </tr>
+                    </table>
+                </div>";
+            }
+
+            $htmlCode .= "<h3>Passenger Details</h3>
+            <div class='info-section'>
+                <table>
+                    <tr>
+                        <th>Phone</th>
+                        <td>{$Contact}</td>
+                        <th>Email</th>
+                        <td>{$Email}</td>
+                    </tr>";
+
+        foreach ($paxDetails as $pax) {
+            $gen = $pax['Gender'] === 0 ? "Male" : "Female";
+            $htmlCode .= "<tr>
+                        <th>Ticket No.</th>
+                        <td>{$pax['TicketDetails'][0]['Ticket_Number']}</td>
+                        <th>Name</th>
+                        <td>{$pax['First_Name']} {$pax['Last_Name']}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>{$gen}</td>
+                    </tr>";
+        }
+
+        $htmlCode .= "</table>
+            </div>
+            <h3>Payment Details</h3>
+            <div class='info-section'>
+                <table>
+                    <tr>
+                        <th>Base Fare</th>
+                        <td>INR {$BaseFare}</td>
+                    </tr>
+                    <tr>
+                        <th>Taxes and Fees</th>
+                        <td>INR {$Tax}</td>
+                    </tr>
+                    <tr>
+                        <th>Gross Fare</th>
+                        <td>INR {$TotalAmount}</td>
+                    </tr>
+                </table>
+            </div>
+            <h3>Fare Rule - Onward Journey</h3>
+            <div class='fare-rules'>
+                <h4>Cancellation Charges Per Pax</h4>
+                <table>
+                    <tr>
+                        <th>Timeline</th>
+                        <th>Penalty (Airline Fee)</th>
+                    </tr>";
+
+        foreach ($CancelArray as $cancel) {
+            $htmlCode .= "<tr>
+                            <td>{$cancel['DurationFrom']} - {$cancel['DurationTo']}</td>
+                            <td>" . ($cancel['value'] === 'Non Refundable' ? $cancel['value'] : 'INR ' . $cancel['value']) . "</td>
+                        </tr>";
+        }
+
+        $htmlCode .= "</table>
+            <h4>Reschedule Charges Per Pax</h4>
             <table>
                 <tr>
-                    <th>Flight</th>
-                    <td>{$Seg['Airline_Code']}-{$Seg['Flight_Number']}</td>
-                    <th>Class</th>
-                    <td>{$flight_type}</td>
-                </tr>
-                <tr>
-                    <th>Aircraft Type</th>
-                    <td>Airbus A{$Seg['Aircraft_Type']}</td>
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    <th>Depart</th>
-                    <td>{$Seg['Origin_City']} ({$Seg['Origin']}) - {$Seg['Departure_DateTime']}, Terminal {$Seg['Origin_Terminal']}</td>
-                    <th>Arrive</th>
-                    <td>{$Seg['Destination_City']} ({$Seg['Destination']}) - {$Seg['Arrival_DateTime']}, Terminal {$Seg['Destination_Terminal']}</td>
-                </tr>
-                <tr>
-                    <th>Duration/Stops</th>
-                    <td>{$Seg['Duration']}</td>
-                    <th>Status</th>
-                    <td><span class='badge'>Confirmed</span></td>
-                </tr>
-                <tr>
-                    <th>Cabin</th>
-                    <td>{$Cabin}</td>
-                    <th>Check-In</th>
-                    <td>{$CheckIn}</td>
-                </tr>
-            </table>
-        </div>";
-    }
+                    <th>Timeline</th>
+                    <th>Penalty (Airline Fee)</th>
+                </tr>";
 
-    $htmlCode .= "<h3>Passenger Details</h3>
-    <div class='info-section'>
-        <table>
-            <tr>
-                <th>Phone</th>
-                <td>{$Contact}</td>
-                <th>Email</th>
-                <td>{$Email}</td>
-            </tr>";
+        foreach ($RescheduleChargesArray as $charges) {
+            $htmlCode .= "<tr>
+                            <td>{$charges['DurationFrom']} - {$charges['DurationTo']}</td>
+                            <td>" . ($charges['value'] === 'Non Refundable' ? $charges['value'] : 'INR ' . $charges['value'] . ' + Difference in Fare') . "</td>
+                        </tr>";
+        }
 
-foreach ($paxDetails as $pax) {
-    $gen = $pax['Gender'] === 0 ? "Male" : "Female";
-    $htmlCode .= "<tr>
-                <th>Ticket No.</th>
-                <td>{$pax['TicketDetails'][0]['Ticket_Number']}</td>
-                <th>Name</th>
-                <td>{$pax['First_Name']} {$pax['Last_Name']}</td>
-            </tr>
-            <tr>
-                <th>Gender</th>
-                <td>{$gen}</td>
-            </tr>";
-}
-
-$htmlCode .= "</table>
-    </div>
-    <h3>Payment Details</h3>
-    <div class='info-section'>
-        <table>
-            <tr>
-                <th>Base Fare</th>
-                <td>INR {$BaseFare}</td>
-            </tr>
-            <tr>
-                <th>Taxes and Fees</th>
-                <td>INR {$Tax}</td>
-            </tr>
-            <tr>
-                <th>Gross Fare</th>
-                <td>INR {$TotalAmount}</td>
-            </tr>
-        </table>
-    </div>
-    <h3>Fare Rule - Onward Journey</h3>
-    <div class='fare-rules'>
-        <h4>Cancellation Charges Per Pax</h4>
-        <table>
-            <tr>
-                <th>Timeline</th>
-                <th>Penalty (Airline Fee)</th>
-            </tr>";
-
-foreach ($CancelArray as $cancel) {
-    $htmlCode .= "<tr>
-                    <td>{$cancel['DurationFrom']} - {$cancel['DurationTo']}</td>
-                    <td>" . ($cancel['value'] === 'Non Refundable' ? $cancel['value'] : 'INR ' . $cancel['value']) . "</td>
-                  </tr>";
-}
-
-$htmlCode .= "</table>
-    <h4>Reschedule Charges Per Pax</h4>
-    <table>
-        <tr>
-            <th>Timeline</th>
-            <th>Penalty (Airline Fee)</th>
-        </tr>";
-
-foreach ($RescheduleChargesArray as $charges) {
-    $htmlCode .= "<tr>
-                    <td>{$charges['DurationFrom']} - {$charges['DurationTo']}</td>
-                    <td>" . ($charges['value'] === 'Non Refundable' ? $charges['value'] : 'INR ' . $charges['value'] . ' + Difference in Fare') . "</td>
-                  </tr>";
-}
-
-$htmlCode .= "</table>
-    <p>
-        The above timeframe mentioned is the time till which cancellation/reschedule is permitted from the Airline side, and can be canceled by you when performing an online cancellation/reschedule. For any offline cancellation (to be done from our support office), we will need at least 6 hrs of buffer time to process the cancellation/reschedule offline.
-    </p>
-    <p>
-        The above fare rules are just a guideline for your convenience and are subject to changes by the Airline from time to time. The agent does not guarantee the accuracy of cancel/rescheduling fees.
-    </p>
-</div>
-</div>
-</body>
-</html>";
+        $htmlCode .= "</table>
+            <p>
+                The above timeframe mentioned is the time till which cancellation/reschedule is permitted from the Airline side, and can be canceled by you when performing an online cancellation/reschedule. For any offline cancellation (to be done from our support office), we will need at least 6 hrs of buffer time to process the cancellation/reschedule offline.
+            </p>
+            <p>
+                The above fare rules are just a guideline for your convenience and are subject to changes by the Airline from time to time. The agent does not guarantee the accuracy of cancel/rescheduling fees.
+            </p>
+        </div>
+        </div>
+        </body>
+        </html>";
 
 
-        
-    $directoryPath = storage_path('app/public/tickets');
-    $fileName = 'ticket-' . uniqid() . '.pdf';
-    $filePath = $directoryPath . '/' . $fileName;
+            
+        $directoryPath = storage_path('app/public/tickets');
+        $fileName = 'ticket-' . uniqid() . '.pdf';
+        $filePath = $directoryPath . '/' . $fileName;
 
-    // Check if the directory exists, if not, create it
-    if (!file_exists($directoryPath)) {
-        mkdir($directoryPath, 0755, true); // Create directory with appropriate permissions
-    }
+        // Check if the directory exists, if not, create it
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0755, true); // Create directory with appropriate permissions
+        }
 
-    // Load HTML into PDF and save it to the specified path
-    $pdf = Pdf::loadHTML($htmlCode);
+        // Load HTML into PDF and save it to the specified path
+        $pdf = Pdf::loadHTML($htmlCode);
 
-    // return response()->json($pdf);
-    $pdf->save($filePath);
+        // return response()->json($pdf);
+        $pdf->save($filePath);
 
-    // Return the saved file path
-    return 'tickets/' . $fileName; 
-
-
+        // Return the saved file path
+        return 'tickets/' . $fileName; 
 }
 
 public function RePrintTicket(Request $request)
@@ -1602,17 +1619,17 @@ public function RePrintTicket(Request $request)
 public function Cancellation(Request $request)
 {
     $validator = Validator::make($request->all(),[
-        'headersToken' => 'required|string',
-        'headersKey' => 'required|string',
+        "headersToken" => 'required|string',
+        "headersKey" => 'required|string',
         "bookingRef" => "required|string", 
         "pnr" => "required|string",
-        "FlightId" => "required|string",
-        "PassengerId" => "required|string",
-        "SegmentId" => "required|string",
+        "ticketCancelDetails" => "required|array",
+        "ticketCancelDetails.*.FlightId" => "required|string",
+        "ticketCancelDetails.*.PassengerId" => "required|string",
+        "ticketCancelDetails.*.SegmentId" => "required|string",
         "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
         "cancelCode" => "required|string",
         "remark" => "required|string"
-            
     ]);     
     
     if ($validator->fails()) {
@@ -1636,21 +1653,16 @@ public function Cancellation(Request $request)
             "ip"=> "122.161.52.233",
             "imeiNumber" => "12384659878976879887"
         ],
-        "ticketCancelDetails" => [
-            [
-                "FlightId" => $data['FlightId'],
-                "PassengerId" => $data["PassengerId"],
-                "SegmentId" => $data["SegmentId"]
-            ]
-        ],
+        "ticketCancelDetails" => $data['ticketCancelDetails'],
         "pnr" => $data["pnr"],
         "bookingRef" => $data["bookingRef"],
         "cancelType" => $data["cancelType"], //0-Normal Cancel, 1-Full Refund, 2-No Show
         "cancelCode" => $data["cancelCode"],
         "remark" => $data["remark"]
-        
     ];
-    
+
+    // return response()->json($payload,200);
+
     // Headers
     $headers = [
         'D-SECRET-TOKEN' => $data['headersToken'] ?? '', // Use null coalescing to avoid issues
@@ -1679,6 +1691,14 @@ public function Cancellation(Request $request)
         else{
             if($response->successful())
             {
+                $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
+                if($History)
+                {
+                    $History->update([
+                        'Status' => 'CANCELLED'
+                    ]);
+                }
+
                 return response()->json([
                     'success' => true,
                     'data' => $result,
