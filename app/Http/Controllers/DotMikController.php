@@ -1680,37 +1680,38 @@ public function Cancellation(Request $request)
         $result=$response->json();
         $statusCode = $response->status();
 
-        if($result['status'] === false)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-                'error' => $result
-            ],$statusCode);
-        }
-        else{
-            if($response->successful())
-            {
-                $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
-                if($History)
-                {
-                    $History->update([
-                        'Status' => 'CANCELLED'
-                    ]);
-                }
+        // if($result['status'] === false)
+        // {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $result['message'],
+        //         'error' => $result
+        //     ],$statusCode);
+        // }
+        // else{
+        //     if($response->successful())
+        //     {
+                // $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
+                // if($History)
+                // {
+                //     $History->update([
+                //         'Status' => 'CANCELLED'
+                //     ]);
+                // }
 
-                return response()->json([
+              return response()->json([
                     'success' => true,
+                    'message' => $result['message'],
                     'data' => $result,
                 ], $statusCode);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => $result['message'],
-                    'error' => $result
-                ],$statusCode);
-            }
-        }
+            // } else {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => $result['message'],
+            //         'error' => $result
+            //     ],$statusCode);
+            // }
+        // }
         //code...
     } catch  (\Exception $e) {
         // Handle exception (e.g. network issues)
