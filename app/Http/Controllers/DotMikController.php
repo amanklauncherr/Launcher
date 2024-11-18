@@ -1665,8 +1665,8 @@ public function Cancellation(Request $request)
 
     // Headers
     $headers = [
-        'D-SECRET-TOKEN' => $data['headersToken'] ?? '', // Use null coalescing to avoid issues
-        'D-SECRET-KEY' => $data['headersKey'] ?? '', // Same for the key
+        'D-SECRET-TOKEN' => $data['headersToken'], 
+        'D-SECRET-KEY' => $data['headersKey'] ,
         'CROP-CODE' => 'DOTMIK160614',
         'Content-Type' => 'application/json',
     ];
@@ -1716,7 +1716,10 @@ public function Cancellation(Request $request)
         // Handle exception (e.g. network issues)
         return response()->json([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
         ], 500);
     }   
 }
