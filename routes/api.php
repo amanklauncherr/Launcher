@@ -189,7 +189,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
    
     Route::get('/get/Order/User',[OrderIDCreationController::class,'GetOrderUser']);
 
-    Route::get('/Update/Order/Status',[OrderIDCreationController::class,'UpdateOrderStatus']);
+    Route::post('/Update/Order/Status',[OrderIDCreationController::class,'UpdateOrderStatus']);
 
 });
 
