@@ -1624,9 +1624,9 @@ public function Cancellation(Request $request)
         "bookingRef" => "required|string", 
         "pnr" => "required|string",
         "ticketCancelDetails" => "required|array",
-        "ticketCancelDetails.*.FlightId" => "required|string",
-        "ticketCancelDetails.*.PassengerId" => "required|string",
-        "ticketCancelDetails.*.SegmentId" => "required|string",
+        "ticketCancelDetails.*.flightId" => "required|string",
+        "ticketCancelDetails.*.passengerId" => "required|string",
+        "ticketCancelDetails.*.segmentId" => "required|string",
         "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
         "cancelCode" => "required|string",
         "remark" => "required|string"
@@ -1653,7 +1653,7 @@ public function Cancellation(Request $request)
             "ip"=> "122.161.52.233",
             "imeiNumber" => "12384659878976879887"
         ],
-        "ticketCancelDetails" => $data['ticketCancelDetails'],
+        "ticketCancelDetails" => $data["ticketCancelDetails"],
         "pnr" => $data["pnr"],
         "bookingRef" => $data["bookingRef"],
         "cancelType" => $data["cancelType"], //0-Normal Cancel, 1-Full Refund, 2-No Show
