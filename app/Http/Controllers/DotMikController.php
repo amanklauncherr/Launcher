@@ -1701,7 +1701,7 @@ public function Cancellation(Request $request)
 
               return response()->json([
                     'success' => true,
-                    'message' => $result['message'],
+                    // 'message' => $result['message'],
                     'data' => $result,
                 ], $statusCode);
             // } else {
