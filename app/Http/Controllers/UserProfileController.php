@@ -448,7 +448,7 @@ class UserProfileController extends Controller
                 'user_State' => $userProfile ? 'nullable|string' : 'required|string',
                 'user_Country' => $userProfile ? 'nullable|string' : 'required|string',
                 'user_PinCode' => $userProfile ? 'nullable|string' : 'required|string',
-                'user_AboutMe' => $userProfile ? 'nullable|string' :'required|string',
+                'user_AboutMe' => 'nullable|string',
             ]);
         
             if ($validator->fails()) {
@@ -463,13 +463,15 @@ class UserProfileController extends Controller
                 // $user = Auth::user();
                 $profile = $request->only(['user_Number', 'user_Address', 'user_City', 'user_State', 'user_Country', 'user_PinCode', 'user_AboutMe']);             
                 
+                
+                
                 if($userProfile)
                 {
                     // $user->name = $request->user_Name;
                     // $user->last_name = $re
                     $userProfile->update($profile);
-                    $user->save();                    
-
+                    // $user->save();   
+                    
                     return response()->json([
                         'success'=> 1,
                         'message' => 'Profile updated successfully',
@@ -479,7 +481,12 @@ class UserProfileController extends Controller
                 }
                 else{
 
-                    $userProfile = UserProfile::create([
+                    if(!isset($profile['user_AboutMe']))
+                    {
+                    $profile['user_AboutMe'] = 'About Me';
+                    }
+
+                    $Profile = UserProfile::create([
                         'user_id' => $user->id,
                         'user_Number' => $profile['user_Number'],
                         'user_Address' => $profile['user_Address'],
@@ -496,7 +503,7 @@ class UserProfileController extends Controller
                         'isProfile' => true
                     ]);
 
-                    return response()->json(['success'=>1, 'message' => 'Profile created successfully', 'profile' => $userProfile], 201);
+                    return response()->json(['success'=>1, 'message' => 'Profile created successfully', 'profile' => $Profile], 201);
                 }
     
             } catch (\Exception $e) {
