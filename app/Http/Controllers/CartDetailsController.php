@@ -175,9 +175,9 @@ class CartDetailsController extends Controller
             }
     
             $total=$totalCart->sum('price');
-            $gstAmount = $total * 0.18;
-            $gstAmount=$gstAmount;
-            $grand=$total + $gstAmount;
+            // $gstAmount = $total * 0.18;
+            // $gstAmount=$gstAmount;
+            // $grand=$total + $gstAmount;
     
             $products = $totalCart->map(function($product) {
                 $productArray = $product->toArray();
@@ -193,8 +193,8 @@ class CartDetailsController extends Controller
                 'success' => 1,
                 'products'=>$products,
                 'subTotal'=>$total,
-                'gstAmt' => $gstAmount,
-                'grand_Total'=>ceil($grand)
+                // 'gstAmt' => $gstAmount,
+                // 'grand_Total'=>ceil($grand)
             ],200);
             
         }
