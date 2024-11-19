@@ -962,7 +962,7 @@ class DotMikController extends Controller
             } else {
                 if ($response->successful()) {
                     TravelHistory::create([
-                        'userID' => Auth::guard('api')->id(),
+                        'user_id' => Auth::guard('api')->id(),
                         'BookingType' => 'FLIGHT',
                         'BookingRef' => $result['payloads']['data']['bookingRef'],
                     ]);
