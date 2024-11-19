@@ -104,7 +104,7 @@
             <h3>Payment Summary</h3>
             <table>
                 <tr>
-                    <th>Subtotal</th>
+                    <th>Total Amount</th>
                     <td>{{ number_format($OrderDetails['subTotal'], 2) }}</td>
                 </tr>
                 {{-- <tr>
