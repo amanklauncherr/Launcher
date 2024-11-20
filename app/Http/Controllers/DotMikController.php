@@ -1676,7 +1676,7 @@ public function Cancellation(Request $request)
 
     try {
         // Make the POST request using Laravel HTTP Client
-        $response = Http::withHeaders($headers)->post($url, $payload);
+        $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
         $result = $response->json();
         $statusCode = $response->status();
 
