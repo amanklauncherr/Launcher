@@ -253,7 +253,7 @@ class OrderIDCreationController extends Controller
                         "first_name" => $OrderDetails['shipping']['firstName'],
                         "last_name" => $OrderDetails['shipping']['lastName'],
                         "address_1" => $OrderDetails['shipping']['address1'] ,
-                        "address_2" => $OrderDetails['shiping']['address2'] ,
+                        "address_2" => $OrderDetails['shipping']['address2'] ,
                         "city" => $OrderDetails['shipping']['city'] ,
                         "state" => $OrderDetails['shipping']['state'] ,
                         "postcode" => $OrderDetails['shipping']['postcode'] ,
