@@ -185,14 +185,16 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     Route::get('/Bus/Travel/History',[TravelHistoryController::class,'GetBusTravelHistory']);
 
+
+    // Order
     Route::post('/OrderID',[OrderIDCreationController::class,'AddOrderID']);
    
     Route::get('/get/Order/User',[OrderIDCreationController::class,'GetOrderUser']);
 
     Route::post('/Update/Order/Status',[OrderIDCreationController::class,'UpdateOrderStatus']);
 
-    // Flight 
 
+    // Flight 
     Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
 
     Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
@@ -212,7 +214,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 });
 
-Route::get('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
+Route::post('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
 Route::get('/Get/All/Orders',[OrderIDCreationController::class,'GetAllOrders']);
 
