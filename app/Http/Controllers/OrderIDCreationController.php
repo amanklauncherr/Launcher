@@ -220,6 +220,7 @@ class OrderIDCreationController extends Controller
 
             // Send email for successful payment
             if ($data['OrderStatus'] === 'PaymentSuccess') {
+
                 Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));
 
                 // Create WooCommerce order via cURL
@@ -235,18 +236,20 @@ class OrderIDCreationController extends Controller
                     "payment_method" => "cod",
                     "payment_method_title" => "Cash on Delivery",
                     "set_paid" => true,
-                    "billing" => $OrderDetails['billing'],
-                    // [
-                    //     "first_name" => $OrderDetails['billing']['first_name'] ?? 'John',
-                    //     "last_name" => $OrderDetails['billing']['last_name'] ?? 'Doe',
-                    //     "address_1" => $OrderDetails['billing']['address_1'] ?? '123 Main St',
-                    //     "city" => $OrderDetails['billing']['city'] ?? 'Los Angeles',
-                    //     "state" => $OrderDetails['billing']['state'] ?? 'CA',
-                    //     "postcode" => $OrderDetails['billing']['postcode'] ?? '90001',
-                    //     "country" => $OrderDetails['billing']['country'] ?? 'US',
-                    //     "email" => $user->email,
-                    //     "phone" => $OrderDetails['billing']['phone'] ?? '1234567890'
-                    // ],
+                    "billing" =>[
+                        "first_name" => $OrderDetails['billing']['first_name'],
+                        "last_name" => $OrderDetails['billing']['last_name'],
+                        "address_1" => $OrderDetails['billing']['address_1'] ,
+                        "city" => $OrderDetails['billing']['city'] ,
+                        "state" => $OrderDetails['billing']['state'] ,
+                        "postcode" => $OrderDetails['billing']['postcode'] ,
+                        "country" => $OrderDetails['billing']['country'],
+                        "email" =>  $OrderDetails['billing']['email'],
+                        "phone" => (string) $OrderDetails['billing']['phone'] 
+                    ],  
+ 
+                    // $OrderDetails['billing'],
+ 
                     "shipping" => $OrderDetails['shipping'] ?? [],
                     "line_items" => array_map(function ($product) {
                         return [
