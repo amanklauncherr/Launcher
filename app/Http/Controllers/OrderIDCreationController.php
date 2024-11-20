@@ -212,8 +212,6 @@ class OrderIDCreationController extends Controller
             }
 
             // Update the order status
-            $order->update(['Status' => $data['OrderStatus']]);
-
             $user = Auth()->guard('api')->user();
             $OrderDetails = json_decode($order->OrderDetails, true);
 
@@ -240,6 +238,7 @@ class OrderIDCreationController extends Controller
                         "first_name" => $OrderDetails['billing']['firstName'],
                         "last_name" => $OrderDetails['billing']['lastName'],
                         "address_1" => $OrderDetails['billing']['address1'] ,
+                        // "address_2" => $OrderDetails['billing']['address2'] ,
                         "city" => $OrderDetails['billing']['city'] ,
                         "state" => $OrderDetails['billing']['state'] ,
                         "postcode" => $OrderDetails['billing']['postcode'] ,
@@ -250,7 +249,18 @@ class OrderIDCreationController extends Controller
  
                     // $OrderDetails['billing'],
  
-                    "shipping" => $OrderDetails['shipping'] ?? [],
+                    "shipping" => [
+                        "first_name" => $OrderDetails['shipping']['firstName'],
+                        "last_name" => $OrderDetails['shipping']['lastName'],
+                        "address_1" => $OrderDetails['shipping']['address1'] ,
+                        "address_2" => $OrderDetails['shiping']['address2'] ,
+                        "city" => $OrderDetails['shipping']['city'] ,
+                        "state" => $OrderDetails['shipping']['state'] ,
+                        "postcode" => $OrderDetails['shipping']['postcode'] ,
+                        "country" => 'India',
+                        // "email" =>  $OrderDetails['shipping']['email'],
+                        "phone" => (string) $OrderDetails['shipping']['phone'] 
+                    ] ,
                     "line_items" => array_map(function ($product) {
                         return [
                             "product_id" => $product['product_id'],
@@ -266,49 +276,32 @@ class OrderIDCreationController extends Controller
                     ]
                 ];
 
-                // // Use cURL to send WooCommerce API request
-                // $ch = curl_init($url);
-                // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                // curl_setopt($ch, CURLOPT_POST, true);
-                // curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($wooCommercePayload));
-                // curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                //     'Content-Type: application/json',
-                //     'Authorization: Basic ' . base64_encode("$consumer_key:$consumer_secret"),
-                // ]);
+                // Define headers for the request
+                $headers = [
+                    'Authorization' => 'Basic ' . base64_encode("$consumer_key:$consumer_secret"),
+                    'Content-Type' => 'application/json',
+                ];
 
-                // $response = curl_exec($ch);
+                // Send the WooCommerce API request using Laravel's Http client
+                $response = Http::withHeaders($headers)->timeout(60)->post($url, $wooCommercePayload);
 
-                // if (curl_errno($ch)) {
-                //     return response()->json([
-                //         'success' => 0,
-                //         'message' => 'WooCommerce API error: ' . curl_error($ch),
-                //     ], 500);
-                // }
+                // Check for API response errors
+                if ($response->failed()) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'WooCommerce API error: ' . $response->body(),
+                    ], 500);
+                }
+                // Get the response in JSON format
+                $result = $response->json();
 
-                // curl_close($ch);
-
-            // Define headers for the request
-            $headers = [
-                'Authorization' => 'Basic ' . base64_encode("$consumer_key:$consumer_secret"),
-                'Content-Type' => 'application/json',
-            ];
-
-            // Send the WooCommerce API request using Laravel's Http client
-            $response = Http::withHeaders($headers)->timeout(60)->post($url, $wooCommercePayload);
-
-            // Check for API response errors
-            if ($response->failed()) {
-                return response()->json([
-                    'success' => 0,
-                    'message' => 'WooCommerce API error: ' . $response->body(),
-                ], 500);
-            }
-
-            // Get the response in JSON format
-            $result = $response->json();
-
+                $order->update(
+                    [
+                        'Status' => $data['OrderStatus'],
+                        'WooCommerceID' => $result['id'],
+                    ]
+                );
         }
-
             return response()->json([
                 'success' => 1,
                 'message' => 'Status Updated and WooCommerce order created successfully',
@@ -322,6 +315,7 @@ class OrderIDCreationController extends Controller
         ], 500);
     }
 }
+
 
 
 
