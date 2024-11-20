@@ -126,64 +126,6 @@ class OrderIDCreationController extends Controller
      * 
      */
 
-    // public function UpdateOrderStatus(Request $request)
-    // {
-    //     $validator=Validator::make($request->all(),[
-    //         'OrderID' => 'required|string',
-    //         'OrderStatus' => 'required|string|in:PaymentSuccess',     
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         $error = $validator->errors()->first(); // Get all error messages
-    //         return response()->json([
-    //             'success' => 0,
-    //             'error' => $error
-    //         ], 422);
-    //     }
-
-    //     try {
-    //         //code...
-    //         $data=$validator->validated();
-    //         $order = OrderIDCreation::where('OrderID',$data['OrderID'])->first();
-
-    //         if(!$order)
-    //         {
-    //             return response()->json([
-    //                 'success' => 0,
-    //                 'message' => 'No Order Found',
-    //             ], 400);
-    //         }            
-    //         $order->update([
-    //             'Status' => $data['OrderStatus']
-    //         ]);
-
-
-
-    //         $user=Auth()->guard('api')->user();
-
-    //         $OrderDetails=json_decode($order->OrderDetails,true);
-
-    //         // return response()->json($OrderDetails);
-
-    //         if($data['OrderStatus'] === 'PaymentSuccess')
-    //         {
-    //          Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));               
-    //         }
-       
-
-    //         return response()->json([
-    //             'success' => 1,
-    //             'message' => 'Status Updated'
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => 0,
-    //             'message' => 'An error occurred Update Order Status',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
-
     public function UpdateOrderStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -392,10 +334,9 @@ class OrderIDCreationController extends Controller
 
                 return response()->json([
                     'success' => 1,
-                    'message' => 'Order Cancelled',
+                    'message' => 'Order Cancelled Successfully',
                     'result' => $result
                 ], 200);
-
 
         } catch (\Exception $e) {
             return response()->json([
