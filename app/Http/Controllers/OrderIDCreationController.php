@@ -237,13 +237,13 @@ class OrderIDCreationController extends Controller
                     "payment_method_title" => "Cash on Delivery",
                     "set_paid" => true,
                     "billing" =>[
-                        "first_name" => $OrderDetails['billing']['first_name'],
-                        "last_name" => $OrderDetails['billing']['last_name'],
-                        "address_1" => $OrderDetails['billing']['address_1'] ,
+                        "first_name" => $OrderDetails['billing']['firstName'],
+                        "last_name" => $OrderDetails['billing']['lastName'],
+                        "address_1" => $OrderDetails['billing']['address1'] ,
                         "city" => $OrderDetails['billing']['city'] ,
                         "state" => $OrderDetails['billing']['state'] ,
                         "postcode" => $OrderDetails['billing']['postcode'] ,
-                        "country" => $OrderDetails['billing']['country'],
+                        "country" => 'India',
                         "email" =>  $OrderDetails['billing']['email'],
                         "phone" => (string) $OrderDetails['billing']['phone'] 
                     ],  
