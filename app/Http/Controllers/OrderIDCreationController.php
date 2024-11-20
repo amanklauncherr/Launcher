@@ -318,6 +318,95 @@ class OrderIDCreationController extends Controller
 
 
 
+  public function CancelOrder(Request $request)
+  {
+
+    $orderID = $request->input('OrderID');
+
+    if(!$orderID)
+    {
+        return response()->json([
+            'success' => 0,
+            'message' => 'Please Provide Order ID',
+        ], 400);
+    }
+
+    try {
+        // Fetch the order
+        $order = OrderIDCreation::where('OrderID', $orderID)->first();
+
+        if (!$order) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'No Order Found',
+            ], 400);
+        }
+
+        // Update the order status
+        // $user = Auth()->guard('api')->user();
+
+
+// WooCommerce REST API credentials
+            // Create WooCommerce order via cURL
+            $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
+            $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
+            $store_url = 'https://ecom.launcherr.co';
+
+            // WooCommerce API endpoint
+            $url = $store_url . '/wp-json/wc/v3/orders';
+
+            $order_id = $order['WooCommerceID']; // Replace with your order ID
+
+            // API Endpoint
+            $url = $store_url . "/wp-json/wc/v3/orders/$order_id";
+
+            // Data for cancelling the order
+            $data = [
+                'status' => 'cancelled',
+            ];
+
+            // Define headers for the request
+            $headers = [
+                'Authorization' => 'Basic ' . base64_encode("$consumer_key:$consumer_secret"),
+                'Content-Type' => 'application/json',
+            ];
+
+            // Send the WooCommerce API request using Laravel's Http client
+            $response = Http::withHeaders($headers)->timeout(60)->post($url, $data);
+
+                // Check for API response errors
+                if ($response->failed()) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'WooCommerce API error: ' . $response->body(),
+                    ], 500);
+                }
+                // Get the response in JSON format
+                $result = $response->json();
+
+                $order->update(
+                    [
+                        'Status' => 'OrderCancelled',
+                    ]
+                );
+
+                return response()->json([
+                    'success' => 1,
+                    'message' => 'Order Cancelled',
+                    'result' => $result
+                ], 200);
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'An error occurred while updating order status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+  }
+
 
     /**
      * @group Order
