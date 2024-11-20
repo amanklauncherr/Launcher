@@ -13,6 +13,7 @@ class OrderIDCreation extends Model
         'user_id',
         'OrderDetails',
         'OrderID',
-        'Status'
+        'Status',
+        'WooCommerceID'
     ];
 }
