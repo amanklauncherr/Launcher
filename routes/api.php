@@ -193,6 +193,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     Route::post('/Update/Order/Status',[OrderIDCreationController::class,'UpdateOrderStatus']);
 
+    Route::post('/Cancel/OrderID',[OrderIDCreationController::class,'CancelOrder']);
 
     // Flight 
     Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
