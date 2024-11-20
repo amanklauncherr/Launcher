@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderDetailMail;
 use Illuminate\Http\Request;
 use App\Models\OrderIDCreation;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -78,7 +79,7 @@ class OrderIDCreationController extends Controller
                 'user_id' => Auth()->guard()->id(),
                 'OrderDetails' => json_encode($request->OrderDetails),
                 'OrderID' => $orderID,
-                'Status' => 'Order Created'
+                'Status' => 'PaymentPending'
             ]);
             return response()->json(['success' => 1, 'order' => $order], 201);
         } catch (\Exception $e) {
@@ -125,15 +126,73 @@ class OrderIDCreationController extends Controller
      * 
      */
 
+    // public function UpdateOrderStatus(Request $request)
+    // {
+    //     $validator=Validator::make($request->all(),[
+    //         'OrderID' => 'required|string',
+    //         'OrderStatus' => 'required|string|in:PaymentSuccess',     
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         $error = $validator->errors()->first(); // Get all error messages
+    //         return response()->json([
+    //             'success' => 0,
+    //             'error' => $error
+    //         ], 422);
+    //     }
+
+    //     try {
+    //         //code...
+    //         $data=$validator->validated();
+    //         $order = OrderIDCreation::where('OrderID',$data['OrderID'])->first();
+
+    //         if(!$order)
+    //         {
+    //             return response()->json([
+    //                 'success' => 0,
+    //                 'message' => 'No Order Found',
+    //             ], 400);
+    //         }            
+    //         $order->update([
+    //             'Status' => $data['OrderStatus']
+    //         ]);
+
+
+
+    //         $user=Auth()->guard('api')->user();
+
+    //         $OrderDetails=json_decode($order->OrderDetails,true);
+
+    //         // return response()->json($OrderDetails);
+
+    //         if($data['OrderStatus'] === 'PaymentSuccess')
+    //         {
+    //          Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));               
+    //         }
+       
+
+    //         return response()->json([
+    //             'success' => 1,
+    //             'message' => 'Status Updated'
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => 0,
+    //             'message' => 'An error occurred Update Order Status',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function UpdateOrderStatus(Request $request)
     {
-        $validator=Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'OrderID' => 'required|string',
-            'OrderStatus' => 'required|string',     
+            'OrderStatus' => 'required|string|in:PaymentSuccess',
         ]);
 
         if ($validator->fails()) {
-            $error = $validator->errors()->first(); // Get all error messages
+            $error = $validator->errors()->first();
             return response()->json([
                 'success' => 0,
                 'error' => $error
@@ -141,44 +200,126 @@ class OrderIDCreationController extends Controller
         }
 
         try {
-            //code...
-            $data=$validator->validated();
-            $order = OrderIDCreation::where('OrderID',$data['OrderID'])->first();
+            $data = $validator->validated();
 
-            if(!$order)
-            {
+            // Fetch the order
+            $order = OrderIDCreation::where('OrderID', $data['OrderID'])->first();
+            if (!$order) {
                 return response()->json([
                     'success' => 0,
                     'message' => 'No Order Found',
                 ], 400);
-            }            
-            $order->update([
-                'Status' => $data['OrderStatus']
-            ]);
-
-            $user=Auth()->guard('api')->user();
-
-            $OrderDetails=json_decode($order->OrderDetails,true);
-
-            // return response()->json($OrderDetails);
-
-            if($data['OrderStatus'] === 'PaymentSuccess')
-            {
-             Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));               
             }
-       
+
+            // Update the order status
+            $order->update(['Status' => $data['OrderStatus']]);
+
+            $user = Auth()->guard('api')->user();
+            $OrderDetails = json_decode($order->OrderDetails, true);
+
+
+            // Send email for successful payment
+            if ($data['OrderStatus'] === 'PaymentSuccess') {
+                Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));
+
+                // Create WooCommerce order via cURL
+                $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
+                $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
+                $store_url = 'https://ecom.launcherr.co';
+
+                // WooCommerce API endpoint
+                $url = $store_url . '/wp-json/wc/v3/orders';
+
+                // Prepare WooCommerce payload
+                $wooCommercePayload = [
+                    "payment_method" => "cod",
+                    "payment_method_title" => "Cash on Delivery",
+                    "set_paid" => true,
+                    "billing" => $OrderDetails['billing'],
+                    // [
+                    //     "first_name" => $OrderDetails['billing']['first_name'] ?? 'John',
+                    //     "last_name" => $OrderDetails['billing']['last_name'] ?? 'Doe',
+                    //     "address_1" => $OrderDetails['billing']['address_1'] ?? '123 Main St',
+                    //     "city" => $OrderDetails['billing']['city'] ?? 'Los Angeles',
+                    //     "state" => $OrderDetails['billing']['state'] ?? 'CA',
+                    //     "postcode" => $OrderDetails['billing']['postcode'] ?? '90001',
+                    //     "country" => $OrderDetails['billing']['country'] ?? 'US',
+                    //     "email" => $user->email,
+                    //     "phone" => $OrderDetails['billing']['phone'] ?? '1234567890'
+                    // ],
+                    "shipping" => $OrderDetails['shipping'] ?? [],
+                    "line_items" => array_map(function ($product) {
+                        return [
+                            "product_id" => $product['product_id'],
+                            "quantity" => $product['quantity']
+                        ];
+                    }, $OrderDetails['products'] ?? []),
+                    "shipping_lines" => [
+                        [
+                            "method_id" => "flat_rate",
+                            "method_title" => "Flat Rate",
+                            "total" => "10.00"
+                        ]
+                    ]
+                ];
+
+                // // Use cURL to send WooCommerce API request
+                // $ch = curl_init($url);
+                // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                // curl_setopt($ch, CURLOPT_POST, true);
+                // curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($wooCommercePayload));
+                // curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                //     'Content-Type: application/json',
+                //     'Authorization: Basic ' . base64_encode("$consumer_key:$consumer_secret"),
+                // ]);
+
+                // $response = curl_exec($ch);
+
+                // if (curl_errno($ch)) {
+                //     return response()->json([
+                //         'success' => 0,
+                //         'message' => 'WooCommerce API error: ' . curl_error($ch),
+                //     ], 500);
+                // }
+
+                // curl_close($ch);
+
+            // Define headers for the request
+            $headers = [
+                'Authorization' => 'Basic ' . base64_encode("$consumer_key:$consumer_secret"),
+                'Content-Type' => 'application/json',
+            ];
+
+            // Send the WooCommerce API request using Laravel's Http client
+            $response = Http::withHeaders($headers)->timeout(60)->post($url, $wooCommercePayload);
+
+            // Check for API response errors
+            if ($response->failed()) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'WooCommerce API error: ' . $response->body(),
+                ], 500);
+            }
+
+            // Get the response in JSON format
+            $result = $response->json();
+
+        }
+
             return response()->json([
                 'success' => 1,
-                'message' => 'Status Updated'
+                'message' => 'Status Updated and WooCommerce order created successfully',
+                'result' => $result
             ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => 0,
-                'message' => 'An error occurred Update Order Status',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => 0,
+            'message' => 'An error occurred while updating order status',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
 
 
     /**
