@@ -1625,9 +1625,9 @@ public function Cancellation(Request $request)
         "bookingRef" => "required|string", 
         "pnr" => "required|string",
         "ticketCancelDetails" => "required|array",
-        "ticketCancelDetails.*.flightId" => "required|string",
-        "ticketCancelDetails.*.passengerId" => "required|string",
-        "ticketCancelDetails.*.segmentId" => "required|string",
+        "ticketCancelDetails.*.FlightId" => "required|string",
+        "ticketCancelDetails.*.PassengerId" => "required|string",
+        "ticketCancelDetails.*.SegmentId" => "required|string",
         "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
         "cancelCode" => "required|string",
         "remark" => "required|string"
