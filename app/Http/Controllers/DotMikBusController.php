@@ -132,6 +132,8 @@ class DotMikBusController extends Controller
 
                     $uniqueBusName=array_values(array_unique(array_filter($BusName)));
 
+
+
                     if(isset($data['Arrival']) && isset($data['Departure']))
                     {
 
@@ -288,7 +290,6 @@ class DotMikBusController extends Controller
                         $filteredBus = array_filter($avaliableTrip,function($Trip) use($travel){
                             return $Trip['travels'] === $travel ;
                         });
-
                         $avaliableTrip=array_values($filteredBus);   
                     }
 
@@ -320,7 +321,7 @@ class DotMikBusController extends Controller
                         'count' => $count,
                         'status_code' => $status_code,
                         'request_id' =>$request_id,
-                        'uniqueBus' =>  $uniqueBusName,
+                        'uniqueBus' =>  sort($uniqueBusName),
                         'payloads' => $payloads,
                         'result' => $result,
                     ],$response->status());
