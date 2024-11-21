@@ -696,7 +696,7 @@ class DotMikBusController extends Controller
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
                 $History->update([
                     'PnrDetails' => [
-                        "pnr" => $result['payload']['transaction']['description']['pnr']
+                        "pnr" => $result['payloads']['transaction']['description']['pnr']
                     ],
                     'Status' => "BOOKED",
                 ]);
@@ -719,7 +719,8 @@ class DotMikBusController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'An error occurred',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
         ], 500);
     }   
    }
