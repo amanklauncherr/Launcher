@@ -132,6 +132,7 @@ class DotMikBusController extends Controller
 
                     $uniqueBusName=array_values(array_unique(array_filter($BusName)));
 
+                    $FinalBus=sort($uniqueBusName);
 
 
                     if(isset($data['Arrival']) && isset($data['Departure']))
@@ -320,8 +321,8 @@ class DotMikBusController extends Controller
                         'success' => true,
                         'count' => $count,
                         'status_code' => $status_code,
-                        'request_id' =>$request_id,
-                        'uniqueBus' =>  sort($uniqueBusName),
+                        'request_id' => $request_id,
+                        'uniqueBus' => $FinalBus,
                         'payloads' => $payloads,
                         'result' => $result,
                     ],$response->status());
