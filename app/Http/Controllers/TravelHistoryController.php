@@ -36,6 +36,7 @@ class TravelHistoryController extends Controller
                 'PnrDetails'=>json_decode($his->PnrDetails),
                 'PAXTicketDetails'=>json_decode($his->PAXTicketDetails),
                 'TravelDetails'=>json_decode($his->TravelDetails),
+                'Status' => $his->Status,
             ];
                 array_push($data,$obj);
         }
