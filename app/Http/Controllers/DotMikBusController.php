@@ -124,6 +124,12 @@ class DotMikBusController extends Controller
                 {
                     $avaliableTrip=$result['payloads']['data']['availableTrips'];
                     // return response()->json($avaliableTrip);
+                    // $Bus=$avaliableTrip['travels'];
+                    $BusName=array_map(function($travel){
+                        return $travel['travels'] ?? null;
+                    },$avaliableTrip);
+
+                    $uniqueBusName=array_values(array_unique(array_filter($BusName)));
 
                     if(isset($data['Arrival']) && isset($data['Departure']))
                     {
@@ -275,6 +281,7 @@ class DotMikBusController extends Controller
                         $avaliableTrip=array_values($filteredSleeper);
                     }
 
+
                     $data=$avaliableTrip;
 
                     $count = count($data);
@@ -302,6 +309,7 @@ class DotMikBusController extends Controller
                         'count' => $count,
                         'status_code' => $status_code,
                         'request_id' =>$request_id,
+                        'uniqueBus' =>  $uniqueBusName,
                         'payloads' => $payloads,
                         'result' => $result,
                     ],$response->status());
