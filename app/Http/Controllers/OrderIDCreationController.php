@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AdminCancelOrderMail;
+use App\Mail\AdminOrderMail;
 use App\Mail\OrderDetailMail;
+use App\Mail\UserCancelOrderMail;
 use Illuminate\Http\Request;
 use App\Models\OrderIDCreation;
 use Illuminate\Support\Facades\Http;
@@ -163,6 +166,10 @@ class OrderIDCreationController extends Controller
 
                 Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));
 
+                $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
+
+                Mail::to(env('ADMINMAIL'))->send(new AdminOrderMail($AdminText));
+
                 // Create WooCommerce order via cURL
                 $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
                 $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
@@ -173,8 +180,8 @@ class OrderIDCreationController extends Controller
 
                 // Prepare WooCommerce payload
                 $wooCommercePayload = [
-                    "payment_method" => "cod",
-                    "payment_method_title" => "Cash on Delivery",
+                    "payment_method" => "Online",
+                    "payment_method_title" => "Payment Online",
                     "set_paid" => true,
                     "billing" =>[
                         "first_name" => $OrderDetails['billing']['firstName'],
@@ -276,6 +283,7 @@ class OrderIDCreationController extends Controller
     try {
         // Fetch the order
         $order = OrderIDCreation::where('OrderID', $orderID)->first();
+        $user = Auth()->guard('api')->user();
 
         if (!$order) {
             return response()->json([
@@ -316,6 +324,7 @@ class OrderIDCreationController extends Controller
             // Send the WooCommerce API request using Laravel's Http client
             $response = Http::withHeaders($headers)->timeout(60)->post($url, $data);
 
+
                 // Check for API response errors
                 if ($response->failed()) {
                     return response()->json([
@@ -331,6 +340,10 @@ class OrderIDCreationController extends Controller
                         'Status' => 'OrderCancelled',
                     ]
                 );
+
+                $OrderCancel = "Order Cancelled. Order ID -: {$data['OrderID']}";
+                Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+                Mail::to(env('ADMINMAIL'))->send(new AdminCancelOrderMail($OrderCancel));
 
                 return response()->json([
                     'success' => 1,
