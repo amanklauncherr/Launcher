@@ -65,7 +65,8 @@ class DotMikBusController extends Controller
             "Seater" => "nullable|string",
             "Sleeper" => "nullable|string",
             "Arrival" => "nullable|string",
-            "Departure" => "nullable|string"
+            "Departure" => "nullable|string",
+            "BusName" => "nullable|string"
         ]);
         
         if($validator->fails())
@@ -280,6 +281,16 @@ class DotMikBusController extends Controller
 
                         $avaliableTrip=array_values($filteredSleeper);
                     }
+                    // BusName
+                    if(isset($data['BusName']))
+                    {
+                        $travel=$data['BusName'];
+                        $filteredBus = array_filter($avaliableTrip,function($Trip) use($travel){
+                            return $Trip['travels'] === $travel ;
+                        });
+
+                        $avaliableTrip=array_values($filteredBus);   
+                    }
 
 
                     $data=$avaliableTrip;
@@ -320,7 +331,7 @@ class DotMikBusController extends Controller
                         'error' => $response->json()
                     ], $response->status());
                 }
-            }
+            }       
             //code...
         } catch  (\Exception $e) {
             // Handle exception (e.g. network issues)
