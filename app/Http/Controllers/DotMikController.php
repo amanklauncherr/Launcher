@@ -965,6 +965,7 @@ class DotMikController extends Controller
                         'user_id' => Auth::guard('api')->id(),
                         'BookingType' => 'FLIGHT',
                         'BookingRef' => $result['payloads']['data']['bookingRef'],
+                        'Status' => 'TEMPBOOKED'
                     ]);
                     return response()->json([
                         'success' => true,
