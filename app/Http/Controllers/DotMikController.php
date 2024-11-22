@@ -1137,7 +1137,9 @@ class DotMikController extends Controller
             ];
         
             $ticketingResponse = Http::withHeaders($headers)->post($ticketingUrl, $payloadTicket);
+
             $ticketingResult = $ticketingResponse->json();
+
             $ticketingStatusCode = $ticketingResponse->status();
         
             if ($ticketingResponse->failed() || !isset($ticketingResult['status']) || !$ticketingResult['status']) {
@@ -1147,7 +1149,6 @@ class DotMikController extends Controller
                     'error' => $ticketingResult
                 ], $ticketingStatusCode);
             }
-           
             $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
             $History->update([
                 'PnrDetails' => $result['payloads']['data']['pnrDetails'],
@@ -1400,7 +1401,7 @@ class DotMikController extends Controller
 
         // Return the saved file path
         return 'tickets/' . $fileName; 
-}
+    }
 
 public function RePrintTicket(Request $request)
 {
@@ -1593,7 +1594,6 @@ public function RePrintTicket(Request $request)
                     ]);
                 }
 
-
                 return response()->json([
                     'success' => true,
                     'pdf_url' => asset('storage/' . $pdfFilePath), // Return the URL for the PDF file
@@ -1604,7 +1604,7 @@ public function RePrintTicket(Request $request)
                     return response()->json([
                         'success' => false,
                         'message' => $result['message'],
-                        'error' => $result
+                        'error' => $result,
                     ],$statusCode);
                 }
             }
@@ -1612,7 +1612,8 @@ public function RePrintTicket(Request $request)
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => $e->getMessage(),
+            'errorline' => $e->getLine() 
         ], 500);
     }   
 }
