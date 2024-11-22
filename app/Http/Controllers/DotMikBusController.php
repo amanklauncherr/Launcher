@@ -695,6 +695,7 @@ class DotMikBusController extends Controller
             {
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
                 $History->update([
+                    'BookingRef' => $result['payloads']['transaction']['description'],
                     'PnrDetails' => [
                         "pnr" => $result['payloads']['transaction']['description']
                     ],
@@ -1029,7 +1030,7 @@ class DotMikBusController extends Controller
 
             //   $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity);
          
-              $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
+              $History=TravelHistory::where('BookingRef',$data['referenceId'])->first();
               
               $History->update([
                 'PnrDetails' => [
