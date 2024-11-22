@@ -1032,17 +1032,11 @@ class DotMikBusController extends Controller
          
               $History=TravelHistory::where('BookingRef',$data['referenceId'])->first();
 
-              return response()->json($History);
+            //   return response()->json($History);
               
               $History->update([
-                'PnrDetails' => [
-                    'pnr' => $History['PnrDetails'],
-                    'busType'=>$result['payloads']['data']['busType']
-                    // 'dateOfJourney'=>$result['payload']['data']['dateOfJourney'],
-                    // "pnr" => $result['payload']['transaction']['description']['pnr']
-                ],
+                'PnrDetails' => $History['PnrDetails'],
                 'PAXTicketDetails' => $result['payloads']['data']['inventoryItems'],
-
                 'TravelDetails' => [
                     'dropDetails' => $result['payloads']['data']['dropDetails'],
                     'pickupDetails' => $result['payloads']['data']['pickupDetails'],
