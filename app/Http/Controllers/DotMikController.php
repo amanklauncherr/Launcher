@@ -1453,9 +1453,11 @@ public function RePrintTicket(Request $request)
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result=$response->json();
            
-        //    $result=json_decode($res,true);
+           $result=json_decode($result,true);
 
-             $statusCode = $response->status();
+            $statusCode = $response->status();
+
+            return response()->json(['result'=>$result],$statusCode);
             
             if($result['status'] === false)
             {
@@ -1469,6 +1471,7 @@ public function RePrintTicket(Request $request)
             {
                 if($response->successful())
                 {    
+
 
                     $Aircraft= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Aircraft_Type'];
                     $Origin_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
