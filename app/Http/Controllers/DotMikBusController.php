@@ -696,15 +696,17 @@ class DotMikBusController extends Controller
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
                 $History->update([
                     'PnrDetails' => [
-                        "pnr" => $result['payloads']['transaction']['description']['pnr']
+                        "pnr" => $result['payloads']['transaction']['description']
                     ],
                     'Status' => "BOOKED",
                 ]);
+
                 return response()->json([
                     'success' => true,
                     'data' => $result,
                     'message' => "Bus Booked Successfully"
                 ], 200);
+                
             } else {
                 return response()->json([
                     'success' => false,
@@ -1032,14 +1034,14 @@ class DotMikBusController extends Controller
               $History->update([
                 'PnrDetails' => [
                     'pnr' => $History['PnrDetails']['pnr'],
-                    'busType'=>$result['payload']['data']['busType']
+                    'busType'=>$result['payloads']['data']['busType']
                     // 'dateOfJourney'=>$result['payload']['data']['dateOfJourney'],
                     // "pnr" => $result['payload']['transaction']['description']['pnr']
                 ],
-                'PAXTicketDetails' => $result['payload']['data']['inventoryItems'],
+                'PAXTicketDetails' => $result['payloads']['data']['inventoryItems'],
                 'TravelDetails' => [
-                    'dropDetails' => $result['payload']['data']['dropDetails'],
-                    'pickupDetails' => $result['payload']['data']['pickupDetails'],
+                    'dropDetails' => $result['payloads']['data']['dropDetails'],
+                    'pickupDetails' => $result['payloads']['data']['pickupDetails'],
                 ],
               ]);
 
