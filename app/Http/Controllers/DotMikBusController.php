@@ -1040,6 +1040,7 @@ class DotMikBusController extends Controller
                     // "pnr" => $result['payload']['transaction']['description']['pnr']
                 ],
                 'PAXTicketDetails' => $result['payloads']['data']['inventoryItems'],
+
                 'TravelDetails' => [
                     'dropDetails' => $result['payloads']['data']['dropDetails'],
                     'pickupDetails' => $result['payloads']['data']['pickupDetails'],
@@ -1065,7 +1066,8 @@ class DotMikBusController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'An error occurred',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
+            'errorLine' => $e->getLine()
         ], 500);
     }   
    }
