@@ -1034,7 +1034,7 @@ class DotMikBusController extends Controller
               
               $History->update([
                 'PnrDetails' => [
-                    'pnr' => $History['PnrDetails']['pnr'],
+                    'pnr' => $History['PnrDetails'][0],
                     'busType'=>$result['payloads']['data']['busType']
                     // 'dateOfJourney'=>$result['payload']['data']['dateOfJourney'],
                     // "pnr" => $result['payload']['transaction']['description']['pnr']
