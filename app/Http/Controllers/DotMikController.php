@@ -1453,7 +1453,7 @@ public function RePrintTicket(Request $request)
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result=$response->json();
            
-           $result=json_decode($result,true);
+        //    $result=json_decode($result,true);
 
             $statusCode = $response->status();
 
