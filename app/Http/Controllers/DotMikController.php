@@ -1457,7 +1457,7 @@ public function RePrintTicket(Request $request)
 
             $statusCode = $response->status();
 
-            return response()->json(['result'=>$result],$statusCode);
+            // return response()->json(['result'=>$result],$statusCode);
             
             if($result['status'] === false)
             {
@@ -1492,7 +1492,6 @@ public function RePrintTicket(Request $request)
                     $paxDetails=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
 
                     $Origin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
-
 
                     $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
 
