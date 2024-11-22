@@ -39,7 +39,7 @@ use App\Http\Controllers\SubscriptionDetailController;
 use App\Http\Controllers\UserSubscriptionController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\TravelHistoryController;
-
+use App\Http\Controllers\WebHookRefundController;
 use App\Models\Destination;
 use App\Models\SubscriptionDetail;
 use App\Http\Middleware\CheckBearerToken;
@@ -342,7 +342,7 @@ Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPoint
 
 Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
 
-
+Route::post('/WebHook',[WebHookRefundController::class,'WebHookRefund']);
 
 // Token API
 
