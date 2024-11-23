@@ -168,7 +168,7 @@ class OrderIDCreationController extends Controller
 
                 $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
 
-                Mail::to(env('ADMINMAIL'))->send(new AdminOrderMail($AdminText));
+                Mail::to(env('ADMINMAIL','devmmr069@gmail.com'))->send(new AdminOrderMail($AdminText));
 
                 // Create WooCommerce order via cURL
                 $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
@@ -256,14 +256,14 @@ class OrderIDCreationController extends Controller
                 'message' => 'Status Updated and WooCommerce order created successfully',
                 'result' => $result
             ], 200);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => 0,
-            'message' => 'An error occurred while updating order status',
-            'error' => $e->getMessage(),
-        ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'An error occurred while updating order status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
 
 
@@ -295,8 +295,7 @@ class OrderIDCreationController extends Controller
         // Update the order status
         // $user = Auth()->guard('api')->user();
 
-
-// WooCommerce REST API credentials
+        // WooCommerce REST API credentials
             // Create WooCommerce order via cURL
             $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
             $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
@@ -341,9 +340,22 @@ class OrderIDCreationController extends Controller
                     ]
                 );
 
-                $OrderCancel = "Order Cancelled. Order ID -: {$data['OrderID']}";
+                $OrderCancel = "Order Cancelled. Order ID -: {$orderID}";
+
+                // try {
+                //     Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+                // } catch (\Exception $e) {
+                //     \Log::error('Failed to send cancellation email to user: ' . $e->getMessage());
+                // }
+                // try {
+                //     Mail::to(env('ADMINMAIL'))->send(new AdminCancelOrderMail($OrderCancel));
+                // } catch (\Exception $e) {
+                //     \Log::error('Failed to send cancellation email to admin: ' . $e->getMessage());
+                // }
+
                 Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
-                Mail::to(env('ADMINMAIL'))->send(new AdminCancelOrderMail($OrderCancel));
+
+                Mail::to(env('ADMINMAIL','devmmr069@gmail.com'))->send(new AdminCancelOrderMail($OrderCancel));
 
                 return response()->json([
                     'success' => 1,
@@ -356,6 +368,7 @@ class OrderIDCreationController extends Controller
                 'success' => 0,
                 'message' => 'An error occurred while updating order status',
                 'error' => $e->getMessage(),
+                'errorLine' => $e->getLine()
             ], 500);
         }
 
