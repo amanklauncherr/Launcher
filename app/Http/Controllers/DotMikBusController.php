@@ -1214,11 +1214,22 @@ class DotMikBusController extends Controller
             else{
                 if($response->successful())
                 {
+                    $History=TravelHistory::where('BookingRef',$data['referenceId'])->first();
+
+                    //   return response()->json($History);
+                      
+                    if($History)
+                    {
+                       $History->update([
+                          'Status' => 'CANCELLED'
+                       ]);
+                    }
                     return response()->json([
                         'success' => true,
                         'data' => $result,
                         'message' => $result['message']
                     ], 200);
+
                 } else {
                     return response()->json([
                         'success' => false,
