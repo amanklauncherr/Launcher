@@ -13,7 +13,10 @@ class TravelHistoryController extends Controller
     public function GetFlightTravelHistory(Request $request)
     {
 
-        $History=TravelHistory::where('user_id',Auth::guard('api')->id())->where('BookingType','FLIGHT')->get();
+        $History=TravelHistory::where('user_id',Auth::guard('api')->id())
+        ->where('BookingType','FLIGHT')
+        ->get()
+        ->reverse();
 
         if($History->isEmpty())
         {
@@ -53,7 +56,10 @@ class TravelHistoryController extends Controller
     public function GetBusTravelHistory(Request $request)
     {
 
-        $History=TravelHistory::where('user_id',Auth::guard('api')->id())->where('BookingType','BUS')->get();
+        $History=TravelHistory::where('user_id',Auth::guard('api')->id())
+        ->where('BookingType','BUS')
+        ->get()
+        ->reverse();
 
         if($History->isEmpty())
         {
