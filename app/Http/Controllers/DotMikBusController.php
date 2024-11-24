@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 class DotMikBusController extends Controller
 {
@@ -675,6 +676,9 @@ class DotMikBusController extends Controller
 
     // API URL // dotmik
     $url="https://api.dotmik.in/api/busBooking/v1/bookTicket";
+    $checkTicketurl="https://api.dotmik.in/api/busBooking/v1/checkTicket";
+
+    DB::beginTransaction(); 
 
     try {
         // Make the POST request using Laravel HTTP Client
@@ -693,20 +697,60 @@ class DotMikBusController extends Controller
         else{
             if($response->successful())
             {
+
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
+
                 $History->update([
                     'BookingRef' => $result['payloads']['transaction']['description']['user_ref'],
                     'PnrDetails' => [
-                        "pnr" => $result['payloads']['transaction']['description']
+                        [
+                            $result['payloads']['transaction']['description']
+                        ]
                     ],
                     'Status' => "BOOKED",
                 ]);
 
+                $payload1 = [
+                    "referenceId" => $result['payloads']['transaction']['description']['user_ref'],
+                ];
+
+                $responseCheckTicket = Http::withHeaders($headers)->post($checkTicketurl,$payload1);
+
+                $resultCheckTicket = $responseCheckTicket->json();
+
+                if($responseCheckTicket->successful())
+                {
+
+                    $History1=TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
+                    //   return response()->json($History);
+                      
+                     $History1->update([
+                        'PnrDetails' => $History1['PnrDetails'],
+                        'PAXTicketDetails' => [
+                            $resultCheckTicket['payloads']['data']['inventoryItems']
+                        ],
+                        'TravelDetails' => [
+                            'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
+                            'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
+                        ],
+                      ]);
+                } else {
+                    DB::rollBack(); // Rollback transaction if checkTicket fails
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Bus Booked Successfully. Check ticket API failed',
+                        'error' => $resultCheckTicket,
+                    ], $responseCheckTicket->status());
+                }
+        
+                DB::commit();
+
+                // $statusCode = $response->status();
                 return response()->json([
                     'success' => true,
                     'data' => $result,
                     'message' => "Bus Booked Successfully"
-                ], 200);
+                ], $statusCode);
                 
             } else {
                 return response()->json([
