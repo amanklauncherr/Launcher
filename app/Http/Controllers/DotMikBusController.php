@@ -703,9 +703,7 @@ class DotMikBusController extends Controller
                 $History->update([
                     'BookingRef' => $result['payloads']['transaction']['description']['user_ref'],
                     'PnrDetails' => [
-                        [
                             $result['payloads']['transaction']['description']
-                        ]
                     ],
                     'Status' => "BOOKED",
                 ]);
