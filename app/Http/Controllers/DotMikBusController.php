@@ -695,7 +695,7 @@ class DotMikBusController extends Controller
             {
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
                 $History->update([
-                    'BookingRef' => $result['payloads']['transaction']['description'],
+                    'BookingRef' => $result['payloads']['transaction']['description']['user_ref'],
                     'PnrDetails' => [
                         "pnr" => $result['payloads']['transaction']['description']
                     ],
