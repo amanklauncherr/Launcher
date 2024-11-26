@@ -719,14 +719,22 @@ class DotMikBusController extends Controller
                 if($responseCheckTicket->successful())
                 {
 
+                    $pax = null;
+
+                    $type = $resultCheckTicket['inventoryItems'];
+
+                    if (is_object($type)) {
+                        $pax = [$type]; // Wrap the object in an array of arrays.
+                    } elseif (is_array($type) && count($type) > 0) {
+                        $pax = $type; // Wrap the array in another array.
+                    }
+
                     $History1=TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
                     //   return response()->json($History);
                       
                      $History1->update([
                         'PnrDetails' => $History1['PnrDetails'],
-                        'PAXTicketDetails' => [
-                            $resultCheckTicket['payloads']['data']['inventoryItems']
-                        ],
+                        'PAXTicketDetails' => $pax,
                         'TravelDetails' => [
                             'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
                             'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
