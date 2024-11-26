@@ -1074,7 +1074,7 @@ class DotMikController extends Controller
         }   
     }
 
-    public function generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment)
+    public function generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type)
     {
 
         $htmlCode = "<!DOCTYPE html>
@@ -1432,22 +1432,16 @@ class DotMikController extends Controller
 
                 // $Destination=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
 
-                // $type=$resultRePrint['payloads']['data']['rePrintTicket']['Class_of_Travel'];
+                $type=$resultRePrint['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
                 $Cabin=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
                 $CheckIn=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
-
                 $Contact=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_Mobile'];
                 $Email=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_EmailId'];
-                $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];
-                
+                $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];     
                 $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
-
                 $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
-
                 $RescheduleCharges=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
-
-
                 $Tax=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
                 
                 $CancelArray=[];
@@ -1476,22 +1470,22 @@ class DotMikController extends Controller
                     $RescheduleChargesArray[] = $value;
                 }
                 
-                // if($type === 0)
-                // {
-                //     $flight_type="Ecomony";
-                // }
-                // else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
-                // {
-                //     $flight_type="Business";
-                // }
-                // else if($type === 2)
-                // {
-                //     $flight_type="First Class";
-                // }
-                // else if($type === 3)
-                // {
-                //     $flight_type="Premium Ecomomy";
-                // }
+                if($type === 0)
+                {
+                    $flight_type="Ecomony";
+                }
+                else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+                {
+                    $flight_type="Business";
+                }
+                else if($type === 2)
+                {
+                    $flight_type="First Class";
+                }
+                else if($type === 3)
+                {
+                    $flight_type="Premium Ecomomy";
+                }
         
                 // $ArrivalTime = $ArrivalDateTime->format('H:i'); // Outputs '16:25'
                 // $DepartureTime= $DepartureDateTime->format('H:i');
@@ -1508,7 +1502,7 @@ class DotMikController extends Controller
                 // $Duration = $hours . 'h ' . $minutes . 'm';
                 
                 // Generate the PDF
-                $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment);
+                $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                 // $first,$last,$Ticket,$gen,
 
                 $pdf_url = asset('storage/' . $pdfFilePath);
@@ -1647,7 +1641,7 @@ class DotMikController extends Controller
 
                         // $Destination=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
 
-                        // $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
+                        $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
                         $Cabin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
                         $CheckIn=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
@@ -1703,28 +1697,28 @@ class DotMikController extends Controller
                         //     $gen = 'Female';
                         // }
 
-                        // if($type === 0)
-                        // {
-                        //     $flight_type="Ecomony";
-                        // }
-                        // else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
-                        // {
-                        //     $flight_type="Business";
-                        // }
-                        // else if($type === 2)
-                        // {
-                        //     $flight_type="First Class";
-                        // }
-                        // else if($type === 3)
-                        // {
-                        //     $flight_type="Premium Ecomomy";
-                        // }
+                        if($type === 0)
+                        {
+                            $flight_type="Ecomony";
+                        }
+                        else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+                        {
+                            $flight_type="Business";
+                        }
+                        else if($type === 2)
+                        {
+                            $flight_type="First Class";
+                        }
+                        else if($type === 3)
+                        {
+                            $flight_type="Premium Ecomomy";
+                        }
                 
                         // $ArrivalTime = $ArrivalDateTime->format('H:i'); // Outputs '16:25'
                         // $DepartureTime= $DepartureDateTime->format('H:i');
                         // $ArrivalDate = $ArrivalDateTime->format('D d M, Y');
                         // $DepartureDate = $DepartureDateTime->format('D d M, Y');
-                
+
                         $dateTime = DateTime::createFromFormat('H:i', $DurationTime);
                 
                         // Extract hours and minutes
@@ -1735,7 +1729,7 @@ class DotMikController extends Controller
                         $Duration = $hours . 'h ' . $minutes . 'm';
                 
                         // Generate the PDF
-                        $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment);
+                        $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                         // $first,$last,$Ticket,$gen,
                         
                         $pdf_url= asset('storage/' . $pdfFilePath);
