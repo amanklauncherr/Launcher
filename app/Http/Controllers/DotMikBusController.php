@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\UserBusBooking;
 use App\Models\DotMitSourceCities;
 use App\Models\TravelHistory;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DotMikBusController extends Controller
 {
@@ -825,6 +827,7 @@ class DotMikBusController extends Controller
     }
     
     $data=$validator->validated();
+    $user = Auth()->guard('api')->user();
 
     $payload = [
             "userRef" => $data["userRef"],
@@ -893,23 +896,21 @@ class DotMikBusController extends Controller
                 if($responseCheckTicket->successful())
                 {
 
-                    $busName = $responseCheckTicket['payloads']['data']['busType'];
-                    $dateOfJourney =new DateTime ($responseCheckTicket['payloads']['data']['dateOfJourney']);
-                    $pnr=$responseCheckTicket['payloads']['data']['tin'];
+                    $busName = $resultCheckTicket['payloads']['data']['busType'];
+                    $dateOfJourney =new DateTime ($resultCheckTicket['payloads']['data']['dateOfJourney']);
+                    $pnr=$resultCheckTicket['payloads']['data']['tin'];
                    
-                    $destinationCity=$responseCheckTicket['payloads']['data']['dropDetails']['destinationCity'];
-                    $dropLocation=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocation'];
-                    $dropLocationAddress=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocationAddress'];
-                    $dropLocationLandmark=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocationLandmark'];
-                    $dropTime=$responseCheckTicket['payloads']['data']['dropDetails']['dropTime'];
+                    $destinationCity=$resultCheckTicket['payloads']['data']['dropDetails']['destinationCity'];
+                    $dropLocation=$resultCheckTicket['payloads']['data']['dropDetails']['dropLocation'];
+                    $dropLocationAddress=$resultCheckTicket['payloads']['data']['dropDetails']['dropLocationAddress'];
+                    $dropLocationLandmark=$resultCheckTicket['payloads']['data']['dropDetails']['dropLocationLandmark'];
+                    $dropTime=$resultCheckTicket['payloads']['data']['dropDetails']['dropTime'];
 
-                    $OriginCity=$responseCheckTicket['payloads']['data']['pickupDetails']['sourceCity'];
-                    $pickupLocation=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupLocation'];                    
-                    $pickUpLocationAddress=$responseCheckTicket['payloads']['data']['pickupDetails']['pickUpLocationAddress'];
-                    $pickupLocationLandmark=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupLocationLandmark'];
-                    $pickupTime=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupTime'];
-
-
+                    $OriginCity=$resultCheckTicket['payloads']['data']['pickupDetails']['sourceCity'];
+                    $pickupLocation=$resultCheckTicket['payloads']['data']['pickupDetails']['pickupLocation'];                    
+                    $pickUpLocationAddress=$resultCheckTicket['payloads']['data']['pickupDetails']['pickUpLocationAddress'];
+                    $pickupLocationLandmark=$resultCheckTicket['payloads']['data']['pickupDetails']['pickupLocationLandmark'];
+                    $pickupTime=$resultCheckTicket['payloads']['data']['pickupDetails']['pickupTime'];
 
                     $pax = null;
 
@@ -921,21 +922,23 @@ class DotMikBusController extends Controller
                         $pax = $type; // Wrap the array in another array.
                     }
 
-                    $History1=TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
-                    //   return response()->json($History);
-                     
+                    $BookingRef=$result['payloads']['transaction']['description']['user_ref'];
 
+                    $History1=TravelHistory::where('BookingRef', $BookingRef)->first();
+                     
                     $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
 
-                     $History1->update([
-                        'PnrDetails' => $History1['PnrDetails'],
-                        'PAXTicketDetails' => $pax,
-                        'TravelDetails' => [
-                            'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
-                            'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
-                        ],
-                        'Ticket_URL' => asset('storage/' . $pdfFilePath)
-                      ]);
+                    $pdf_url = asset('storage/' . $pdfFilePath);
+
+                    $History1->update([
+                    'PnrDetails' => $History1['PnrDetails'],
+                    'PAXTicketDetails' => $pax,
+                    'TravelDetails' => [
+                        'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
+                        'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
+                    ],
+                    'Ticket_URL' =>  $pdf_url
+                    ]);
                 } else {
                     DB::rollBack(); // Rollback transaction if checkTicket fails
                     return response()->json([
@@ -944,6 +947,10 @@ class DotMikBusController extends Controller
                         'error' => $resultCheckTicket,
                     ], $responseCheckTicket->status());
                 }
+
+                
+
+                Mail::to($user->email)->send(new UserBusBooking($pnr,$BookingRef, $pdf_url));
                 
                 DB::commit();
 
@@ -1033,27 +1040,25 @@ class DotMikBusController extends Controller
         {
             if($response->successful())
             {
-                $busName = $responseCheckTicket['payloads']['data']['busType'];
-                $dateOfJourney =new DateTime ($responseCheckTicket['payloads']['data']['dateOfJourney']);
-                $pnr=$responseCheckTicket['payloads']['data']['tin'];
+                $busName = $result['payloads']['data']['busType'];
+                $dateOfJourney =new DateTime ($result['payloads']['data']['dateOfJourney']);
+                $pnr=$result['payloads']['data']['tin'];
                
-                $destinationCity=$responseCheckTicket['payloads']['data']['dropDetails']['destinationCity'];
-                $dropLocation=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocation'];
-                $dropLocationAddress=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocationAddress'];
-                $dropLocationLandmark=$responseCheckTicket['payloads']['data']['dropDetails']['dropLocationLandmark'];
-                $dropTime=$responseCheckTicket['payloads']['data']['dropDetails']['dropTime'];
+                $destinationCity=$result['payloads']['data']['dropDetails']['destinationCity'];
+                $dropLocation=$result['payloads']['data']['dropDetails']['dropLocation'];
+                $dropLocationAddress=$result['payloads']['data']['dropDetails']['dropLocationAddress'];
+                $dropLocationLandmark=$result['payloads']['data']['dropDetails']['dropLocationLandmark'];
+                $dropTime=$result['payloads']['data']['dropDetails']['dropTime'];
 
-                $OriginCity=$responseCheckTicket['payloads']['data']['pickupDetails']['sourceCity'];
-                $pickupLocation=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupLocation'];                    
-                $pickUpLocationAddress=$responseCheckTicket['payloads']['data']['pickupDetails']['pickUpLocationAddress'];
-                $pickupLocationLandmark=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupLocationLandmark'];
-                $pickupTime=$responseCheckTicket['payloads']['data']['pickupDetails']['pickupTime'];
-
-
+                $OriginCity=$result['payloads']['data']['pickupDetails']['sourceCity'];
+                $pickupLocation=$result['payloads']['data']['pickupDetails']['pickupLocation'];                    
+                $pickUpLocationAddress=$result['payloads']['data']['pickupDetails']['pickUpLocationAddress'];
+                $pickupLocationLandmark=$result['payloads']['data']['pickupDetails']['pickupLocationLandmark'];
+                $pickupTime=$result['payloads']['data']['pickupDetails']['pickupTime'];
 
                 $pax = null;
 
-                $type = $resultCheckTicket['inventoryItems'];
+                $type = $result['inventoryItems'];
 
                 if (is_object($type)) {
                     $pax = [$type]; // Wrap the object in an array of arrays.
@@ -1061,21 +1066,20 @@ class DotMikBusController extends Controller
                     $pax = $type; // Wrap the array in another array.
                 }
 
-                $History1=TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
+                $History1 = TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
                 //   return response()->json($History);
-                 
 
                 $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
 
-                 $History1->update([
+                $History1->update([
                     'PnrDetails' => $History1['PnrDetails'],
                     'PAXTicketDetails' => $pax,
                     'TravelDetails' => [
-                        'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
-                        'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
+                        'dropDetails' => $result['payloads']['data']['dropDetails'],
+                        'pickupDetails' => $result['payloads']['data']['pickupDetails'],
                     ],
                     'Ticket_URL' => asset('storage/' . $pdfFilePath)
-                  ]);
+                ]);
 
                 return response()->json([
                     'success' => true,
