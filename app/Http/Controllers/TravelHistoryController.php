@@ -40,6 +40,7 @@ class TravelHistoryController extends Controller
                 'PAXTicketDetails'=>json_decode($his->PAXTicketDetails),
                 'TravelDetails'=>json_decode($his->TravelDetails),
                 'Status' => $his->Status,
+                'Ticket_URL' => $his->Ticket_URL
             ];
                 array_push($data,$obj);
         }
@@ -83,6 +84,7 @@ class TravelHistoryController extends Controller
                 'PAXTicketDetails'=>json_decode($his->PAXTicketDetails),
                 'TravelDetails'=>json_decode($his->TravelDetails),
                 'Status' => $his->Status,
+                'Ticket_URL' => $his->Ticket_URL
             ];
                 array_push($data,$obj);
         }
