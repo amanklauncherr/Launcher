@@ -914,7 +914,7 @@ class DotMikBusController extends Controller
 
                     $pax = null;
 
-                    $type = $resultCheckTicket['inventoryItems'];
+                    $type = $resultCheckTicket['payloads']['data']['inventoryItems'];
 
                     if (is_object($type)) {
                         $pax = [$type]; // Wrap the object in an array of arrays.
@@ -946,9 +946,7 @@ class DotMikBusController extends Controller
                         'message' => 'Bus Booked Successfully. Check ticket API failed',
                         'error' => $resultCheckTicket,
                     ], $responseCheckTicket->status());
-                }
-
-                
+                }                
 
                 Mail::to($user->email)->send(new UserBusBooking($pnr,$BookingRef, $pdf_url));
                 
@@ -990,7 +988,7 @@ class DotMikBusController extends Controller
         // "ip" => "required|string",
      ]);
 
-
+     
     if ($validator->fails()) {
         $errors = $validator->errors()->all(); // Get all error messages
         $formattedErrors = [];
@@ -1058,7 +1056,7 @@ class DotMikBusController extends Controller
 
                 $pax = null;
 
-                $type = $result['inventoryItems'];
+                $type = $result['payloads']['data']['inventoryItems'];
 
                 if (is_object($type)) {
                     $pax = [$type]; // Wrap the object in an array of arrays.
