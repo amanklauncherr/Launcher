@@ -623,7 +623,7 @@ class DotMikBusController extends Controller
             }
     }
 
-       public function generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax)
+       public function generateTicketPdf($busName,$dateOfJourneyFormatted,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax)
    {
 
         $htmlCode = "<!DOCTYPE html>
@@ -720,7 +720,7 @@ class DotMikBusController extends Controller
                             <th>PNR</th>
                             <td>{$pnr}</td>
                             <th>Journey Date</th>
-                            <td>{$dateOfJourney}</td>
+                            <td>{$dateOfJourneyFormatted}</td>
                         </tr>
                     </table>
                     <table>
@@ -897,7 +897,10 @@ class DotMikBusController extends Controller
                 {
 
                     $busName = $resultCheckTicket['payloads']['data']['busType'];
-                    $dateOfJourney =new DateTime ($resultCheckTicket['payloads']['data']['dateOfJourney']);
+                    
+                    $dateOfJourney = new DateTime($resultCheckTicket['payloads']['data']['dateOfJourney']);
+                    $dateOfJourneyFormatted = $dateOfJourney->format('Y-m-d');
+
                     $pnr=$resultCheckTicket['payloads']['data']['tin'];
                    
                     $destinationCity=$resultCheckTicket['payloads']['data']['dropDetails']['destinationCity'];
@@ -926,7 +929,7 @@ class DotMikBusController extends Controller
 
                     $History1=TravelHistory::where('BookingRef', $BookingRef)->first();
                      
-                    $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
+                    $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourneyFormatted,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
 
                     $pdf_url = asset('storage/' . $pdfFilePath);
 
@@ -1039,7 +1042,10 @@ class DotMikBusController extends Controller
             if($response->successful())
             {
                 $busName = $result['payloads']['data']['busType'];
-                $dateOfJourney =new DateTime ($result['payloads']['data']['dateOfJourney']);
+               
+                $dateOfJourney = new DateTime($result['payloads']['data']['dateOfJourney']);
+                $dateOfJourneyFormatted = $dateOfJourney->format('Y-m-d'); // Format it as needed
+                
                 $pnr=$result['payloads']['data']['tin'];
                
                 $destinationCity=$result['payloads']['data']['dropDetails']['destinationCity'];
@@ -1067,7 +1073,7 @@ class DotMikBusController extends Controller
                 $History1 = TravelHistory::where('BookingRef',$data['referenceId'])->first();
                 //   return response()->json($History);
 
-                $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
+                $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourneyFormatted,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
 
                 $History1->update([
                     'PnrDetails' => $History1['PnrDetails'],
