@@ -1064,7 +1064,7 @@ class DotMikBusController extends Controller
                     $pax = $type; // Wrap the array in another array.
                 }
 
-                $History1 = TravelHistory::where('BookingRef',$result['payloads']['transaction']['description']['user_ref'])->first();
+                $History1 = TravelHistory::where('BookingRef',$data['referenceId'])->first();
                 //   return response()->json($History);
 
                 $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourney,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
