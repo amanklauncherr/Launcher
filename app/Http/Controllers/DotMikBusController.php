@@ -623,12 +623,27 @@ class DotMikBusController extends Controller
             }
     }
 
-       public function generateTicketPdf($busName,$dateOfJourneyFormatted,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax)
-   {
-
-        $htmlCode = "<!DOCTYPE html>
-            <html lang='en'>
-            <head>
+    public function generateTicketPdf(
+        $busName,
+        $dateOfJourneyFormatted,
+        $pnr,
+        $destinationCity,
+        $dropLocationAddress,
+        $dropLocation,
+        $dropLocationLandmark,
+        $dropTime,
+        $pickUpLocationAddress,
+        $pickupLocation,
+        $pickupLocationLandmark,
+        $pickupTime,
+        $OriginCity,
+        $pax
+    ) {
+        // Start building the HTML content
+        $htmlCode = "
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
             <title>Bus Ticket</title>
@@ -636,23 +651,21 @@ class DotMikBusController extends Controller
             <style>
                 body {
                     font-family: 'Roboto', sans-serif;
-                    background-color: #f0f2f5;
                     margin: 0;
                     padding: 20px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
+                    background-color: #f9f9f9;
                 }
                 .container {
                     max-width: 800px;
                     background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    margin: auto;
                     padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                 }
                 h2, h3 {
                     text-align: center;
+                    margin-bottom: 20px;
                     color: #333;
                 }
                 table {
@@ -660,142 +673,104 @@ class DotMikBusController extends Controller
                     border-collapse: collapse;
                     margin-bottom: 20px;
                 }
-                table, th, td {
+                table th, table td {
+                    padding: 10px;
                     border: 1px solid #e0e0e0;
-                    padding: 15px;
                     text-align: left;
                 }
-                th {
+                table th {
                     background-color: #f7f7f7;
-                    color: #555;
                     font-weight: bold;
-                }
-                td {
-                    color: #333;
-                }
-                .info-section {
-                    margin-bottom: 20px;
-                }
-                .fare-rules h4 {
-                    margin-top: 0;
                     color: #555;
                 }
-                .fare-rules p {
-                    font-size: 0.9em;
-                    color: #777;
-                }
-                .badge {
-                    display: inline-block;
-                    padding: 5px 10px;
-                    background-color: #4caf50;
-                    color: white;
-                    border-radius: 5px;
-                    font-size: 0.85em;
+                table td {
+                    color: #333;
                 }
                 .ticket-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     margin-bottom: 20px;
-                    padding-bottom: 15px;
                     border-bottom: 2px solid #e0e0e0;
+                    padding-bottom: 15px;
                 }
                 .ticket-header img {
                     height: 50px;
                 }
             </style>
-            </head>
-            <body>
+        </head>
+        <body>
             <div class='container'>
                 <div class='ticket-header'>
                     <h2>Bus Ticket</h2>
-                    <img src='https://via.placeholder.com/100x50?text=Logo' alt='Logo'>
                 </div>
-                
-                <div class='info-section'>
-                    <table>
-                        <tr>
-                            <th>Bus</th>
-                            <td>{$busName}</td>
-                            <th>PNR</th>
-                            <td>{$pnr}</td>
-                            <th>Journey Date</th>
-                            <td>{$dateOfJourneyFormatted}</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>Origin City</th>
-                            <td>{$OriginCity}</td>
-                            <th>Boarding Point</th>
-                            <td>{$pickupLocation}</td>
-                            <th>Boarding Address</th>
-                            <td>{$pickUpLocationAddress}</td>
-                            <th>Boarding Landmark</th>
-                            <td>{$pickupLocationLandmark}</td>
-                            <th>Boarding Time</th>
-                            <td>{$pickupTime}</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>Destination City</th>
-                            <td>{$destinationCity}</td>
-                            <th>Destination Point</th>
-                            <td>{$dropLocation}</td>
-                            <th>Destination Address</th>
-                            <td>{$dropLocationAddress}</td>
-                            <th>Destination Landmark</th>
-                            <td>{$dropLocationLandmark}</td>
-                            <th>Destination Time</th>
-                            <td>{$dropTime}</td>
-                        </tr>
-                    </table>
-                </div>
+                <table>
+                    <tr>
+                        <th>Bus</th><td>{$busName}</td>
+                        <th>PNR</th><td>{$pnr}</td>
+                        <th>Journey Date</th><td>{$dateOfJourneyFormatted}</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>Origin City</th><td>{$OriginCity}</td>
+                        <th>Boarding Point</th><td>{$pickupLocation}</td>
+                        <th>Boarding Address</th><td>{$pickUpLocationAddress}</td>
+                        <th>Boarding Landmark</th><td>{$pickupLocationLandmark}</td>
+                        <th>Boarding Time</th><td>{$pickupTime}</td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>Destination City</th><td>{$destinationCity}</td>
+                        <th>Destination Point</th><td>{$dropLocation}</td>
+                        <th>Destination Address</th><td>{$dropLocationAddress}</td>
+                        <th>Destination Landmark</th><td>{$dropLocationLandmark}</td>
+                        <th>Destination Time</th><td>{$dropTime}</td>
+                    </tr>
+                </table>
                 <h3>Passenger and Seat Details</h3>
-                <div class='info-section'>
-                    <table>";
-    
+                <table>
+                    <tr>
+                        <th>Passenger Name</th>
+                        <th>Contact</th>
+                        <th>Seat No.</th>
+                        <th>Base Fare</th>
+                        <th>Taxes & Fees</th>
+                        <th>Gross Fare</th>
+                    </tr>";
+        
+        // Loop through passengers and add rows
         foreach ($pax as $paxDetails) {
-            $htmlCode .= "<tr>
-                <th>Passenger Name</th>
-                <td>{$paxDetails['passenger']['name']}</td>
-                <th>Passenger Contact</th>
-                <td>{$paxDetails['passenger']['mobile']}</td>
-                <th>Seat No.</th>
-                <td>{$paxDetails['seatName']}</td>
-                <th>Base Fare</th>
-                <td>INR {$paxDetails['baseFare']}</td>
-                <th>Taxes and Fees</th>
-                <td>INR {$paxDetails['fare']}</td>
-                <th>Gross Fare</th>
-                <td>INR {$paxDetails['fare']}</td>
-            </tr>";
+            $htmlCode .= "
+                    <tr>
+                        <td>{$paxDetails['passenger']['name']}</td>
+                        <td>{$paxDetails['passenger']['mobile']}</td>
+                        <td>{$paxDetails['seatName']}</td>
+                        <td>INR {$paxDetails['baseFare']}</td>
+                        <td>INR {$paxDetails['fare']}</td>
+                        <td>INR {$paxDetails['fare']}</td>
+                    </tr>";
         }
     
-        $htmlCode .= "</table>
-                </div>
+        $htmlCode .= "
+                </table>
             </div>
-            </body>
-            </html>";
+        </body>
+        </html>";
     
-        // Define the file storage path
-        $directoryPath = storage_path('app/public/tickets');
+        // Define storage path and ensure directory exists
         $fileName = 'ticket-' . uniqid() . '.pdf';
-        $filePath = $directoryPath . '/' . $fileName;
+        $filePath = 'public/tickets/' . $fileName;
     
-        // Ensure the directory exists
-        if (!file_exists($directoryPath)) {
-            mkdir($directoryPath, 0755, true);
-        }
-    
-        // Generate and save the PDF
+        // Generate and save PDF
         $pdf = Pdf::loadHTML($htmlCode);
-        $pdf->save($filePath);
+        Storage::put($filePath, $pdf->output());
     
-        // Return the relative file path
-        return 'tickets/' . $fileName;     
-}
+        // Return the relative path for use
+        return Storage::url($filePath);
+    }
+    
    
    public function BookTicket(Request $request)
    {
