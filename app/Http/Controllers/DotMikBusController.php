@@ -759,16 +759,22 @@ class DotMikBusController extends Controller
         </body>
         </html>";
     
-        // Define storage path and ensure directory exists
+        // Define the file storage path
+        $directoryPath = storage_path('app/public/tickets');
         $fileName = 'ticket-' . uniqid() . '.pdf';
-        $filePath = 'public/tickets/' . $fileName;
+        $filePath = $directoryPath . '/' . $fileName;
     
-        // Generate and save PDF
+        // Ensure the directory exists
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0755, true);
+        }
+    
+        // Generate and save the PDF
         $pdf = Pdf::loadHTML($htmlCode);
-        Storage::put($filePath, $pdf->output());
+        $pdf->save($filePath);
     
-        // Return the relative path for use
-        return Storage::url($filePath);
+        // Return the relative file path
+        return 'tickets/' . $fileName;    
     }
     
    
