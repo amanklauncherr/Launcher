@@ -1394,13 +1394,14 @@ class DotMikController extends Controller
                 'PnrDetails' => $result['payloads']['data']['pnrDetails'],
                 'Status' => "BOOKED",
             ]);
+            
             $payloadRePrintTicket = [
                 "deviceInfo" => [
                     "ip" => "122.161.52.233",
                     "imeiNumber" => "12384659878976879887"
                 ],
                 "bookingRef" => $data['bookingRef'],
-                "pnr" => $result['payloads']['data']['pnrDetails']
+                "pnr" => $ticketingResult['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR']
             ];
 
             $responseRePrint = Http::withHeaders($headers)->post($RePrintTicketurl, $payloadRePrintTicket);
@@ -1435,13 +1436,21 @@ class DotMikController extends Controller
                 $type=$resultRePrint['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
                 $Cabin=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
+               
                 $CheckIn=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
+               
                 $Contact=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_Mobile'];
+               
                 $Email=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_EmailId'];
+               
                 $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];     
+               
                 $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+               
                 $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
+               
                 $RescheduleCharges=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
+               
                 $Tax=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
                 
                 $CancelArray=[];
@@ -1509,12 +1518,15 @@ class DotMikController extends Controller
                             
                 $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
 
-                $History->update([
+                if($History)
+                {
+                    $History->update([
                         'PAXTicketDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
                         'TravelDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
                         'Ticket_URL' => $pdf_url
-                ]);
-    
+                    ]);
+                }
+                
             }else {
                 // DB::rollBack(); // Rollback transaction if checkTicket fails
                 return response()->json([
@@ -1527,7 +1539,7 @@ class DotMikController extends Controller
 
             $BookingRef = $data['BookingRef'];
             
-            $Pnr = $result['payloads']['data']['pnrDetails'];
+            $Pnr = $result['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR'];
 
             Mail::to($user->email)->send(new UserFlightBooking($Pnr,$BookingRef,$pdf_url));
 
@@ -1554,7 +1566,7 @@ class DotMikController extends Controller
         $validator = Validator::make($request->all(), [
             'headersToken' => 'required|string',
             'headersKey' => 'required|string',
-            "bookingRef" => "nullable|string", 
+            "bookingRef" => "required|string", 
             "pnr" => "nullable|string"
         ]);     
         
@@ -1567,13 +1579,13 @@ class DotMikController extends Controller
         
         $data = $validator->validated();
 
-        if(!$data['bookingRef'] && !$data['pnr'])
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'Provide Either Bookin Ref or PNR'
-            ], 400);
-        }
+        // if(!$data['bookingRef'] && !$data['pnr'])
+        // {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Provide Either Bookin Ref or PNR'
+        //     ], 400);
+        // }
         
         $payload = [
             "deviceInfo" => [
@@ -1624,7 +1636,7 @@ class DotMikController extends Controller
                         // $DepartureDateTime=new DateTime($result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
                         // $Destination_terminal=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];/
 
-                        $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
+                        // $DurationTime= $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
                     
                         // $FlightNO = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Flight_Number']; 
                         // $AirlineCode = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Airline_Code'];
@@ -1644,10 +1656,13 @@ class DotMikController extends Controller
                         $type=$result['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
                         $Cabin=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
+                        
                         $CheckIn=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
 
                         $Contact=$result['payloads']['data']['rePrintTicket']['PAX_Mobile'];
+                        
                         $Email=$result['payloads']['data']['rePrintTicket']['PAX_EmailId'];
+                        
                         $BaseFare=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];
                         
                         $TotalAmount=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
@@ -1671,7 +1686,6 @@ class DotMikController extends Controller
                                 'DurationTo' => $cancel['DurationTo'],
                                 'value' => ($cancel['ValueType'] === 1) ? 'Non Refundable' : $cancel['Value'],
                             ];
-                        
                             $CancelArray[] = $value;
                         }
                         
@@ -1719,14 +1733,14 @@ class DotMikController extends Controller
                         // $ArrivalDate = $ArrivalDateTime->format('D d M, Y');
                         // $DepartureDate = $DepartureDateTime->format('D d M, Y');
 
-                        $dateTime = DateTime::createFromFormat('H:i', $DurationTime);
+                        // $dateTime = DateTime::createFromFormat('H:i', $DurationTime);
                 
-                        // Extract hours and minutes
-                        $hours = $dateTime->format('G'); // 'G' formats hours without leading zeros
-                        $minutes = $dateTime->format('i'); // 'i' formats minutes with leading zeros
+                        // // Extract hours and minutes
+                        // $hours = $dateTime->format('G'); // 'G' formats hours without leading zeros
+                        // $minutes = $dateTime->format('i'); // 'i' formats minutes with leading zeros
                 
-                        // Format as "1h 05m"
-                        $Duration = $hours . 'h ' . $minutes . 'm';
+                        // // Format as "1h 05m"
+                        // $Duration = $hours . 'h ' . $minutes . 'm';
                 
                         // Generate the PDF
                         $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
@@ -1738,23 +1752,20 @@ class DotMikController extends Controller
 
                         if($History)
                         {
-                            // $History->update([
-                            //     'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
-                            //     'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']
-                            // ]);
                             $History->update([
-                                    'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
-                                    'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
-                                    'Ticket_URL' => $pdf_url
+                                'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                                'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
+                                'Ticket_URL' => $pdf_url
                             ]);
-            
                         }
-                            return response()->json([
-                                'success' => true,
-                                'pdf_url' => $pdf_url, // Return the URL for the PDF file
-                                'data' => $result,
-                                'history' => $History
-                            ]);
+
+
+                        return response()->json([
+                            'success' => true,
+                            'pdf_url' => $pdf_url, // Return the URL for the PDF file
+                            'data' => $result,
+                            'history' => $History
+                        ]);
                     } else {
                         return response()->json([
                             'success' => false,
