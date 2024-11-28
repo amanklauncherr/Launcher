@@ -639,126 +639,168 @@ class DotMikBusController extends Controller
         $OriginCity,
         $pax
     ) {
-        // Start building the HTML content
-        $htmlCode = "
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Bus Ticket</title>
-            <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
-            <style>
-                body {
-                    font-family: 'Roboto', sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                    background-color: #f9f9f9;
-                }
-                .container {
-                    max-width: 800px;
-                    background-color: #ffffff;
-                    margin: auto;
-                    padding: 20px;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                }
-                h2, h3 {
-                    text-align: center;
-                    margin-bottom: 20px;
-                    color: #333;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 20px;
-                }
-                table th, table td {
-                    padding: 10px;
-                    border: 1px solid #e0e0e0;
-                    text-align: left;
-                }
-                table th {
-                    background-color: #f7f7f7;
-                    font-weight: bold;
-                    color: #555;
-                }
-                table td {
-                    color: #333;
-                }
-                .ticket-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                    border-bottom: 2px solid #e0e0e0;
-                    padding-bottom: 15px;
-                }
-                .ticket-header img {
-                    height: 50px;
-                }
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='ticket-header'>
-                    <h2>Bus Ticket</h2>
-                </div>
-                <table>
-                    <tr>
-                        <th>Bus</th><td>{$busName}</td>
-                        <th>PNR</th><td>{$pnr}</td>
-                        <th>Journey Date</th><td>{$dateOfJourneyFormatted}</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>Origin City</th><td>{$OriginCity}</td>
-                        <th>Boarding Point</th><td>{$pickupLocation}</td>
-                        <th>Boarding Address</th><td>{$pickUpLocationAddress}</td>
-                        <th>Boarding Landmark</th><td>{$pickupLocationLandmark}</td>
-                        <th>Boarding Time</th><td>{$pickupTime}</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>Destination City</th><td>{$destinationCity}</td>
-                        <th>Destination Point</th><td>{$dropLocation}</td>
-                        <th>Destination Address</th><td>{$dropLocationAddress}</td>
-                        <th>Destination Landmark</th><td>{$dropLocationLandmark}</td>
-                        <th>Destination Time</th><td>{$dropTime}</td>
-                    </tr>
-                </table>
-                <h3>Passenger and Seat Details</h3>
-                <table>
-                    <tr>
-                        <th>Passenger Name</th>
-                        <th>Contact</th>
-                        <th>Seat No.</th>
-                        <th>Base Fare</th>
-                        <th>Taxes & Fees</th>
-                        <th>Gross Fare</th>
-                    </tr>";
+            // Start building the improved HTML content
+            $htmlCode = "
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                <title>Bus Ticket</title>
+                <link href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' rel='stylesheet'>
+                <style>
+                    body {
+                        font-family: 'Roboto', sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f9f9f9;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 800px;
+                        background-color: #ffffff;
+                        margin: 20px auto;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h2, h3 {
+                        text-align: center;
+                        color: #444;
+                        margin-bottom: 20px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 20px;
+                        font-size: 14px;
+                    }
+                    table th, table td {
+                        padding: 10px;
+                        text-align: left;
+                        border: 1px solid #ddd;
+                    }
+                    table th {
+                        background-color: #f0f0f0;
+                        font-weight: bold;
+                        text-align: center;
+                    }
+                    .section {
+                        margin-bottom: 20px;
+                    }
+                    .header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .header img {
+                        height: 50px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h2>Bus Ticket</h2>
+                    </div>
+                    <div class='section'>
+                        <table>
+                            <tr>
+                                <th>Bus</th>
+                                <td>{$busName}</td>
+                                <th>PNR</th>
+                                <td>{$pnr}</td>
+                                <th>Journey Date</th>
+                                <td>{$dateOfJourneyFormatted}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class='section'>
+                        <h3>Boarding Details</h3>
+                        <table>
+                            <tr>
+                                <th>Origin City</th>
+                                <td>{$OriginCity}</td>
+                                <th>Boarding Point</th>
+                                <td>{$pickupLocation}</td>
+                            </tr>
+                            <tr>
+                                <th>Boarding Address</th>
+                                <td colspan='3'>{$pickUpLocationAddress}</td>
+                            </tr>
+                            <tr>
+                                <th>Landmark</th>
+                                <td>{$pickupLocationLandmark}</td>
+                                <th>Time</th>
+                                <td>{$pickupTime}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class='section'>
+                        <h3>Destination Details</h3>
+                        <table>
+                            <tr>
+                                <th>Destination City</th>
+                                <td>{$destinationCity}</td>
+                                <th>Drop Point</th>
+                                <td>{$dropLocation}</td>
+                            </tr>
+                            <tr>
+                                <th>Drop Address</th>
+                                <td colspan='3'>{$dropLocationAddress}</td>
+                            </tr>
+                            <tr>
+                                <th>Landmark</th>
+                                <td>{$dropLocationLandmark}</td>
+                                <th>Time</th>
+                                <td>{$dropTime}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class='section'>
+                        <h3>Passenger Details</h3>
+                        <table>
+                            <tr>
+                                <th>Passenger Name</th>
+                                <th>Contact</th>
+                                <th>Seat No.</th>
+                                <th>Base Fare</th>
+                                <th>Taxes & Fees</th>
+                                <th>Gross Fare</th>
+                            </tr>";
+            // Loop through passengers and add rows
+            foreach ($pax as $paxDetails) {
+                $htmlCode .= "
+                            <tr>
+                                <td>{$paxDetails['passenger']['name']}</td>
+                                <td>{$paxDetails['passenger']['mobile']}</td>
+                                <td>{$paxDetails['seatName']}</td>
+                                <td>INR {$paxDetails['baseFare']}</td>
+                                <td>INR {$paxDetails['fare']}</td>
+                                <td>INR {$paxDetails['fare']}</td>
+                            </tr>";
+            }
         
-        // Loop through passengers and add rows
-        foreach ($pax as $paxDetails) {
             $htmlCode .= "
-                    <tr>
-                        <td>{$paxDetails['passenger']['name']}</td>
-                        <td>{$paxDetails['passenger']['mobile']}</td>
-                        <td>{$paxDetails['seatName']}</td>
-                        <td>INR {$paxDetails['baseFare']}</td>
-                        <td>INR {$paxDetails['fare']}</td>
-                        <td>INR {$paxDetails['fare']}</td>
-                    </tr>";
-        }
-    
-        $htmlCode .= "
-                </table>
-            </div>
-        </body>
-        </html>";
-    
+                        </table>
+                    </div>
+                </div>
+            </body>
+            </html>";
+        
+            // // Define the file storage path
+            // $fileName = 'ticket-' . uniqid() . '.pdf';
+            // $filePath = 'public/tickets/' . $fileName;
+        
+            // // Ensure the directory exists
+            // Storage::makeDirectory('public/tickets');
+        
+            // // Generate and save the PDF
+            // $pdf = Pdf::loadHTML($htmlCode);
+            // Storage::put($filePath, $pdf->output());
+        
+            // // Return the relative file path
+            // return Storage::url($filePath);
+                
         // Define the file storage path
         $directoryPath = storage_path('app/public/tickets');
         $fileName = 'ticket-' . uniqid() . '.pdf';
@@ -852,10 +894,10 @@ class DotMikBusController extends Controller
                 'error' => $result
             ],$statusCode);   
         }
-        else{
+        else
+        {
             if($response->successful())
             {
-
                 $History=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
 
                 $History->update([
@@ -876,7 +918,6 @@ class DotMikBusController extends Controller
 
                 if($responseCheckTicket->successful())
                 {
-
                     $busName = $resultCheckTicket['payloads']['data']['busType'];
                     
                     $dateOfJourney = new DateTime($resultCheckTicket['payloads']['data']['dateOfJourney']);
