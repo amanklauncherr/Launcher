@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\UserFlightBooking;
+use App\Mail\UserFlightTicketCancel;
 use App\Models\AirlineCode;
 use App\Models\iatacode;
 use App\Models\TravelHistory;
@@ -1815,7 +1816,8 @@ class DotMikController extends Controller
         }
         
         $data = $validator->validated();
-        
+        $user = Auth()->guard('api')->user();
+
         $payload = [
             "deviceInfo"=> [
                 "ip"=> "122.161.52.233",
@@ -1866,11 +1868,15 @@ class DotMikController extends Controller
                             'Status' => 'CANCELLED'
                         ]);
                     }
-
                     
+                    $BookingRef=$data["bookingRef"];
+                    $pnr=$data["pnr"];
+
+                    Mail::to($user->email)->send(new UserFlightTicketCancel($pnr,$BookingRef));
+
                 return response()->json([
                         'success' => true,
-                        // 'message' => $result['message'],
+                        'message' => $result['message'] ?? 'Flight Ticket Cancelled',
                         'data' => $result,
                     ], $statusCode);
                 } else {

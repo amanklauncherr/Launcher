@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\UserBusBooking;
+use App\Mail\UserBusTicketCancel;
 use App\Models\DotMitSourceCities;
 use App\Models\TravelHistory;
 use Illuminate\Http\Request;
@@ -1242,6 +1243,7 @@ class DotMikBusController extends Controller
       }
     
         $data=$validator->validated();
+        $user = Auth()->guard('api')->user();
 
         $payload = [
                 "referenceId" => $data["referenceId"],
@@ -1288,12 +1290,17 @@ class DotMikBusController extends Controller
                           'Status' => 'CANCELLED'
                        ]);
                     }
+
+                    $BookingRef=$data["referenceId"];
+                    $pnr=$History['PnrDetails'][0]['pnr'];
+
+                    Mail::to($user->email)->send(new UserBusTicketCancel($pnr,$BookingRef));
+
                     return response()->json([
                         'success' => true,
+                        'message' => $result['message'] ?? 'Bus Ticket Cancelled',
                         'data' => $result,
-                        'message' => $result['message']
-                    ], 200);
-
+                     ], 200);
                 } else {
                     return response()->json([
                         'success' => false,
@@ -1302,7 +1309,6 @@ class DotMikBusController extends Controller
                     ], $response->status());
                 }
             }
-            //code...
         } catch  (\Exception $e) {
             // Handle exception (e.g. network issues)
             return response()->json([
