@@ -1292,7 +1292,10 @@ class DotMikBusController extends Controller
                     }
 
                     $BookingRef=$data["referenceId"];
-                    $pnr=$History['PnrDetails'][0]['pnr'];
+                    $pnrDetails=$History['PnrDetails'];
+
+                    $PNR=json_decode($pnrDetails,true);
+                    $pnr=$PNR[0]['pnr'];
 
                     Mail::to($user->email)->send(new UserBusTicketCancel($pnr,$BookingRef));
 
