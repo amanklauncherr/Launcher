@@ -33,7 +33,7 @@ return [
     |
     */
 
-    'mailers' => [
+  'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
             // 'url' => env('MAIL_URL'),
@@ -45,7 +45,7 @@ return [
             'timeout' => null,
             'auth_mode' => null,
             // 'local_domain' => 'launcherr.co',
-        ],
+            ],
 
         'ses' => [
             'transport' => 'ses',
