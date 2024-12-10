@@ -41,7 +41,7 @@ return [
             'port' => env('MAIL_PORT', 465),
             'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
             'username' => 'noreply@launcherr.co',
-            'password' => 'sdig sncr hgde zhxz',
+            'password' => 'yooy ymri zcoy erkp',
             'timeout' => null,
             'auth_mode' => null,
             // 'local_domain' => 'launcherr.co',
