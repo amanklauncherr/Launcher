@@ -875,23 +875,26 @@ class DotMikController extends Controller
         $padID=1;
 
         for ($i = 0; $i < $data['totalCount']; $i++) {
-        $paxDetails[] = [
-            "paxId" => $padID++,
-            "paxType" => $data['passenger_details'][$i]['paxType'],
-            "title" => $data['passenger_details'][$i]['title'],
-            "firstName" => $data['passenger_details'][$i]['firstName'],
-            "lastName" => $data['passenger_details'][$i]['lastName'],
-            "gender" => $data['passenger_details'][$i]['gender'],
-            "age" => $data['passenger_details'][$i]['age'] ?? null,
-            "dob" => $data['passenger_details'][$i]['dob'],
-            "passportNumber" => $data['passenger_details'][$i]['passportNumber'] ?? null,
-            "passportIssuingAuthority" => $data['passenger_details'][$i]['passportIssuingAuthority'] ?? null,
-            "passportExpire" => $data['passenger_details'][$i]['passportExpire'] ?? null,
-            "nationality" => $data['passenger_details'][$i]['nationality'] ?? null,
-            "pancardNumber" => $data['passenger_details'][$i]['pancardNumber'] ?? null,
-            "frequentFlyerDetails" => $data['passenger_details'][$i]['frequentFlyerDetails'] ?? null,
-        ];
+            $paxDetails[] = [
+                "paxId" => $padID++,
+                "paxType" => $data['passenger_details'][$i]['paxType'],
+                "title" => $data['passenger_details'][$i]['title'],
+                "firstName" => $data['passenger_details'][$i]['firstName'],
+                "lastName" => $data['passenger_details'][$i]['lastName'],
+                "gender" => $data['passenger_details'][$i]['gender'],
+                "age" => $data['passenger_details'][$i]['age'] ?? null,
+                // "dob" => $data['passenger_details'][$i]['dob'],
+                "dob" => (new DateTime($data['passenger_details'][$i]['dob']))->format('m-d-Y'),
+                "passportNumber" => $data['passenger_details'][$i]['passportNumber'] ?? null,
+                "passportIssuingAuthority" => $data['passenger_details'][$i]['passportIssuingAuthority'] ?? null,
+                "passportExpire" => (new DateTime($data['passenger_details'][$i]['passportExpire']))->format('m-d-Y') ?? null,
+                "nationality" => $data['passenger_details'][$i]['nationality'] ?? null,
+                "pancardNumber" => $data['passenger_details'][$i]['pancardNumber'] ?? null,
+                "frequentFlyerDetails" => $data['passenger_details'][$i]['frequentFlyerDetails'] ?? null,
+            ];
         }
+
+        // return response()->json($paxDetails);
 
         // $passportNumbers = array_column($paxDetails, 'passportNumber');
 
@@ -1870,11 +1873,12 @@ class DotMikController extends Controller
                     }
                     
                     $BookingRef=$data["bookingRef"];
+
                     $pnr=$data["pnr"];
 
                     Mail::to($user->email)->send(new UserFlightTicketCancel($pnr,$BookingRef));
 
-                return response()->json([
+                    return response()->json([
                         'success' => true,
                         'message' => $result['message'] ?? 'Flight Ticket Cancelled',
                         'data' => $result,
