@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop the 'sub-heading' column
         Schema::table('sections', function (Blueprint $table) {
-            //
-            $table->text('sub-heading')->change();
+            $table->dropColumn('sub-heading');
+        });
+
+        // Recreate the 'sub-heading' column as TEXT
+        Schema::table('sections', function (Blueprint $table) {
+            $table->text('sub-heading')->nullable();
         });
     }
 
@@ -22,9 +27,14 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop the 'sub-heading' column
         Schema::table('sections', function (Blueprint $table) {
-            //
-            $table->string('sub-heading', 255)->change();
+            $table->dropColumn('sub-heading');
+        });
+
+        // Recreate it as varchar(255) (the original type)
+        Schema::table('sections', function (Blueprint $table) {
+            $table->string('sub-heading', 255)->nullable();
         });
     }
 };
