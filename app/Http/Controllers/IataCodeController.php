@@ -18734,24 +18734,53 @@ class IataCodeController extends Controller
 "icao": "",
 "direct_flights": "0",
 "carriers": "0"
-}]';
-      $dataArray = json_decode($json, true);
+}
+]';
 
-  // Iterate through each item in the array
-  foreach ($dataArray as $data) {
-      // Find the corresponding record in the iatacode table using the iata_code
-      if (!is_null($data['city']) && !is_null($data['state']))
-      {
-        DB::table('iatacodes')
-        ->where('iata_code', $data['code'])
-        ->update([
-            'city' => $data['city'],
-            'state' => $data['state']
-        ]);
-      }
+      $dataArray = json_decode($json);
+     
+      // return response()->json(['count' => count($dataArray)]); 
+
+  // // Iterate through each item in the array
+  // foreach ($dataArray as $data) {
+  //     // Find the corresponding record in the iatacode table using the iata_code
+  //     if (!is_null($data['city']) && !is_null($data['state']))
+  //     {
+  //       DB::table('iatacodes')
+  //       ->where('iata_code', $data['code'])
+  //       ->update([
+  //           'city' => $data['city'],
+  //           'state' => $data['state']
+  //       ]);
+  //     }
+  //   }
+
+  $existingAirportCodes = iatacode::pluck('iata_code')->toArray();
+
+  $beforeCount = iatacode::count();
+
+  $data = [];
+
+  foreach ($dataArray as $Airport) {
+    if (!in_array($Airport->code, $existingAirportCodes)) {      
+        $data[] = [
+          'airport_name' => $Airport->name ?? null,
+          'country'=> $Airport->country ?? null ,
+          'iata_code' => $Airport->code ?? null,
+          'state' => $Airport->state ?? null,
+          'city' => $Airport->city ?? null
+        ];
     }
+}
 
-    return response()->json(['success'=>1, 'Data' => 'added']);
+  iatacode::insert($data);
+      
+  $afterCount = iatacode::count();
+
+  // Calculate the number of records inserted
+  $insertedCount = $afterCount - $beforeCount;
+
+  return response()->json(['inserted_count' => $insertedCount]);   
 
 }
 
