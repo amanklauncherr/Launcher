@@ -11,6 +11,8 @@ class iatacode extends Model
     protected $fillable=[
         'airport_name',
         'country',
-        'iata_code'
+        'iata_code',
+        'state',
+        'city'
     ];
 }
