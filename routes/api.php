@@ -196,7 +196,6 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/Cancel/OrderID',[OrderIDCreationController::class,'CancelOrder']);
 
     // Flight 
-    Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
 
     Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
 
@@ -212,8 +211,10 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/Check/Ticket',[DotMikBusController::class,'CheckTicket']);
 
     Route::post('/Get/Cancel/Ticket',[DotMikBusController::class,'CancelTicket']);
-
 });
+
+Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
+
 
 Route::post('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
@@ -282,6 +283,8 @@ Route::get('/showState',[StateController::class,'showState']);  //
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']); //
 
 
+Route::post('/add/Iata',[IataCodeController::class,'AddIata']); //
+
 // All iata
 Route::get('/showIata',[IataCodeController::class,'showIata']); //
 
@@ -289,6 +292,10 @@ Route::get('/showIata',[IataCodeController::class,'showIata']); //
 Route::get('/Check/IATA',[IataCodeController::class,'CheckIATA']); //
 
 Route::get('/showIata/airport',[IataCodeController::class,'showAirport']); //
+
+
+// addAirlineCode
+Route::post('/Add/Airline',[AirlineCodeController::class,'addAirlineCode']); //
 
 Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']); //
 
@@ -343,6 +350,8 @@ Route::post('/Boarding/Point/Details',[DotMikBusController::class,'BoardingPoint
 Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationData']);
 
 Route::post('/WebHook',[WebHookRefundController::class,'WebHookRefund']);
+
+
 
 // Token API
 
