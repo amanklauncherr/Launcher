@@ -274,11 +274,15 @@ Route::get('/Show-QueAndAns',[QueAndAnsController::class,'showQueAndAns']); //
 // Saved  Cites and State
 Route::get('/cities',[CitesController::class,'Cites']); // 
 
+Route::post('/Add/States',[StateController::class,'AddStates']);
+
 Route::get('/CITIES',[StateController::class,'CITIES']);  //
 
 Route::get('/STATE',[StateController::class,'AllState']); //
 
 Route::get('/showState',[StateController::class,'showState']);  //
+
+Route::post('/Add/Country/Code',[CountryCodeController::class,'AddCountryCode']); //
 
 Route::get('/showCode',[CountryCodeController::class,'showCountryCode']); //
 
@@ -377,3 +381,13 @@ Route::post('/WebHook',[WebHookRefundController::class,'WebHookRefund']);
 // Route::post('/updateProfile',[EmployerController::class,'update']);
 
 // Route::middleware(['throttle:20,1'])->group(function (){
+
+
+
+
+
+
+
+
+
+  
