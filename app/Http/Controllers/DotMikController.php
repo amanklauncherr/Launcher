@@ -747,6 +747,10 @@ class DotMikController extends Controller
                     $infantAmount = 0;
                     $infantservice = 0;
                     $infantAirportFee=0;
+                    $adultAmountwithMargin=0;
+                    $childAmountwithMarin=0;
+                    $infantAmountwithMargin=0;
+
 
                     foreach($PAX as $pax) {
                         $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
