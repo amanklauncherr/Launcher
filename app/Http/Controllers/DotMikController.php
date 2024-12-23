@@ -754,16 +754,19 @@ class DotMikController extends Controller
                         switch ($pax['PAX_Type']) {
                             case 0: // Adult
                                 $adultAmount += $total * $data['adultCount'];
+                                $adultAmountwithMargin = $adultAmount + ($adultAmount * (10/100));
                                 $adultservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $adultAirportFee += $pax['AirportTax_Amount']  * $data['adultCount'];
                                 break;
                             case 1: // Child
                                 $childAmount += $total * $data['childCount'];
+                                $childAmountwithMarin = $childAmount + ($childAmount * (10/100));
                                 $childservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $childAirportFee += $pax['AirportTax_Amount']  * $data['childCount'];
                                 break;
                             case 2: // Infant
                                 $infantAmount += $total * $data['infantCount'];
+                                $infantAmountwithMargin = $infantAmount + ($infantAmount * (10/100));
                                 $infantservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $infantAirportFee += $pax['AirportTax_Amount']  * $data['infantCount'];
                                 break;
@@ -775,17 +778,24 @@ class DotMikController extends Controller
                     $LauncherAmount = null;
                     if( $BookingType === 'Domestic')
                     {
-                        $LauncherAmount = ($TotalAmount * (20/100)) + $TotalAmount;
+                        $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                        $serviceCharge = $LauncherAmountBefore * (3/100);
+                        $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
+                       
                     }
                     else if( $BookingType === 'International')
                     {
                         if($TotalAmount <= 20000)
                         {
-                            $LauncherAmount = ($TotalAmount * (20/100)) + $TotalAmount;
+                            $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            $serviceCharge = $LauncherAmountBefore * (3/100);
+                            $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
                         }
                         elseif($TotalAmount >20000)
                         {
-                            $LauncherAmount = ($TotalAmount * (25/100)) + $TotalAmount;   
+                            $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            $serviceCharge = $LauncherAmountBefore * (3/100);
+                            $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
                         }
                     }
 
@@ -795,13 +805,14 @@ class DotMikController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'adultAmount' => $adultAmount,
-                        'childAmount' => $childAmount,
-                        'infantAmount' => $infantAmount,
+                        'adultAmount' => $adultAmountwithMargin,
+                        'childAmount' => $childAmountwithMarin,
+                        'infantAmount' => $infantAmountwithMargin,
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
                         'launcherAmount' => ceil($LauncherAmount),
+                        'serviceChargeNew' => ceil($serviceCharge),
                         'data' => $result,
                     ], $statusCode);
                 } else {
