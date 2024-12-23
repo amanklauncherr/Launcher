@@ -784,7 +784,7 @@ class DotMikController extends Controller
                     {
                         $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
                         $serviceCharge = $LauncherAmountBefore * (3/100);
-                        $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
+                        $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                        
                     }
                     else if( $BookingType === 'International')
@@ -793,13 +793,13 @@ class DotMikController extends Controller
                         {
                             $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
                             $serviceCharge = $LauncherAmountBefore * (3/100);
-                            $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
+                            $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                         }
                         elseif($TotalAmount >20000)
                         {
                             $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
                             $serviceCharge = $LauncherAmountBefore * (3/100);
-                            $LauncherAmount = $serviceCharge + $LauncherAmountBefore;
+                            $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                         }
                     }
 
