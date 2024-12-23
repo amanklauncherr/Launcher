@@ -809,9 +809,9 @@ class DotMikController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'adultAmount' => $adultAmountwithMargin,
-                        'childAmount' => $childAmountwithMarin,
-                        'infantAmount' => $infantAmountwithMargin,
+                        'adultAmount' => ceil($adultAmountwithMargin),
+                        'childAmount' => ceil($childAmountwithMarin),
+                        'infantAmount' => ceil($infantAmountwithMargin),
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
