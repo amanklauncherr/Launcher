@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // Controllers
 use App\Http\Controllers\TermsConditionsController;
 use App\Http\Controllers\Sections;
+use App\Http\Controllers\DataInsert;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CompanyDetailController;
@@ -355,6 +356,7 @@ Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationD
 
 Route::post('/WebHook',[WebHookRefundController::class,'WebHookRefund']);
 
+Route::post('/launcherr/insert/dotmitcity',[DataInsert::class,'addData']);
 
 
 // Token API

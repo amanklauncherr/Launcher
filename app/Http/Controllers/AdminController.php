@@ -91,6 +91,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'last_name'=> $request->last_name,
             ]);
     
             $token = JWTAuth::fromUser($admin);
