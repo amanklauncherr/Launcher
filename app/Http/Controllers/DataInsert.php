@@ -17,14 +17,14 @@ public function addData(Request $request){
 
     // Data to insert
     $data = [
-        'name' => 'Manali',
-        'city' => 'Manali',
-        'state' => 'Himachal Pradesh',
+        'name' => 'Rishikesh',
+        'city' => 'Rishikesh',
+        'state' => 'Uttarakhand',
         'destination_type'=>'Mountain',
-        'thumbnail_image'=>'https://res.cloudinary.com/douuxmaix/image/upload/v1721656388/ppuglhlbz6xtaihlwnxw.jpg',
-        'images'=>'["https:\/\/res.cloudinary.com\/douuxmaix\/image\/upload\/v1721657937\/llmhg1tsnrwir14wcdoj.png","https:\/\/res.cloudinary.com\/douuxmaix\/image\/upload\/v1721657938\/nhgtqx17zsqjrscbi5sg.png"]',
-        'short_description'=>'A Himalayan gem, offers cool climate, snow-capped peaks, and cultural richness.',
-        'description'=>'A detailed description of the destination'
+        'thumbnail_image'=>'https://res.cloudinary.com/douuxmaix/image/upload/v1721655735/gkayacn65zg87urcnauc.jpg',
+        'images'=>'["https:\/\/res.cloudinary.com\/douuxmaix\/image\/upload\/v1721655736\/hngg1ckd61shd2uxcqu8.jpg","https:\/\/res.cloudinary.com\/douuxmaix\/image\/upload\/v1721647269\/s9afhaw0e4crysgfgmvd.jpg"]',
+        'short_description'=>'a short trip to Rishikesh',
+        'description'=>'A detailed description of the destination',
     ];
 
     // Insert data using DB facade (Query Builder)
