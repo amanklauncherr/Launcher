@@ -356,7 +356,10 @@ Route::post('/Get/Cancelation/Data',[DotMikBusController::class,'getCancelationD
 
 Route::post('/WebHook',[WebHookRefundController::class,'WebHookRefund']);
 
+Route::post('/launcherr/db/details',[DataInsert::class,'dbDetails']);
+
 Route::post('/launcherr/insert/dotmitcity',[DataInsert::class,'addData']);
+
 
 
 // Token API
