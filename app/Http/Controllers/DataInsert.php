@@ -15,8 +15,8 @@ class DataInsert extends Controller
 
     public function dbDetails(Request $request)
     {
-        $dbUsername = config('database.connections.mysql.database');
-        $dbPassword = config('database.connections.mysql.username');
+        $dbName = config('database.connections.mysql.database');
+        $dbUsername = config('database.connections.mysql.username');
         $dbPassword = config('database.connections.mysql.password');
 
         // return response()->json([
