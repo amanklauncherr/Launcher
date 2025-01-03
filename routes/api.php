@@ -360,6 +360,8 @@ Route::post('/launcherr/db/details',[DataInsert::class,'dbDetails']);
 
 Route::post('/launcherr/getSourceCity',[DataInsert::class,'getSourceCity']);
 
+Route::post('getcity',[DataInsert::class,'dotmicBusCity']);
+
 
 
 // Token API
