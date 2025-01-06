@@ -837,6 +837,73 @@ class DotMikController extends Controller
         }
    }
 
+   public function getSSR(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'searchKey' => 'required|string',
+            'flightKey' => 'required|string',
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string',
+        ]);
+    
+        $data=$validator->validated();
+    
+            // Headers
+        $headers = [
+            'D-SECRET-TOKEN' => $data['headersToken'],
+            'D-SECRET-KEY' => $data['headersKey'],
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
+    
+          //payload
+        $payload = [
+            "deviceInfo" => [
+                "ip" => "122.161.52.233",
+                "imeiNumber" => "12384659878976879887"
+            ],
+            "searchKey" => $data['searchKey'],
+            "flightKey" => $data['flightKey']
+        
+        ];
+    
+        $url = 'https://api.dotmik.in/api/flightBooking/v1/getSsr';
+    
+        try {
+            // Make POST request
+            $response = Http::withHeaders($headers)->post($url, $payload);
+            $result = $response->json();
+            $statusCode = $response->status();
+            
+            if ($result['status'] === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['payloads']['data'],
+                    'error' => $result
+                ],$statusCode);
+            } else {
+                if ($response->successful()) {
+                    return response()->json([
+                        'success' => true,
+                        'data' => $result,
+                    ], $statusCode);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['payloads']['data'],
+                        'error' => $result
+                    ],$statusCode);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        } 
+    
+   }
+
     public function TemporaryBooking(Request $request)
     {
         // Validation

@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\DotMitSourceCities;
 use Illuminate\Support\Facades\DB;
 use App\Models\Card;
 use App\Models\About;
-use App\Models\DotMitSourcesCities;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -29,33 +29,28 @@ class DataInsert extends Controller
 
     }
 
-    public function dotmicBusCity(Request $request){
+    public function addBusStation(Request $request){
 
-        $key = $request->key;
-        $token = $request->token;
+        $data = new DotMitSourceCities();
+        $data->City_ID = $request->City_ID;
+        $data->City_Name = $request->City_Name;
+        $data->State_ID = $request->State_ID;
+        $data->State_Name = $request->State_Name;
+        $data->LocationType =  $request->LocationType;
+        $data->Latitude = $request->Latitude;
+        $data->Longitude = $request->Longitude;
+        if($data->save()){
+            return response()->json(['message' => 'Data inserted successfully!']);
+        }else{
+            return response()->json(['message' => 'Data not inserted successfully!']);
+        }
 
-            $curl = curl_init();
+    }
 
-            curl_setopt_array($curl, array(
-              CURLOPT_URL => 'https://api.dotmik.in/api/busBooking/v1/sourceCities',
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_ENCODING => '',
-              CURLOPT_MAXREDIRS => 10,
-              CURLOPT_TIMEOUT => 0,
-              CURLOPT_FOLLOWLOCATION => true,
-              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-              CURLOPT_CUSTOMREQUEST => 'GET',
-              CURLOPT_HTTPHEADER => array(
-                "D-SECRET-TOKEN: $token",
-                "D-SECRET-KEY: $key",
-                'CROP-CODE: DOTMIK160614'
-              ),
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-            echo $response;
+    public function getCity(Request $request){
+    
+        $data = DotMitSourceCities::where('City_Name', 'LIKE', '%'.$request->City_Name.'%')->get();
+        return response()->json($data);
 
     }
 

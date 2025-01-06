@@ -216,6 +216,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
 Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
 
+Route::post('/Get/SSR',[DotMikController::class,'getSSR']);
 
 Route::post('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
@@ -360,7 +361,8 @@ Route::post('/launcherr/db/details',[DataInsert::class,'dbDetails']);
 
 Route::post('/launcherr/getSourceCity',[DataInsert::class,'getSourceCity']);
 
-Route::post('getcity',[DataInsert::class,'dotmicBusCity']);
+Route::post('getcity',[DataInsert::class,'getCity']);
+Route::post('addcity',[DataInsert::class,'addBusStation']);
 
 
 
