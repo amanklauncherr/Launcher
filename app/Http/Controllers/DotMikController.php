@@ -506,8 +506,8 @@ class DotMikController extends Controller
 
                 $count = count($Flights);
 
-                if (!empty($Flights)) {
-                    if(!empty($data['sortBy'] === 'highToLow')){
+                if (isset($sortBy)) {
+                    if(($data['sortBy'] === 'highToLow')){
                         usort($Flights, function($a, $b) {
                             $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                             $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
