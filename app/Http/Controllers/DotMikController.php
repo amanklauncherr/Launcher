@@ -506,34 +506,25 @@ class DotMikController extends Controller
 
                 $count = count($Flights);
 
-
-                if(isset($data['sortBy'])){
-                    if($data['sortBy'] === 'highToLow')
-                    {
-                       $hightoLow =  usort($Flights, function($a, $b) {
-                            // Get the total amount from the first fare of each flight
+                if (!empty($Flights)) {
+                    if(!empty($data['sortBy'] === 'highToLow')){
+                        usort($Flights, function($a, $b) {
                             $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                             $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                            
+
                             // Compare prices
                             return $priceB <=> $priceA;
                         });
-
-                        $flights = $hightoLow;
-                    }
-                    else 
-                    {
-                       $lowtohigh =  usort($Flights, function($a, $b) {
-                            // Get the total amount from the first fare of each flight
+                    }else{
+                        usort($Flights, function($a, $b) {
                             $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                             $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                            
+
                             // Compare prices
                             return $priceA <=> $priceB;
                         });
-
-                        $flights = $lowtohigh;
                     }
+                    
                 }
 
                 $payloads = [
