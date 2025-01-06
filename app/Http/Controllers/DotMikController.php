@@ -506,6 +506,17 @@ class DotMikController extends Controller
 
                 $count = count($Flights);
 
+                if (!empty($Flights)) {
+                    usort($Flights, function($a, $b) {
+                        // Get the total amount from the first fare of each flight
+                        $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                        $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                        
+                        // Compare prices
+                        return $priceA <=> $priceB;
+                    });
+                }
+
                 $payloads = [
                         'errors' => [],
                         'data' => [
@@ -873,7 +884,7 @@ class DotMikController extends Controller
         ];
 
         $url = 'https://api.dotmik.in/api/flightBooking/v1/getSsr';
-
+        
         try {
             // Make POST request
             $response = Http::withHeaders($headers)->post($url, $payload);
