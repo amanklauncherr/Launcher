@@ -508,20 +508,7 @@ class DotMikController extends Controller
 
 
                 if(isset($data['sortBy'])){
-                    if($data['sortBy'] === 'lowToHigh')
-                    {
-                       $lowtoHigh =  usort($Flights, function($a, $b) {
-                            // Get the total amount from the first fare of each flight
-                            $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                            $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                            
-                            // Compare prices
-                            return $priceA <=> $priceB;
-                        });
-
-                        $flights = $lowtoHigh;
-                    }
-                    else if($data['sortBy'] === 'highToLow')
+                    if($data['sortBy'] === 'highToLow')
                     {
                        $hightoLow =  usort($Flights, function($a, $b) {
                             // Get the total amount from the first fare of each flight
@@ -533,6 +520,19 @@ class DotMikController extends Controller
                         });
 
                         $flights = $hightoLow;
+                    }
+                    else 
+                    {
+                       $lowtohigh =  usort($Flights, function($a, $b) {
+                            // Get the total amount from the first fare of each flight
+                            $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                            $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                            
+                            // Compare prices
+                            return $priceA <=> $priceB;
+                        });
+
+                        $flights = $lowtohigh;
                     }
                 }
 
