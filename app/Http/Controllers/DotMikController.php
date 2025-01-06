@@ -77,6 +77,7 @@ class DotMikController extends Controller
             "Price" => "nullable|integer",
             "headersToken" => "required|string", 
             "headersKey" => "required|string",
+            "sortBy" => "nullable",
         ]);
         
         // Check if validation fails
