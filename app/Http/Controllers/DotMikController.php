@@ -510,7 +510,7 @@ class DotMikController extends Controller
                 if(isset($data['sortBy'])){
                     if($data['sortBy'] === 'lowToHigh')
                     {
-                        usort($Flights, function($a, $b) {
+                       $lowtoHigh =  usort($Flights, function($a, $b) {
                             // Get the total amount from the first fare of each flight
                             $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                             $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
@@ -518,10 +518,12 @@ class DotMikController extends Controller
                             // Compare prices
                             return $priceA <=> $priceB;
                         });
+
+                        $flights = $lowtoHigh;
                     }
                     else if($data['sortBy'] === 'highToLow')
                     {
-                        usort($Flights, function($a, $b) {
+                       $hightoLow =  usort($Flights, function($a, $b) {
                             // Get the total amount from the first fare of each flight
                             $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                             $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
@@ -529,19 +531,10 @@ class DotMikController extends Controller
                             // Compare prices
                             return $priceB <=> $priceA;
                         });
+
+                        $flights = $hightoLow;
                     }
                 }
-
-                // if (!empty($Flights)) {
-                //     usort($Flights, function($a, $b) {
-                //         // Get the total amount from the first fare of each flight
-                //         $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                //         $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
-                        
-                //         // Compare prices
-                //         return $priceA <=> $priceB;
-                //     });
-                // }
 
                 $payloads = [
                         'errors' => [],
