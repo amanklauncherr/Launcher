@@ -845,9 +845,9 @@ class DotMikController extends Controller
             'headersToken' => 'required|string',
             'headersKey' => 'required|string',
         ]);
-    
+
         $data=$validator->validated();
-    
+
             // Headers
         $headers = [
             'D-SECRET-TOKEN' => $data['headersToken'],
@@ -855,7 +855,7 @@ class DotMikController extends Controller
             'CROP-CODE' => 'DOTMIK160614',
             'Content-Type' => 'application/json',
         ];
-    
+
           //payload
         $payload = [
             "deviceInfo" => [
@@ -863,18 +863,23 @@ class DotMikController extends Controller
                 "imeiNumber" => "12384659878976879887"
             ],
             "searchKey" => $data['searchKey'],
-            "flightKey" => $data['flightKey']
-        
+            "getSSr" => [
+                [
+                    "Flight_Key" => $data['flightKey']
+                ]
+            ],
+            
+
         ];
-    
+
         $url = 'https://api.dotmik.in/api/flightBooking/v1/getSsr';
-    
+
         try {
             // Make POST request
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result = $response->json();
             $statusCode = $response->status();
-            
+
             if ($result['status'] === false) {
                 return response()->json([
                     'success' => false,
@@ -901,7 +906,7 @@ class DotMikController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         } 
-    
+
    }
 
     public function TemporaryBooking(Request $request)
