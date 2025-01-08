@@ -34,7 +34,8 @@ class DotMikBusController extends Controller
 
             if(isset($city))
             {
-                $result=DotMitSourceCities::where('City_Name',$city)->get();   
+                // $result=DotMitSourceCities::where('City_Name',$city)->get();  
+                $result = DotMitSourceCities::where('City_Name', 'LIKE', "%$city%")->get(); 
                  return response()->json([
                     'success' => true,
                     'data' => $result,
@@ -42,7 +43,8 @@ class DotMikBusController extends Controller
             }
             if(isset($state))
             {
-                $result=DotMitSourceCities::where('State_Name',$state)->get();   
+                // $result=DotMitSourceCities::where('State_Name',$state)->get();
+                $result = DotMitSourceCities::where('State_Name', 'LIKE', "%$state%")->get();   
                 return response()->json([
                    'success' => true,
                    'data' => $result,
