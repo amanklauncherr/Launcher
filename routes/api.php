@@ -218,6 +218,8 @@ Route::post('/Temp/Booking',[DotMikController::class,'TemporaryBooking']);
 
 Route::post('/Get/SSR',[DotMikController::class,'getSSR']);
 
+Route::post('/getSeatMap',[DotMikController::class,'getSeatMap']);
+
 Route::post('/get/Order/Detail',[OrderIDCreationController::class,'GetOrderDetails']);
 
 Route::get('/Get/All/Orders',[OrderIDCreationController::class,'GetAllOrders']);
