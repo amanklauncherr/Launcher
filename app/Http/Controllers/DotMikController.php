@@ -963,7 +963,7 @@ class DotMikController extends Controller
             "imeiNumber" => "12384659878976879887"
         ],
         "searchKey" => $data['searchKey'],
-        "flightKey" => $data['flightKey'],
+        "flightKey" =>[$data['flightKey']],
         "passengers" => [
     [
         "no" => $data['no'],
