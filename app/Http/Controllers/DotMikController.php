@@ -894,7 +894,7 @@ class DotMikController extends Controller
 
         ];
 
-        $url = 'https://staging.dotmik.in/api/flightBooking/v1/getSsr';
+        $url = 'https://api.dotmik.in/api/flightBooking/v1/getSsr';
         
         try {
             // Make POST request
@@ -977,7 +977,7 @@ class DotMikController extends Controller
 
     ];
 
-    $url = 'https://staging.dotmik.in/api/flightBooking/v1/getSeatMap';
+    $url = 'https://api.dotmik.in/api/flightBooking/v1/getSeatMap';
     
     try {
         // Make POST request
