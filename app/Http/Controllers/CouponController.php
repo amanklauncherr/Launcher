@@ -154,6 +154,7 @@ class CouponController extends Controller
         try {
             //code...
             $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
+            // $coupon = Coupon::all();
 
             if(!in_array($request->place,json_decode($coupon->coupon_places))){
                 return response()->json(['error' => 'Coupon not applicable for this place'], 400);
