@@ -1122,8 +1122,8 @@ class DotMikController extends Controller
                 "flightKey" => $data['FlightKey'],
                 "ssrDetails" => [
                     [
-                        "ssrSeatKey" => $data['ssrSeatKey'] ?? null
-                    ]
+                        "ssrSeatKey" => $data['ssrSeatKey'] ?? []
+                    ] ?? []
                 ] // Empty SSR details
             ]
         ],
