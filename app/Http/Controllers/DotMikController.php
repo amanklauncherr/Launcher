@@ -1067,7 +1067,7 @@ class DotMikController extends Controller
 
         $ssrkeynew = [];
 
-        if($data['ssrSeatKey'] !== null)
+        if($data['ssrSeatKey'] !== [])
         {
             $ssrkeynew = [
                 "ssrKey" => $data['ssrSeatKey']
