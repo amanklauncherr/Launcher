@@ -805,7 +805,8 @@ class DotMikController extends Controller
                     if( $BookingType === 'Domestic')
                     {
                         $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
-                        $serviceCharge = $LauncherAmountBefore * (3/100);
+                        // $serviceCharge = $LauncherAmountBefore * (3/100);
+                        $serviceCharge = 0;
                         $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                        
                     }
@@ -814,13 +815,15 @@ class DotMikController extends Controller
                         if($TotalAmount <= 20000)
                         {
                             $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
-                            $serviceCharge = $LauncherAmountBefore * (3/100);
+                            // $serviceCharge = $LauncherAmountBefore * (3/100);
+                            $serviceCharge = 0;
                             $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                         }
                         elseif($TotalAmount >20000)
                         {
                             $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
-                            $serviceCharge = $LauncherAmountBefore * (3/100);
+                            // $serviceCharge = $LauncherAmountBefore * (3/100);
+                            $serviceCharge = 0;
                             $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                         }
                     }
@@ -1019,7 +1022,7 @@ class DotMikController extends Controller
         // Validation
       $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
-            // 'ssrSeatKey' => 'nullable|string',
+            'ssrSeatKey' => 'nullable|string',
             'mobile' => 'required|string|max:10|min:10',
             'whatsApp' => 'required|string|max:10|min:10',
             'email' => 'required|string|email',
@@ -1044,8 +1047,8 @@ class DotMikController extends Controller
             'FlightKey' => 'required|string',
             'headersToken' => 'required|string',
             'headersKey' => 'required|string'
-        ]);     
-
+        ]);  
+        
         if ($validator->fails()) {
             $errors = $validator->errors()->all(); // Get all error messages
             $formattedErrors = [];
@@ -1061,6 +1064,15 @@ class DotMikController extends Controller
         }
         
         $data=$validator->validated();
+
+        $ssrkeynew = [];
+
+        if($data['ssrSeatKey'] !== null)
+        {
+            $ssrkeynew = [
+                "ssrKey" => $data['ssrSeatKey']
+            ];
+        }
 
         // Initialize paxDetails array
         $paxDetails = [];
@@ -1120,7 +1132,7 @@ class DotMikController extends Controller
             [
                 "searchKey" => $data['searchKey'],
                 "flightKey" => $data['FlightKey'],
-                "ssrDetails" => [] // Empty SSR details
+                "ssrDetails" => $ssrkeynew // Empty SSR details
             ]
         ],
         "costCenterId" => 0,
