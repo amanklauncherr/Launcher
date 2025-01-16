@@ -313,7 +313,7 @@ Route::get('/show/Airline',[AirlineCodeController::class,'showAirlineCode']); //
 
 
 // Flight and Order PAYPAL
-Route::get('/paypal',[PaymentController::class,'paypal']);
+Route::post('/paypal',[PaymentController::class,'paypal']);
 
 Route::get('/success',[PaymentController::class,'success'])->name('success');
 
