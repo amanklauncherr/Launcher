@@ -1069,13 +1069,9 @@ class DotMikController extends Controller
 
         $ssrkeys = $request->ssrSeatKey;
 
-        if($ssrkeys !== [])
-        {
-            foreach($ssrkeys as $seats){
+       foreach($ssrkeys as $seats){
                 $ssrkeynew[] = $seats;
             }
-            
-        }
 
         // dd( $ssrkeynew);   
 
@@ -1137,7 +1133,7 @@ class DotMikController extends Controller
             [
                 "searchKey" => $data['searchKey'],
                 "flightKey" => $data['FlightKey'],
-                "ssrDetails" => $ssrkeynew || [] // Empty SSR details
+                "ssrDetails" => $ssrkeynew // Empty SSR details
             ]
         ],
         "costCenterId" => 0,
