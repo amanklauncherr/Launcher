@@ -1022,7 +1022,7 @@ class DotMikController extends Controller
         // Validation
       $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
-            'ssrSeatKey' => 'nullable|string',
+            'ssrSeatKey' => 'nullable',
             'mobile' => 'required|string|max:10|min:10',
             'whatsApp' => 'required|string|max:10|min:10',
             'email' => 'required|string|email',
