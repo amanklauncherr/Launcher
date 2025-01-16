@@ -1067,7 +1067,9 @@ class DotMikController extends Controller
 
         $ssrkeynew = array();
 
-        if($data['ssrSeatKey'] !== [])
+        $ssrkeys = $request->ssrSeatKey;
+
+        if($ssrkeys !== [])
         {
             foreach($data['ssrSeatkey'] as $seats){
                 $ssrkeynew[] = $seats;
