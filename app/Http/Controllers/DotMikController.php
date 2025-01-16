@@ -1069,9 +1069,7 @@ class DotMikController extends Controller
 
         if($data['ssrSeatKey'] !== [])
         {
-            $ssrkeynew = [
-                "ssrKey" => $data['ssrSeatKey']
-            ];
+            $ssrkeynew = $data['ssrSeatKey'];
         }
 
         // Initialize paxDetails array
