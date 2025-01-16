@@ -1075,7 +1075,7 @@ class DotMikController extends Controller
             
         }
 
-        // echo $data['ssrSeatKey'];   
+        return $ssrkeynew;   
 
         // Initialize paxDetails array
         $paxDetails = [];
