@@ -167,7 +167,8 @@ class PaymentController extends Controller
         if (isset($response['id']) && $response['id'] != null) {
             foreach ($response['links'] as $link) {
                 if ($link['rel'] === 'approve') {
-                    return response()->json($link['href']);
+                    $redurectionUrl = $link['href'];
+                    return redirect()->away($redurectionUrl);
                 }
             }
         } else {
