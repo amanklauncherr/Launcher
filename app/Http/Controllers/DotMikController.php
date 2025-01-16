@@ -1070,7 +1070,7 @@ class DotMikController extends Controller
         if($data['ssrSeatKey'] !== null)
         {
             $ssrkeynew = [
-                "ssrKey" => $data['ssrSeatKey']
+                "ssrKey" => $data['ssrSeatKey'] ?? []
             ];
         }
 
@@ -1132,7 +1132,7 @@ class DotMikController extends Controller
             [
                 "searchKey" => $data['searchKey'],
                 "flightKey" => $data['FlightKey'],
-                "ssrDetails" => $ssrkeynew // Empty SSR details
+                "ssrDetails" => $ssrkeynew || [] // Empty SSR details
             ]
         ],
         "costCenterId" => 0,
