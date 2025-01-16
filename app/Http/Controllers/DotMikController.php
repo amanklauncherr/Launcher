@@ -1065,14 +1065,17 @@ class DotMikController extends Controller
         
         $data=$validator->validated();
 
-        $ssrkeynew = [];
+        $ssrkeynew = array();
 
         if($data['ssrSeatKey'] !== [])
         {
-            $ssrkeynew = $data['ssrSeatKey'];
+            foreach($data['ssrSeatkey'] as $seats){
+                $ssrkeynew[] = $seats;
+            }
+            
         }
 
-        echo $data['ssrSeatKey'];   
+        // echo $data['ssrSeatKey'];   
 
         // Initialize paxDetails array
         $paxDetails = [];
