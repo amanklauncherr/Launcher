@@ -775,24 +775,47 @@ class DotMikController extends Controller
 
 
                     foreach($PAX as $pax) {
-                        $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
+
+                        $amount = $pax['Total_Amount'];
+
+                        if($amount < 5000){
+                            $discount = $amount * (6/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 5000 && $amount < 15000){
+                            $discount = $amount * (6/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 15000 && $amount < 25000){
+                            $discount = $amount * (5.50/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 25000 && $amount < 50000){
+                            $discount = $amount * (5/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 50000 && $amount < 100000){
+                            $discount = $amount * (4/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 100000){
+                            $discount = $amount * (3.50/100);
+                            $total = $amount + $discount;
+                        }else{
+                            $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
+                        }
 
                         switch ($pax['PAX_Type']) {
                             case 0: // Adult
                                 $adultAmount += $total * $data['adultCount'];
-                                $adultAmountwithMargin = $adultAmount + ($adultAmount * (10/100));
+                                // $adultAmountwithMargin = $adultAmount + ($adultAmount * (10/100));
                                 $adultservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $adultAirportFee += $pax['AirportTax_Amount']  * $data['adultCount'];
                                 break;
                             case 1: // Child
                                 $childAmount += $total * $data['childCount'];
-                                $childAmountwithMarin = $childAmount + ($childAmount * (10/100));
+                                // $childAmountwithMarin = $childAmount + ($childAmount * (10/100));
                                 $childservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $childAirportFee += $pax['AirportTax_Amount']  * $data['childCount'];
                                 break;
                             case 2: // Infant
                                 $infantAmount += $total * $data['infantCount'];
-                                $infantAmountwithMargin = $infantAmount + ($infantAmount * (10/100));
+                                // $infantAmountwithMargin = $infantAmount + ($infantAmount * (10/100));
                                 $infantservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $infantAirportFee += $pax['AirportTax_Amount']  * $data['infantCount'];
                                 break;
@@ -804,7 +827,8 @@ class DotMikController extends Controller
                     $LauncherAmount = null;
                     if( $BookingType === 'Domestic')
                     {
-                        $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                        // $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                        $LauncherAmountBefore = $TotalAmount;
                         // $serviceCharge = $LauncherAmountBefore * (3/100);
                         $serviceCharge = 0;
                         $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
@@ -814,14 +838,16 @@ class DotMikController extends Controller
                     {
                         if($TotalAmount <= 20000)
                         {
-                            $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            // $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            $LauncherAmountBefore = $TotalAmount;
                             // $serviceCharge = $LauncherAmountBefore * (3/100);
                             $serviceCharge = 0;
                             $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
                         }
                         elseif($TotalAmount >20000)
                         {
-                            $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            // $LauncherAmountBefore = ($TotalAmount * (10/100)) + $TotalAmount;
+                            $LauncherAmountBefore = $TotalAmount;
                             // $serviceCharge = $LauncherAmountBefore * (3/100);
                             $serviceCharge = 0;
                             $LauncherAmount = ceil($serviceCharge) + ceil($LauncherAmountBefore);
@@ -834,9 +860,9 @@ class DotMikController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'adultAmount' => ceil($adultAmountwithMargin),
-                        'childAmount' => ceil($childAmountwithMarin),
-                        'infantAmount' => ceil($infantAmountwithMargin),
+                        'adultAmount' => ceil($adultAmount),
+                        'childAmount' => ceil($childAmount),
+                        'infantAmount' => ceil($infantAmount),
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
