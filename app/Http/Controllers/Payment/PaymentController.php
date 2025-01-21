@@ -185,36 +185,43 @@ class PaymentController extends Controller
             $paypalToken = $provider->getAccessToken();
     
             $response = $provider->capturePaymentOrder($request->token);
-    
             if ($response['status'] === 'COMPLETED') 
             {
                 // Get the BookingRef from the request
                 $bookingRef = $request->query('BookingRef'); 
     
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Payment Successful',
-                    // Append BookingRef to the success URL
-                    'link' => 'https://launcherr.co/flightSuccess?BookingRef=' . urlencode($bookingRef),
-                    'data' => $response
-                ], 200);
+                // return response()->json([
+                //     'success' => true,
+                //     'message' => 'Payment Successful',
+                //     // Append BookingRef to the success URL
+                //     'link' => 'https://launcherr.co/flightSuccess?BookingRef=' . urlencode($bookingRef),
+                //     'data' => $response
+                // ], 200);
+
+                $redurectionUrl = 'https://launcherr.co/flightSuccess?BookingRef=' . urlencode($bookingRef);
+                return redirect()->away($redurectionUrl);
             } else {
                 Log::error('PayPal Payment Capture Failed', ['response' => $response]);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Payment Failure',
-                    'link' => 'https://launcherr.co/paymentFailure',
-                    'error' => $response
-                ], 500);
+                // return response()->json([
+                //     'success' => false,
+                //     'message' => 'Payment Failure',
+                //     'link' => 'https://launcherr.co/paymentFailure',
+                //     'error' => $response
+                // ], 500);
+                $redurectionUrl = 'https://launcherr.co/paymentFailure';
+
+               return redirect()->away($redurectionUrl);
             }
         } catch (\Exception $e) {
             Log::error('PayPal Payment Capture Error', ['exception' => $e]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Payment Failure',
-                'link' => 'https://launcherr.co/paymentFailure',
-                'error' => $e->getMessage()
-            ], 500);
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => 'Payment Failure',
+            //     'link' => 'https://launcherr.co/paymentFailure',
+            //     'error' => $e->getMessage()
+            // ], 500);
+            $redurectionUrl = 'https://launcherr.co/paymentFailure';
+               return redirect()->away($redurectionUrl);
         }
     }
     
