@@ -1203,10 +1203,10 @@ class DotMikController extends Controller
                 if ($response->successful()) {
                     $array1 = $result['payloads']['data']['bookingRef'];
                     $array = json_decode($array1, true);
-                    foreach ($array as &$item) {
+                    foreach ($array as $item) {
                         if (isset($item['Fares'])) {
-                            foreach ($item['Fares'] as &$fare) {
-                                foreach ($fare['FareDetails'] as &$fareDetail) {
+                            foreach ($item['Fares'] as $fare) {
+                                foreach ($fare['FareDetails'] as $fareDetail) {
                                     if (isset($fareDetail['Total_Amount'])) {
                                          // Apply discount logic
                                          $totalAmount = $fareDetail['Total_Amount'];
@@ -1236,7 +1236,7 @@ class DotMikController extends Controller
                             }
                         }
                     }
-                    
+
                     $updatedData = json_encode($array);
 
                     TravelHistory::create([
