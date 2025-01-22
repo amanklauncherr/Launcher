@@ -1984,12 +1984,54 @@ class DotMikController extends Controller
                         
                         $pdf_url= asset('storage/' . $pdfFilePath);
 
+                        $array1 = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
+
+                        $array = json_decode($array1, true);
+
+                            // Modify Total_Amount with discount logic
+                            foreach ($array as &$item) {
+                                if (isset($item['Fares'])) {
+                                    foreach ($item['Fares'] as &$fare) {
+                                        foreach ($fare['FareDetails'] as &$fareDetail) {
+                                            if (isset($fareDetail['Total_Amount'])) {
+                                                // Apply discount logic
+                                                $totalAmount = $fareDetail['Total_Amount'];
+                                                if ($totalAmount < 5000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (5.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                    $discount = $totalAmount * (5 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                    $discount = $totalAmount * (4 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 100000) {
+                                                    $discount = $totalAmount * (3.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } else {
+                                                    $fareDetail['Total_Amount'] = $totalAmount;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Encode back to JSON
+                            $updatedData = json_encode($array);
+
                         $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
 
                         if($History)
                         {
                             $History->update([
-                                'PAXTicketDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                                'PAXTicketDetails' => $updatedData,
                                 'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
                                 'Ticket_URL' => $pdf_url
                             ]);
