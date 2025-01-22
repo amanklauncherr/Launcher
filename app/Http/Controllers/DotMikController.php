@@ -1203,7 +1203,7 @@ class DotMikController extends Controller
                 if ($response->successful()) {
                     $array1 = $result['payloads']['data']['bookingRef'];
                     $array = json_decode($array1, true);
-                    foreach ($array as $item) {
+                    foreach ($array1 as $item) {
                         if (isset($item['Fares'])) {
                             foreach ($item['Fares'] as $fare) {
                                 foreach ($fare['FareDetails'] as $fareDetail) {
