@@ -1986,8 +1986,14 @@ class DotMikController extends Controller
 
                         $array1 = $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
 
-                        $array = json_decode($array1, true);
-
+                        if (is_string($array1)) {
+                            $array = json_decode($array1, true);
+                        } elseif (is_array($array1)) {
+                            $array = $array1; // Data is already an array
+                        } else {
+                            throw new Exception('Unexpected data type. Expected a JSON string or an array.');
+                        }
+                        
                             // Modify Total_Amount with discount logic
                             foreach ($array as &$item) {
                                 if (isset($item['Fares'])) {
