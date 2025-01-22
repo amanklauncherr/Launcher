@@ -1901,8 +1901,31 @@ class DotMikController extends Controller
                         
                         $BaseFare=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];
                         
-                        $TotalAmount=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+                        // $TotalAmount=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+                        $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
+                             if ($TotalAmountBefore < 5000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                                 $discount = $TotalAmountBefore * (5.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                                 $discount = $TotalAmountBefore * (5 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                                 $discount = $TotalAmountBefore * (4 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 100000) {
+                                 $discount = $TotalAmountBefore * (3.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } else {
+                                 $TotalAmount = $TotalAmountBefore;
+                             }
+                         
                         $Cancellation=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
 
                         $RescheduleCharges=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
