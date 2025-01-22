@@ -1681,7 +1681,31 @@ class DotMikController extends Controller
                
                 $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];     
                
-                $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+                // $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+
+                $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+
+                             if ($TotalAmountBefore < 5000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                                 $discount = $TotalAmountBefore * (5.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                                 $discount = $TotalAmountBefore * (5 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                                 $discount = $TotalAmountBefore * (4 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 100000) {
+                                 $discount = $TotalAmountBefore * (3.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } else {
+                                 $TotalAmount = $TotalAmountBefore;
+                             }
                
                 $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
                
@@ -1751,13 +1775,61 @@ class DotMikController extends Controller
                 // $first,$last,$Ticket,$gen,
 
                 $pdf_url = asset('storage/' . $pdfFilePath);
+
+                $array1 = $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
+
+                        if (is_string($array1)) {
+                            $array = json_decode($array1, true);
+                        } elseif (is_array($array1)) {
+                            $array = $array1; // Data is already an array
+                        } else {
+                            $array = $array1;
+                        }
+                        
+                            // Modify Total_Amount with discount logic
+                            foreach ($array as &$item) {
+                                if (isset($item['Fares'])) {
+                                    foreach ($item['Fares'] as &$fare) {
+                                        foreach ($fare['FareDetails'] as &$fareDetail) {
+                                            if (isset($fareDetail['Total_Amount'])) {
+                                                // Apply discount logic
+                                                $totalAmount = $fareDetail['Total_Amount'];
+                                                if ($totalAmount < 5000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (5.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                    $discount = $totalAmount * (5 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                    $discount = $totalAmount * (4 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 100000) {
+                                                    $discount = $totalAmount * (3.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } else {
+                                                    $fareDetail['Total_Amount'] = $totalAmount;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Encode back to JSON
+                            $updatedData = json_encode($array);
                             
                 $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
 
                 if($History)
                 {
                     $History->update([
-                        'PAXTicketDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'],
+                        'PAXTicketDetails' => $updatedData,
                         'TravelDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
                         'Ticket_URL' => $pdf_url
                     ]);
