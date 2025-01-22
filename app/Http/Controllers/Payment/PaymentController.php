@@ -228,7 +228,13 @@ class PaymentController extends Controller
 
     public function cancel()
     {
-        return response()->json(['success' => false, 'message' => 'Payment Failure', 'link' => 'https://launcherr.co/paymentFailure'], 500); 
+        // return response()->json(
+        //     ['success' => false,
+        //      'message' => 'Payment Failure',
+        //       'link' => 'https://launcherr.co/paymentFailure'
+        //     ], 500); 
+        $redurectionUrl = 'https://launcherr.co/paymentFailure';
+        return redirect()->away($redurectionUrl);
     }
 
     // public function success(Request $request){

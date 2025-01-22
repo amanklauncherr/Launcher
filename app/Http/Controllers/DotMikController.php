@@ -1201,10 +1201,48 @@ class DotMikController extends Controller
                 ],$statusCode);
             } else {
                 if ($response->successful()) {
+                    $array1 = $result['payloads']['data']['bookingRef'];
+                    $array = json_decode($array1, true);
+                    foreach ($array as &$item) {
+                        if (isset($item['Fares'])) {
+                            foreach ($item['Fares'] as &$fare) {
+                                foreach ($fare['FareDetails'] as &$fareDetail) {
+                                    if (isset($fareDetail['Total_Amount'])) {
+                                         // Apply discount logic
+                                         $totalAmount = $fareDetail['Total_Amount'];
+                                         if ($totalAmount < 5000) {
+                                             $discount = $totalAmount * (6 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                             $discount = $totalAmount * (6 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                             $discount = $totalAmount * (5.50 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                             $discount = $totalAmount * (5 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                             $discount = $totalAmount * (4 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } elseif ($totalAmount >= 100000) {
+                                             $discount = $totalAmount * (3.50 / 100);
+                                             $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                         } else {
+                                             $fareDetail['Total_Amount'] = $totalAmount;
+                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    $updatedData = json_encode($array);
+
                     TravelHistory::create([
                         'user_id' => Auth::guard('api')->id(),
                         'BookingType' => 'FLIGHT',
-                        'BookingRef' => $result['payloads']['data']['bookingRef'],
+                        'BookingRef' => $updatedData,
                         'Status' => 'TEMPBOOKED'
                     ]);
                     return response()->json([
