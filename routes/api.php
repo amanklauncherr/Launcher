@@ -200,6 +200,10 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     Route::post('/Ticketing',[DotMikController::class,'Ticketing']);
 
+    // this api is made for if payment gateway fails to confirm payment
+
+    Route::post('/Ticketing2',[DotMikController::class,'Ticketing2']);
+
     Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
 
     Route::post('/Cancellation',[DotMikController::class,'Cancellation']);

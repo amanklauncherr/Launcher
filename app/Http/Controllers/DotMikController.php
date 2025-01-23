@@ -112,6 +112,310 @@ class DotMikController extends Controller
         }
     }
 
+    public function Ticketing2(Request $request)
+    {    
+        $validator = Validator::make($request->all(), [
+            'BookingRef' => 'required|string',
+            'UserRef' => 'required|string',
+            'TicketingType' => 'required|string',
+            'headersToken' => 'required|string',
+            'headersKey' => 'required|string'
+        ]);
+        
+        if ($validator->fails()) {
+            // Return the first error message
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+        
+        $data = $validator->validated();
+        $user = Auth()->guard('api')->user();
+
+        // If the wallet check succeeds, proceed to ticketing
+        $payloadTicket = [
+            "deviceInfo" => [
+                "ip" => "122.161.52.233",
+                "imeiNumber" => "12384659878976879887"
+            ],
+            "bookingRef" => $data['BookingRef'],
+            "ticketingType" => $data['TicketingType']
+        ];
+        
+        // Prepare headers
+        $headers = [
+            'D-SECRET-TOKEN' => $data['headersToken'],
+            'D-SECRET-KEY' => $data['headersKey'],
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
+        
+        // API URL
+        $ticketingUrl = 'https://api.dotmik.in/api/flightBooking/v1/ticketing';
+        $RePrintTicketurl = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
+        
+        try {
+            
+            $ticketingResponse = Http::withHeaders($headers)->post($ticketingUrl, $payloadTicket);
+
+            $ticketingResult = $ticketingResponse->json();
+
+            $ticketingStatusCode = $ticketingResponse->status();
+        
+            if ($ticketingResponse->failed() || !isset($ticketingResult['status']) || $ticketingResult['status'] === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $ticketingResult['message'] ?? 'Failed to issue ticket',
+                    'error' => $ticketingResult
+                ], $ticketingStatusCode);
+            }
+            $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+            $History->update([
+                'PnrDetails' => $result['payloads']['data']['pnrDetails'],
+                'Status' => "BOOKED",
+            ]);
+            
+            $payloadRePrintTicket = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879887"
+                ],
+                "bookingRef" => $data['bookingRef'],
+                "pnr" => $ticketingResult['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR']
+            ];
+
+            $responseRePrint = Http::withHeaders($headers)->post($RePrintTicketurl, $payloadRePrintTicket);
+            // $statusCode = $response->status();
+            $resultRePrint = $responseRePrint->json();
+
+            if($responseRePrint->successful())
+            {
+
+                // $Aircraft= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Aircraft_Type'];
+                // $Origin_terminal=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Origin_Terminal'];
+                // $ArrivalDateTime=new DateTime($resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Arrival_DateTime']);
+                // $DepartureDateTime=new DateTime($resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Departure_DateTime']);
+                // $Destination_terminal=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Destination_Terminal'];
+                // $DurationTime= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Duration'];
+            
+                // $FlightNO = $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Flight_Number']; 
+                // $AirlineCode = $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments']['0']['Airline_Code'];
+
+                $Segment=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'];
+
+                // $PNR= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+                // $Origin_Code= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Origin'];
+                // $Destination_Code= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'][0]['TicketDetails'][0]['SegemtWiseChanges']['0']['Destination'];
+
+                $paxDetails=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
+
+                // $Origin=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Origin'];
+
+                // $Destination=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Destination'];
+
+                $type=$resultRePrint['payloads']['data']['rePrintTicket']['Class_of_Travel'];
+
+                $Cabin=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
+               
+                $CheckIn=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Check_In_Baggage'];
+               
+                $Contact=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_Mobile'];
+               
+                $Email=$resultRePrint['payloads']['data']['rePrintTicket']['PAX_EmailId'];
+               
+                $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];     
+               
+                // $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+
+                $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+
+                             if ($TotalAmountBefore < 5000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                                 $discount = $TotalAmountBefore * (5.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                                 $discount = $TotalAmountBefore * (5 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                                 $discount = $TotalAmountBefore * (4 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 100000) {
+                                 $discount = $TotalAmountBefore * (3.50 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } else {
+                                 $TotalAmount = $TotalAmountBefore;
+                             }
+               
+                $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
+               
+                $RescheduleCharges=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
+               
+                $Tax=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
+                
+                $CancelArray=[];
+                
+                foreach($Cancellation as $cancel)
+                {
+                    $value = [
+                        'DurationFrom' => $cancel['DurationFrom'],
+                        'DurationTo' => $cancel['DurationTo'],
+                        'value' => ($cancel['ValueType'] === 1) ? 'Non Refundable' : $cancel['Value'],
+                    ];
+                
+                    $CancelArray[] = $value;
+                }
+                
+                $RescheduleChargesArray=[];
+            
+                foreach($RescheduleCharges as $charges)
+                {
+                    $value = [
+                        'DurationFrom' => $charges['DurationFrom'],
+                        'DurationTo' => $charges['DurationTo'],
+                        'value' => ($charges['ValueType'] === 1) ? 'Non Refundable' : $charges['Value'],
+                    ];
+                
+                    $RescheduleChargesArray[] = $value;
+                }
+                
+                if($type === 0)
+                {
+                    $flight_type="Ecomony";
+                }
+                else if($type === 1) //  BUSINESS/ 2- FIRST/ 3- PREMIUM_ECONOMY
+                {
+                    $flight_type="Business";
+                }
+                else if($type === 2)
+                {
+                    $flight_type="First Class";
+                }
+                else if($type === 3)
+                {
+                    $flight_type="Premium Ecomomy";
+                }
+        
+                // $ArrivalTime = $ArrivalDateTime->format('H:i'); // Outputs '16:25'
+                // $DepartureTime= $DepartureDateTime->format('H:i');
+                // $ArrivalDate = $ArrivalDateTime->format('D d M, Y');
+                // $DepartureDate = $DepartureDateTime->format('D d M, Y');
+        
+                // $dateTime = DateTime::createFromFormat('H:i', $DurationTime);
+        
+                // // Extract hours and minutes
+                // $hours = $dateTime->format('G'); // 'G' formats hours without leading zeros
+                // $minutes = $dateTime->format('i'); // 'i' formats minutes with leading zeros
+        
+                // // Format as "1h 05m"
+                // $Duration = $hours . 'h ' . $minutes . 'm';
+                
+                // Generate the PDF
+                $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
+                // $first,$last,$Ticket,$gen,
+
+                $pdf_url = asset('storage/' . $pdfFilePath);
+
+                $array1 = $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
+
+                        if (is_string($array1)) {
+                            $array = json_decode($array1, true);
+                        } elseif (is_array($array1)) {
+                            $array = $array1; // Data is already an array
+                        } else {
+                            $array = $array1;
+                        }
+                        
+                            // Modify Total_Amount with discount logic
+                            foreach ($array as &$item) {
+                                if (isset($item['Fares'])) {
+                                    foreach ($item['Fares'] as &$fare) {
+                                        foreach ($fare['FareDetails'] as &$fareDetail) {
+                                            if (isset($fareDetail['Total_Amount'])) {
+                                                // Apply discount logic
+                                                $totalAmount = $fareDetail['Total_Amount'];
+                                                if ($totalAmount < 5000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (6 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (5.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                    $discount = $totalAmount * (5 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                    $discount = $totalAmount * (4 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 100000) {
+                                                    $discount = $totalAmount * (3.50 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } else {
+                                                    $fareDetail['Total_Amount'] = $totalAmount;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Encode back to JSON
+                            $updatedData = json_encode($array);
+                            
+                $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+
+                if($History)
+                {
+                    $History->update([
+                        'PAXTicketDetails' => $updatedData,
+                        'TravelDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
+                        'Ticket_URL' => $pdf_url
+                    ]);
+                }
+                
+            }else {
+                // DB::rollBack(); // Rollback transaction if checkTicket fails
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bus Booked Successfully. Check ticket API failed',
+                    'error' => $resultRePrint,
+                ], $responseRePrint->status());
+            }
+
+
+            $BookingRef = $data['BookingRef'];
+            
+            $Pnr = $result['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR'];
+
+            Mail::to($user->email)->send(new UserFlightBooking($Pnr,$BookingRef,$pdf_url));
+
+            // If ticketing is successful, return the success response
+            return response()->json([
+                'success' => true,
+                'message' => 'Flight Booked Successfully',
+                'data' => $ticketingResult
+            ], $ticketingStatusCode);
+        
+        } catch (\Exception $e) {
+            // Handle general exceptions
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $e->getMessage(),
+            ], 500);
+        }     
+    }
+
+
+
+
+
     public function SearchFlight(Request $request)
     {
         $validator = Validator::make($request->all(), [
