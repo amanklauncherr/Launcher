@@ -68,7 +68,7 @@ class DotMikController extends Controller
                 [
                 "origin" => "DEL",
                 "destination" => "LKO",
-                "travelDate" => "30/02/2025",
+                "travelDate" => "03/02/2025",
                 "tripId" => "0"
                 ]
             ],
