@@ -100,7 +100,9 @@ class DotMikController extends Controller
         // $result=$response->json();
         // $statusCode = $response->status();
 
-        return response()->json($response);
+        // return response()->json($response);
+
+        return $response;
             
 
         }catch (\Exception $e) {
