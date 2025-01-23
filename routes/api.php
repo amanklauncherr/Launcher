@@ -329,6 +329,8 @@ Route::get('/AES/Encryption',[AESEncryption::class, 'AESEncryption']);
 
 Route::post('/Search/Flight',[DotMikController::class,'SearchFlight']);
 
+Route::post('/Search/Flight2',[DotMikController::class,'SearchFlight2']);
+
 // Route::post('/Filter/Flight',[DotMikController::class,'Filter']);
 
 Route::post('/Fare/Rule',[DotMikController::class,'fareRule']);

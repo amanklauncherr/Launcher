@@ -54,6 +54,56 @@ class DotMikController extends Controller
      *   "message": "The TYPE field is required."
      * }
     */
+
+    public function SearchFlight2(Request $request){
+
+        $payload = [
+            "deviceInfo" => [
+                "ip" => "122.161.52.233",
+                "imeiNumber" => "12384659878976879887"
+            ],
+            "travelType" => $request->travelType,
+            "bookingType" => $request->bookingType, 
+            "tripInfo" => $request->tripInfo,
+            "adultCount" => '1',
+            "childCount" => '0',
+            "infantCount" => '0',
+            "classOfTravel" => '0',
+            "filteredAirLine" => [
+                "airlineCode" => ''
+            ]
+        ];
+
+        // return response()->json($payload);
+
+        $headers = [
+            'D-SECRET-TOKEN' => $request->headersToken,
+            'D-SECRET-KEY' =>   $request->headersKey,
+            'CROP-CODE' => 'DOTMIK160614',
+            'Content-Type' => 'application/json',
+        ];
+
+        $url = 'https://api.dotmik.in/api/flightBooking/v1/searchFlight';
+
+        try 
+        {
+        $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
+        // $result=$response->json();
+        // $statusCode = $response->status();
+
+        // return response()->json($result);
+            return $response;
+
+        }catch (\Exception $e) {
+            // Handle exception (e.g. network issues)
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    }
+
     public function SearchFlight(Request $request)
     {
         $validator = Validator::make($request->all(), [
