@@ -64,11 +64,12 @@ class DotMikController extends Controller
             ],
             "travelType" => $request->travelType,
             "bookingType" => $request->bookingType, 
-            "tripInfo" => [
-                "origin" => "DEL",
-                "destination" => "LKO",
-                "travelDate" => "02/02/2025",
-                "tripId" => "0"
+            "tripInfo" => [[
+                "origin" => $request->origin,
+                "destination" => $request->destination,
+                "travelDate" => $request->travelDate,
+                "tripId" => $request->tripId
+            ]
             ],
             "adultCount" => '1',
             "childCount" => '0',
