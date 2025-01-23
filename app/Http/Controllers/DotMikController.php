@@ -64,7 +64,12 @@ class DotMikController extends Controller
             ],
             "travelType" => $request->travelType,
             "bookingType" => $request->bookingType, 
-            "tripInfo" => $request->tripInfo,
+            "tripInfo" => [
+                "origin" => $request->origin,
+                "destination" => $request->destination,
+                "travelDate" => $request->travelDate,
+                "tripId" => $request->tripId
+            ],
             "adultCount" => '1',
             "childCount" => '0',
             "infantCount" => '0',
@@ -73,6 +78,8 @@ class DotMikController extends Controller
                 "airlineCode" => ''
             ]
         ];
+
+        // dd($payload);
 
         // return response()->json($payload);
 
