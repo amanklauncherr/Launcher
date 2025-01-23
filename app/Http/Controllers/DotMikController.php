@@ -65,12 +65,10 @@ class DotMikController extends Controller
             "travelType" => $request->travelType,
             "bookingType" => $request->bookingType, 
             "tripInfo" => [
-                [
-                "origin" => "DEL",
-                "destination" => "LKO",
-                "travelDate" => "03/02/2025",
-                "tripId" => "0"
-                ]
+                "origin" => $request->origin,
+                "destination" => $request->destination,
+                "travelDate" => $request->travelDate,
+                "tripId" => $request->tripId
             ],
             "adultCount" => '1',
             "childCount" => '0',
@@ -97,13 +95,11 @@ class DotMikController extends Controller
         try 
         {
         $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
-        // $result=$response->json();
+        $result=$response->json();
         // $statusCode = $response->status();
 
-        // return response()->json($response);
-
-        return $response;
-            
+        return response()->json($result);
+            // return $response;
 
         }catch (\Exception $e) {
             // Handle exception (e.g. network issues)
