@@ -66,10 +66,10 @@ class DotMikController extends Controller
             "bookingType" => $request->bookingType, 
             "tripInfo" => [
                 [
-                "origin" => "DEL",
-                "destination" => "LKO",
-                "travelDate" => "03/02/2025",
-                "tripId" => "0"
+                "origin" => $request->origin,
+                "destination" => $request->destination,
+                "travelDate" => $request->travelDate,
+                "tripId" => $request->tripId
                 ]
             ],
             "adultCount" => '1',
@@ -100,8 +100,8 @@ class DotMikController extends Controller
         // $result=$response->json();
         // $statusCode = $response->status();
 
-        // return response()->json($result);
-            return $response;
+        return response()->json($response);
+            
 
         }catch (\Exception $e) {
             // Handle exception (e.g. network issues)
