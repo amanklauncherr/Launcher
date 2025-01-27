@@ -80,6 +80,30 @@ class DotMikController extends Controller
             ]
         ];
 
+
+        $payload2 = [
+            "deviceInfo" => [
+                "ip" => "122.161.52.233",
+                "imeiNumber" => "12384659878976879887"
+            ],
+            "travelType" => $request->travelType,
+            "bookingType" => $request->bookingType, 
+            "tripInfo" => [[
+                "origin" => $request->destination,
+                "destination" => $request->origin,
+                "travelDate" => $request->travelDate2,
+                "tripId" => $request->tripId
+            ]
+            ],
+            "adultCount" => '1',
+            "childCount" => '0',
+            "infantCount" => '0',
+            "classOfTravel" => '0',
+            "filteredAirLine" => [
+                "airlineCode" => ''
+            ]
+        ];
+
         // dd($payload);
 
         // return response()->json($payload);
@@ -97,9 +121,24 @@ class DotMikController extends Controller
         {
         $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
         $result=$response->json();
+
+        if($request->travelDate2 != null && $request->travelDate2 != '')
+        {
+            $response2 = Http::withHeaders($headers)->timeout(60)->post($url, $payload2);
+            $result2=$response2->json();
+            
+        }else{
+            $result2 = [];
+        }
+
+        $return = [
+            'response1' => $result,
+            'response2' => $result2
+        ];
+
         // $statusCode = $response->status();
 
-        return response()->json($result);
+        // return response()->json($result);
             // return $response;
 
         }catch (\Exception $e) {
@@ -110,6 +149,7 @@ class DotMikController extends Controller
                 'line' => $e->getLine()
             ], 500);
         }
+
     }
 
     public function Ticketing2(Request $request)
