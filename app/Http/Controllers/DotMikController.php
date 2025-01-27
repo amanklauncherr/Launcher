@@ -228,7 +228,7 @@ class DotMikController extends Controller
                
                 // $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
-                $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+                $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
                              if ($TotalAmountBefore < 5000) {
                                  $discount = $TotalAmountBefore * (6 / 100);
@@ -411,10 +411,6 @@ class DotMikController extends Controller
             ], 500);
         }     
     }
-
-
-
-
 
     public function SearchFlight(Request $request)
     {
@@ -1323,7 +1319,7 @@ class DotMikController extends Controller
    }
 
 
-   public function getSeatMap(Request $request){
+public function getSeatMap(Request $request){
 
     $validator = Validator::make($request->all(),[
         'searchKey' => 'required|string',
@@ -1405,7 +1401,7 @@ class DotMikController extends Controller
 
 }
 
-    public function TemporaryBooking(Request $request)
+public function TemporaryBooking(Request $request)
     {
         // Validation
       $validator = Validator::make($request->all(),[
@@ -1587,9 +1583,9 @@ class DotMikController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }        
-    }
+}
 
-    public function CheckWallet(Request $request)
+public function CheckWallet(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'BookingRef' => 'required|string',
@@ -1670,9 +1666,9 @@ class DotMikController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }   
-    }
+}
 
-    public function generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type)
+public function generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type)
     {
 
         $htmlCode = "<!DOCTYPE html>
@@ -1903,10 +1899,10 @@ class DotMikController extends Controller
 
         // Return the saved file path
         return 'tickets/' . $fileName; 
-    }
+}
 
 
-    public function Ticketing(Request $request)
+public function Ticketing(Request $request)
     {    
         $validator = Validator::make($request->all(), [
             'BookingRef' => 'required|string',
@@ -2045,7 +2041,7 @@ class DotMikController extends Controller
                
                 // $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
-                $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
+                $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
                              if ($TotalAmountBefore < 5000) {
                                  $discount = $TotalAmountBefore * (6 / 100);
@@ -2227,11 +2223,11 @@ class DotMikController extends Controller
                 'message' => 'An error occurred: ' . $e->getMessage(),
             ], 500);
         }     
-    }
+}
 
    
  
-    public function RePrintTicket(Request $request)
+public function RePrintTicket(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'headersToken' => 'required|string',
@@ -2523,9 +2519,9 @@ class DotMikController extends Controller
                 'errorline' => $e->getLine() 
             ], 500);
         }   
-    }
+}
 
-    public function Cancellation(Request $request)
+public function Cancellation(Request $request)
     {
         $validator = Validator::make($request->all(),[
             "headersToken" => 'required|string',
@@ -2639,9 +2635,9 @@ class DotMikController extends Controller
                 'line' => $e->getLine(),
             ], 500);
         }   
-    }
+}
 
-    public function LowFare(Request $request)
+public function LowFare(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'headersToken' => 'required|string',
@@ -2729,7 +2725,7 @@ class DotMikController extends Controller
         }   
     }
 
-    public function SectorAvalability(Request $request)
+public function SectorAvalability(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'headersToken' => 'required|string',
@@ -2809,7 +2805,7 @@ class DotMikController extends Controller
         }   
     }
 
-    public function ReleasePNR(Request $request)
+public function ReleasePNR(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'headersToken' => 'required|string',
