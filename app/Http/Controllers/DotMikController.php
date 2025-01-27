@@ -126,19 +126,19 @@ class DotMikController extends Controller
         {
             $response2 = Http::withHeaders($headers)->timeout(60)->post($url, $payload2);
             $result2=$response2->json();
-            
+
         }else{
             $result2 = [];
         }
 
-        $return = [
-            'response1' => $result,
-            'response2' => $result2
-        ];
+        // $return = [
+        //     'response1' => $result,
+        //     'response2' => $result2
+        // ];
 
         // $statusCode = $response->status();
 
-        // return response()->json($result);
+        return response()->json($result , $result2);
             // return $response;
 
         }catch (\Exception $e) {
