@@ -131,14 +131,14 @@ class DotMikController extends Controller
             $result2 = [];
         }
 
-        // $return = [
-        //     'response1' => $result,
-        //     'response2' => $result2
-        // ];
+        $return = [
+            'response1' => $result,
+            'response2' => $result2
+        ];
 
         // $statusCode = $response->status();
 
-        return response()->json($result , $result2);
+        return response()->json($return);
             // return $response;
 
         }catch (\Exception $e) {
