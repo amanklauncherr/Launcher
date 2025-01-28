@@ -185,7 +185,7 @@ class OrderIDCreationController extends Controller
                     "set_paid" => true,
                     "billing" =>[
                         "first_name" => $OrderDetails['billing']['firstName'],
-                        "last_name" => $OrderDetails['billing']['lastName'],
+                        "last_name" => $OrderDetails['billing']['lastName'] ?? " ",
                         "address_1" => $OrderDetails['billing']['address1'] ,
                         "address_2" => $OrderDetails['billing']['address2'] ?? " ",
                         "city" => $OrderDetails['billing']['city'] ,
