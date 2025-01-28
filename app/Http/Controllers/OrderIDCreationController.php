@@ -185,7 +185,7 @@ class OrderIDCreationController extends Controller
                     "set_paid" => true,
                     "billing" =>[
                         "first_name" => $OrderDetails['billing']['firstName'],
-                        "last_name" => $OrderDetails['billing']['lastName'] ?? " ",
+                        "last_name" => $OrderDetails['billing']['lastName'],
                         "address_1" => $OrderDetails['billing']['address1'] ,
                         "address_2" => $OrderDetails['billing']['address2'] ?? " ",
                         "city" => $OrderDetails['billing']['city'] ,
@@ -199,16 +199,16 @@ class OrderIDCreationController extends Controller
                     // $OrderDetails['billing'],
  
                     "shipping" => [
-                        "first_name" => $OrderDetails['shipping']['firstName'],
-                        "last_name" => $OrderDetails['shipping']['lastName'],
-                        "address_1" => $OrderDetails['shipping']['address1'] ,
+                        "first_name" => $OrderDetails['shipping']['firstName'] ?? $OrderDetails['billing']['firstName'],
+                        "last_name" => $OrderDetails['shipping']['last_name'] ?? $OrderDetails['billing']['lastName'],
+                        "address_1" => $OrderDetails['shipping']['address1'] ?? $OrderDetails['billing']['address1'],
                         "address_2" => $OrderDetails['shipping']['address2'] ?? " ",
-                        "city" => $OrderDetails['shipping']['city'] ,
-                        "state" => $OrderDetails['shipping']['state'] ,
-                        "postcode" => $OrderDetails['shipping']['postcode'] ,
+                        "city" => $OrderDetails['shipping']['city'] ?? $OrderDetails['billing']['city'],
+                        "state" => $OrderDetails['shipping']['state'] ??$OrderDetails['billing']['state'] ,
+                        "postcode" => $OrderDetails['shipping']['postcode'] ??$OrderDetails['billing']['postcode'] ,
                         "country" => 'India',
                         // "email" =>  $OrderDetails['shipping']['email'],
-                        "phone" => (string) $OrderDetails['shipping']['phone'] 
+                        "phone" => (string) $OrderDetails['shipping']['phone'] ?? (string) $OrderDetails['billing']['phone']
                     ] ,
                     "line_items" => array_map(function ($product) {
                         return [
