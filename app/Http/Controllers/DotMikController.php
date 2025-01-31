@@ -590,7 +590,7 @@ class DotMikController extends Controller
                     $transformedTripDetails[] = $trip;
                 }
 
-                $Flights=$transformedTripDetails[0]['Flights'];
+                $Flights=$transformedTripDetails[1]['Flights'];
 
                 $minTotalAmount = PHP_INT_MAX;
                 
