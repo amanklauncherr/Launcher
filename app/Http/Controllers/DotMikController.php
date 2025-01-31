@@ -591,10 +591,21 @@ class DotMikController extends Controller
                 }
 
                 // $Flights=$transformedTripDetails[0]['Flights'];
-                $Flights = array_merge(
-                    $transformedTripDetails[0]['Flights'], 
-                    $transformedTripDetails[1]['Flights']
-                );
+                if(isset($transformedTripDetails[1]))
+                {
+                    $Flights = array_merge(
+                        $transformedTripDetails[0]['Flights'], 
+                        $transformedTripDetails[1]['Flights'] ?? [],
+                    );
+                }
+                else
+                {
+                    $Flights = $transformedTripDetails[0]['Flights'];
+                }
+                // $Flights = array_merge(
+                //     $transformedTripDetails[0]['Flights'], 
+                //     $transformedTripDetails[1]['Flights'] ?? [],
+                // );
 
                 $minTotalAmount = PHP_INT_MAX;
                 
