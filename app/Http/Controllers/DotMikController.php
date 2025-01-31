@@ -486,7 +486,7 @@ class DotMikController extends Controller
         }
         else if($data['TYPE'] === "ROUNDTRIP")
         {
-            $bookingType = "2";
+            $bookingType = "1";
             if($count != 2)
             {
                 return response()->json(['success'=>false,'message'=>'tripInfo should have 2 objects for Round Trip'],400);
