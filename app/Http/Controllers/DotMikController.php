@@ -69,6 +69,12 @@ class DotMikController extends Controller
                 "destination" => $request->destination,
                 "travelDate" => $request->travelDate,
                 "tripId" => $request->tripId
+            ],
+            [
+                "origin" => $request->destination,
+                "destination" => $request->origin,
+                "travelDate" => $request->travelDate2,
+                "tripId" => $request->tripId
             ]
             ],
             "adultCount" => '1',
