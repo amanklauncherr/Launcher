@@ -371,6 +371,8 @@ Route::post('/launcherr/getSourceCity',[DataInsert::class,'getSourceCity']);
 
 Route::post('getcity',[DataInsert::class,'getCity']);
 Route::post('addcity',[DataInsert::class,'addBusStation']);
+Route::get('storeExchange',[DataInsert::class,'storeExchange']);
+Route::get('getExchange',[DataInsert::class,'getExchange']);
 
 
 

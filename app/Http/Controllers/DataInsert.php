@@ -8,10 +8,42 @@ use App\Models\About;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 
 class DataInsert extends Controller
 {
+
+
+    public function storeExchange(Request $request){
+        
+        $response = Http::get('https://api.exchangerate-api.com/v4/latest/INR');
+
+        if ($response->successful()) {
+            $object = $response->json(); // Already returns an array
+            $data =  $object;
+
+            DB::table('exchange_rates')->insert([
+                'rates' => json_encode($data['rates']),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            return response()->json(['message' => 'Data inserted successfully!']);
+        }
+        
+    }
+
+    public function getExchange(Request $request){
+    
+        $data = DB::table('exchange_rates')->latest()->first();
+        return ([
+            'rates' => json_decode($data->rates),
+            'date' => $data->created_at
+        ]); 
+
+    }
+
 
     public function dbDetails(Request $request)
     {
