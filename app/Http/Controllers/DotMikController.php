@@ -591,9 +591,9 @@ class DotMikController extends Controller
                     $transformedTripDetails[] = $trip;
                 }
 
-                $Flights = array();
+                // $Flights = array();
                 $Flights[]=$transformedTripDetails[0]['Flights'];
-                $Flights[]=$transformedTripDetails[1]['Flights'] ?? [];
+                // $Flights[]=$transformedTripDetails[1]['Flights'] ?? [];
                 
                 // $Flights = array_merge(
                 //     $transformedTripDetails[0]['Flights'], 
