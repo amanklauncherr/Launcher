@@ -2039,7 +2039,7 @@ public function Ticketing(Request $request)
 
             $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
             $History->update([
-                'PnrDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'],
+                'PnrDetails' => $ticketingResult['payloads']['data']['pnrDetails'][0],
                 'Status' => "BOOKED",
             ]);
 
@@ -2170,6 +2170,8 @@ public function Ticketing(Request $request)
                 // $Duration = $hours . 'h ' . $minutes . 'm';
                 
                 // Generate the PDF
+                $BaseFare = $TotalAmount - $Tax;
+
                 $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                 // $first,$last,$Ticket,$gen,
 
@@ -2319,11 +2321,11 @@ public function RePrintTicket(Request $request)
                 $result=$response->json();
 
 
-                $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
-                $History->update([
-                    'PnrDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'],
-                    'Status' => "BOOKED",
-                ]);
+                // $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
+                // $History->update([
+                //     'PnrDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'],
+                //     'Status' => "BOOKED",
+                // ]);
             
             //    $result=json_decode($result,true);
 
