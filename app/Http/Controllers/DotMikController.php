@@ -1183,6 +1183,13 @@ class DotMikController extends Controller
                             $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
                         }
 
+                        $adultGST = 0;
+                        $childGST = 0;
+                        $infantGST = 0;
+                        $adultTDS = 0;
+                        $childTDS = 0;
+                        $infantTDS = 0;
+
                         switch ($pax['PAX_Type']) {
                             case 0: // Adult
                                 $adultAmount += $total * $data['adultCount'];
