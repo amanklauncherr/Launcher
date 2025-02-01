@@ -2321,7 +2321,7 @@ public function RePrintTicket(Request $request)
 
                 $History=TravelHistory::where('BookingRef',$data['bookingRef'])->first();
                 $History->update([
-                    'PnrDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'],
+                    'PnrDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'],
                     'Status' => "BOOKED",
                 ]);
             
