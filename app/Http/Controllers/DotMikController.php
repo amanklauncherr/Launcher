@@ -1189,18 +1189,24 @@ class DotMikController extends Controller
                                 // $adultAmountwithMargin = $adultAmount + ($adultAmount * (10/100));
                                 $adultservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $adultAirportFee += $pax['AirportTax_Amount']  * $data['adultCount'];
+                                $adultGST += $pax['GST'] * $data['adultCount'];
+                                $adultTDS += $pax['TDS'] * $data['adultCount'];
                                 break;
                             case 1: // Child
                                 $childAmount += $total * $data['childCount'];
                                 // $childAmountwithMarin = $childAmount + ($childAmount * (10/100));
                                 $childservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $childAirportFee += $pax['AirportTax_Amount']  * $data['childCount'];
+                                $childGST += $pax['GST'] * $data['childCount'];
+                                $childTDS += $pax['TDS'] * $data['childCount'];
                                 break;
                             case 2: // Infant
                                 $infantAmount += $total * $data['infantCount'];
                                 // $infantAmountwithMargin = $infantAmount + ($infantAmount * (10/100));
                                 $infantservice += $pax['Service_Fee_Amount'] * $data['adultCount'];
                                 $infantAirportFee += $pax['AirportTax_Amount']  * $data['infantCount'];
+                                $infantGST += $pax['GST'] * $data['infantCount'];
+                                $infantTDS += $pax['TDS'] * $data['infantCount'];
                                 break;
                         }
                     }
@@ -1243,6 +1249,10 @@ class DotMikController extends Controller
 
                     $TotalAirportFee = $adultAirportFee + $childAirportFee + $infantAirportFee;
 
+                    $TotalGst = $adultGST + $childGST + $infantGST;
+
+                    $TotalTDS = $adultTDS + $childTDS + $infantTDS;
+
                     return response()->json([
                         'success' => true,
                         'adultAmount' => ceil($adultAmount),
@@ -1251,6 +1261,8 @@ class DotMikController extends Controller
                         'totalAmount'=> $TotalAmount,
                         'servicefee' => $Totalservice,
                         'airportTaxes' => $TotalAirportFee,
+                        'gst' => $TotalGst,
+                        'tds' => $TotalTDS,
                         'launcherAmount' => ceil($LauncherAmount),
                         'serviceChargeNew' => ceil($serviceCharge),
                         'data' => $result,
@@ -2010,11 +2022,7 @@ public function Ticketing(Request $request)
                     'error' => $ticketingResult
                 ], $ticketingStatusCode);
             }
-            $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
-            $History->update([
-                'PnrDetails' => $result['payloads']['data']['pnrDetails'],
-                'Status' => "BOOKED",
-            ]);
+            
             
             $payloadRePrintTicket = [
                 "deviceInfo" => [
@@ -2028,6 +2036,12 @@ public function Ticketing(Request $request)
             $responseRePrint = Http::withHeaders($headers)->post($RePrintTicketurl, $payloadRePrintTicket);
             // $statusCode = $response->status();
             $resultRePrint = $responseRePrint->json();
+
+            $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+            $History->update([
+                'PnrDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'],
+                'Status' => "BOOKED",
+            ]);
 
             if($responseRePrint->successful())
             {
@@ -2303,6 +2317,13 @@ public function RePrintTicket(Request $request)
             // Make the POST request using Laravel HTTP Client
                 $response = Http::withHeaders($headers)->post($url, $payload);
                 $result=$response->json();
+
+
+                $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+                $History->update([
+                    'PnrDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'],
+                    'Status' => "BOOKED",
+                ]);
             
             //    $result=json_decode($result,true);
 
@@ -2459,6 +2480,10 @@ public function RePrintTicket(Request $request)
                         // $Duration = $hours . 'h ' . $minutes . 'm';
                 
                         // Generate the PDF
+
+                        $BaseFare = $TotalAmount - $Tax;
+
+
                         $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                         // $first,$last,$Ticket,$gen,
                         
