@@ -55,7 +55,6 @@ class DotMikController extends Controller
      * }
     */
 
-   
     public function SearchFlight2(Request $request){
 
         $payload = [
@@ -591,10 +590,18 @@ class DotMikController extends Controller
                     $transformedTripDetails[] = $trip;
                 }
 
-                // $Flights = array();
-                $Flights[]=$transformedTripDetails[0]['Flights'];
-                // $Flights[]=$transformedTripDetails[1]['Flights'] ?? [];
-                
+                // $Flights=$transformedTripDetails[0]['Flights'];
+                if(isset($transformedTripDetails[1]))
+                {
+                    $Flights = array_merge(
+                        $transformedTripDetails[0]['Flights'], 
+                        $transformedTripDetails[1]['Flights'] ?? [],
+                    );
+                }
+                else
+                {
+                    $Flights = $transformedTripDetails[0]['Flights'];
+                }
                 // $Flights = array_merge(
                 //     $transformedTripDetails[0]['Flights'], 
                 //     $transformedTripDetails[1]['Flights'] ?? [],
