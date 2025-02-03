@@ -105,13 +105,720 @@ class DotMikController extends Controller
         $result=$response->json();
         $statusCode = $response->status();
 
-      
-        // $statusCode = $response->status();
+        // return response()->json($result);
 
-        return response()->json($result);
-            // return $response;
+        if($result['status'] === false)
+        {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+                'error' => $result
+            ],$statusCode);   
+        }
+        else
+        {   
+            if ($response->successful()) 
+            {
+                $dataa = $result['payloads']['data']['tripDetails'];
+                $AC = $result['payloads']['data']['tripDetails'][0]['Flights'];
+                $Flights = $dataa[0]['Flights'];
 
-        }catch (\Exception $e) {
+                $transformedTripDetails = [];
+                foreach ($dataa as $trip) 
+                {
+                    $trip['Flights'] = array_reduce($trip['Flights'], function ($carry,$flight) 
+                    {
+                        if (count($flight['Fares']) > 1) 
+                        {
+                            foreach ($flight['Fares'] as $fare) 
+                            {
+                                $clonedFlight = $flight; // Clone flight details
+                                $clonedFlight['Fares'] = [$fare]; // Assign only this fare
+                                $carry[] = $clonedFlight; // Add to the result array
+                            }
+                        } else
+                        {
+                         // If there's only one fare, return the flight as it is
+                         $carry[] = $flight;
+                        }
+                       return $carry;
+                    }, []);
+                    $transformedTripDetails[] = $trip;
+                }
+
+                $Flights=$transformedTripDetails[0]['Flights'];
+                $Flights2=$transformedTripDetails[1]['Flights'] ?? [];
+                // if(isset($transformedTripDetails[1]))
+                // {
+                //     $Flights = array_merge(
+                //         $transformedTripDetails[0]['Flights'], 
+                //         $transformedTripDetails[1]['Flights'] ?? [],
+                //     );
+                // }
+                // else
+                // {
+                //     $Flights = $transformedTripDetails[0]['Flights'];
+                // }
+                // $Flights = array_merge(
+                //     $transformedTripDetails[0]['Flights'], 
+                //     $transformedTripDetails[1]['Flights'] ?? [],
+                // );
+
+                $minTotalAmount = PHP_INT_MAX;
+                
+                $maxTotalAmount = PHP_INT_MIN;
+
+                foreach($Flights as $Flight)
+                {
+                    $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                    if ($amount < $minTotalAmount) {
+                        $minTotalAmount = $amount;
+                    }
+                    if ($amount > $maxTotalAmount) {
+                        $maxTotalAmount = $amount;
+                    }
+                }
+
+                if(isset($data['Stops']))
+                {
+                    $Filtered=[];
+                    if($data['Stops'] === "0")
+                    {
+                        if($data['TYPE'] === 'ONEWAY')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                        else if($data['TYPE'] === 'ROUNDTRIP')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                        else if($data['TYPE'] === 'MULTISTATE')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'] && $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][2]['Destination'] === $data['tripInfo'][2]['destination'])
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                    }
+                    else if($data['Stops'] === "1")
+                    {
+                        if($data['TYPE'] === 'ONEWAY')
+                        {
+                            foreach ($Flights as $filteration) 
+                            {        
+                                if(count($filteration['Segments']) > 1)
+                                {
+                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] || $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] || $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                                    {
+                                        $Filtered[]=$filteration;
+                                    }
+                                }        
+                            }
+                            $Flights=$Filtered; 
+                        }
+                        else if($data['TYPE'] === 'ROUNDTRIP')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if(
+                                    (
+                                        $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                                    ) 
+                                    || 
+                                    (
+                                        $filteration['Segments'][1]['Origin'] === $data['tripInfo'][2]['origin'] &&
+                                        $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination'])
+                                    )
+
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                        else if($data['TYPE'] === 'MULTISTATE')
+                        {
+                            foreach ($Flights as $filteration) {              
+                                if
+                                (
+                                    (
+                                        $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                                    ) 
+                                    || 
+                                    (
+                                        $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] &&
+                                        $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination']
+                                    )
+                                    ||
+                                    (
+                                        $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][3]['Destination'] === $data['tripInfo'][2]['destination']
+                                    ) 
+                                )
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                            $Flights=$Filtered;
+                        }
+                    }
+                }
+                if (isset($data['Arrival'])) 
+                {        
+                    $Filtered=[];
+
+                    if($data['Arrival'] === '12AM6AM')
+                    {
+                        $arrivalDateTimeLow = "00:00";
+                        // return response()->json($arrivalDateTimeLow, 400);
+                        $arrivalDateTimeHigh = "06:00";
+                    }
+                    else if($data['Arrival'] === '6AM12PM')
+                    {
+                        
+                        $arrivalDateTimeLow = "06:00";
+                        // return response()->json($arrivalDateTimeLow, 400);
+                        $arrivalDateTimeHigh = "12:00";
+                    }
+                    else if($data['Arrival'] === '12PM6PM')
+                    {   
+                        $arrivalDateTimeLow = "12:00";
+                        // return response()->json($arrivalDateTimeLow, 400);
+                        $arrivalDateTimeHigh = "18:00";
+                    }
+                    else if($data['Arrival'] === '6PM12AM')
+                    {
+                        $arrivalDateTimeLow = "18:00";
+                        // return response()->json($arrivalDateTimeLow, 400);
+                        $arrivalDateTimeHigh = "24:00";
+                    }
+                    else{
+                        return response()->json('Invalid Arrival time or condition.', 400);
+                    }
+
+                    foreach ($Flights as $filteration) {                
+                        // $departure= array_filter();
+                        foreach($filteration['Segments'] as $Segment)
+                        {
+                            if($data['tripInfo'][0]['destination'] === $Segment['Destination'])
+                            {
+                                $datetime = $Segment['Arrival_DateTime'];
+                                $dateObj = new DateTime($datetime);
+                                $time = $dateObj->format('H:i');
+                                // return response()->json($time);
+                                if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                        }
+                    }
+                    $Flights=$Filtered;                    
+                }
+                
+                if (isset($data['Departure'])) 
+                {        
+
+                    $Filtered=[];
+
+                    if($data['Departure'] === '12AM6AM')
+                    {
+                        $departureDateTimeLow = "00:00";
+                        $departureDateTimeHigh = "06:00";
+                    }
+                    else if($data['Departure'] === '6AM12PM')
+                    {                        
+                        $departureDateTimeLow = "06:00";
+                        $departureDateTimeHigh = "12:00";
+                    }
+                    else if($data['Departure'] === '12PM6PM')
+                    {   
+                        $departureDateTimeLow = "12:00";
+                        $departureDateTimeHigh = "18:00";
+                    }
+                    else if($data['Departure'] === '6PM12AM')
+                    {
+                        $departureDateTimeLow = "18:00";
+                        $departureDateTimeHigh = "24:00";
+                    }
+                    else{
+                        return response()->json('Invalid Arrival time or condition.', 400);
+                    }
+                    
+                    foreach ($Flights as $filteration) {                
+                        foreach($filteration['Segments'] as $Segment)
+                        {
+                            if($data['tripInfo'][0]['origin'] === $Segment['Origin'])
+                            {
+                                $datetime = $Segment['Departure_DateTime'];
+                                $dateObj = new DateTime($datetime);
+                                $time = $dateObj->format('H:i');
+                                if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
+                                {
+                                    $Filtered[]=$filteration;
+                                }
+                            }
+                        }
+                     }
+                      $Flights=$Filtered;
+                }
+
+                if(isset($data['Refundable']))
+                {       
+                    $refundable = $data['Refundable'];
+                    $filtered = array_filter($Flights, function($flight) use($refundable) {
+                        return $flight['Fares'][0]['Refundable'] === $refundable ;
+                    });
+                    $Flights=array_values($filtered);
+                }
+
+                if(isset($data['Price']))
+                {
+                    $Filtered=[];
+                    foreach($Flights as $Flight)
+                    {
+                        $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                        if($amount <= $data['Price'])
+                        {
+                            $Filtered[] = $Flight;
+                        }
+                    }
+                    $Flights=$Filtered;
+                }
+
+                if(isset($data['airlineCode']))
+                {         
+                    $airlineCode = $data['airlineCode'];
+                    $filtered = array_filter($Flights, function($flight) use($airlineCode) {
+                        return $flight['Airline_Code'] === $airlineCode;
+                    });
+                    $Flights=array_values($filtered);
+                }
+                
+                // Extract distinct airline codes
+                $airlineCodes = array_map(function($flight) {
+                    return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+                }, $AC);
+
+                $distinctAirlineCodes = array_values(array_unique(array_filter($airlineCodes)));
+
+                // foreach($distinctAirlineCodes as $DAC)
+                // {
+                //     $airport = AirlineCode::where('carrier_code', $DAC)->get();
+
+                //     $ACName[]=
+                //     [
+                //         'AirlineCode' => $airport[0]['carrier_code'],
+                //         'AirlineName' => $airport[0]['airline_name'],
+                //         'AirlineLogo' => $airport[0]['logo']
+                //     ];
+                // }
+                
+                $airlines = AirlineCode::whereIn('carrier_code', $distinctAirlineCodes)
+                ->get(['carrier_code', 'airline_name', 'logo'])
+                ->keyBy('carrier_code'); 
+
+                $ACName = array_map(function($code) use ($airlines) {
+                    if (isset($airlines[$code])) {
+                        return [
+                            'AirlineCode' => $airlines[$code]->carrier_code,
+                            'AirlineName' => $airlines[$code]->airline_name,
+                            'AirlineLogo' => $airlines[$code]->logo
+                        ];
+                    }
+                    return null; // Handle cases where airline code is not found
+                }, $distinctAirlineCodes);
+
+                $ACName = array_values(array_filter($ACName));
+
+                $count = count($Flights);
+
+                if (isset($data['sortBy'])) {
+                    if(($data['sortBy'] === 'highToLow')){
+                        usort($Flights, function($a, $b) {
+                            $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                            $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                            // Compare prices
+                            return $priceB <=> $priceA;
+                        });
+                    }else{
+                        usort($Flights, function($a, $b) {
+                            $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                            $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                            // Compare prices
+                            return $priceA <=> $priceB;
+                        });
+                    }
+                    
+                }
+
+
+
+    if($data['TYPE'] === 'ROUNDTRIP'){
+
+        foreach($Flights2 as $Flight)
+        {
+            $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+            if ($amount < $minTotalAmount) {
+                $minTotalAmount = $amount;
+            }
+            if ($amount > $maxTotalAmount) {
+                $maxTotalAmount = $amount;
+            }
+        }
+
+        if(isset($data['Stops']))
+        {
+            $Filtered=[];
+            if($data['Stops'] === "0")
+            {
+                if($data['TYPE'] === 'ONEWAY')
+                {
+                    foreach ($Flights2 as $filteration) {              
+                        if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                    $Flights2=$Filtered;
+                }
+                else if($data['TYPE'] === 'ROUNDTRIP')
+                {
+                    foreach ($Flights2 as $filteration) {              
+                        if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                    $Flights2=$Filtered;
+                }
+                else if($data['TYPE'] === 'MULTISTATE')
+                {
+                    foreach ($Flights2 as $filteration) {              
+                        if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'] && $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][2]['Destination'] === $data['tripInfo'][2]['destination'])
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                    $Flights2=$Filtered;
+                }
+            }
+            else if($data['Stops'] === "1")
+            {
+                if($data['TYPE'] === 'ONEWAY')
+                {
+                    foreach ($Flights2 as $filteration) 
+                    {        
+                        if(count($filteration['Segments']) > 1)
+                        {
+                            if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] || $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] || $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                            {
+                                $Filtered[]=$filteration;
+                            }
+                        }        
+                    }
+                    $Flights2=$Filtered; 
+                }
+                else if($data['TYPE'] === 'ROUNDTRIP')
+                {
+                    foreach ($Flights2 as $filteration) {              
+                        if(
+                            (
+                                $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                            ) 
+                            || 
+                            (
+                                $filteration['Segments'][1]['Origin'] === $data['tripInfo'][2]['origin'] &&
+                                $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination'])
+                            )
+
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                    $Flights2=$Filtered;
+                }
+                else if($data['TYPE'] === 'MULTISTATE')
+                {
+                    foreach ($Flights2 as $filteration) {              
+                        if
+                        (
+                            (
+                                $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
+                            ) 
+                            || 
+                            (
+                                $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] &&
+                                $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination']
+                            )
+                            ||
+                            (
+                                $filteration['Segments'][2]['Origin'] === $data['tripInfo'][2]['origin'] && $filteration['Segments'][3]['Destination'] === $data['tripInfo'][2]['destination']
+                            ) 
+                        )
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                    $Flights2=$Filtered;
+                }
+            }
+        }
+        if (isset($data['Arrival'])) 
+        {        
+            $Filtered=[];
+
+            if($data['Arrival'] === '12AM6AM')
+            {
+                $arrivalDateTimeLow = "00:00";
+                // return response()->json($arrivalDateTimeLow, 400);
+                $arrivalDateTimeHigh = "06:00";
+            }
+            else if($data['Arrival'] === '6AM12PM')
+            {
+                
+                $arrivalDateTimeLow = "06:00";
+                // return response()->json($arrivalDateTimeLow, 400);
+                $arrivalDateTimeHigh = "12:00";
+            }
+            else if($data['Arrival'] === '12PM6PM')
+            {   
+                $arrivalDateTimeLow = "12:00";
+                // return response()->json($arrivalDateTimeLow, 400);
+                $arrivalDateTimeHigh = "18:00";
+            }
+            else if($data['Arrival'] === '6PM12AM')
+            {
+                $arrivalDateTimeLow = "18:00";
+                // return response()->json($arrivalDateTimeLow, 400);
+                $arrivalDateTimeHigh = "24:00";
+            }
+            else{
+                return response()->json('Invalid Arrival time or condition.', 400);
+            }
+
+            foreach ($Flights2 as $filteration) {                
+                // $departure= array_filter();
+                foreach($filteration['Segments'] as $Segment)
+                {
+                    if($data['tripInfo'][0]['destination'] === $Segment['Destination'])
+                    {
+                        $datetime = $Segment['Arrival_DateTime'];
+                        $dateObj = new DateTime($datetime);
+                        $time = $dateObj->format('H:i');
+                        // return response()->json($time);
+                        if($time >  $arrivalDateTimeLow && $time < $arrivalDateTimeHigh)
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                }
+            }
+            $Flights2=$Filtered;                    
+        }
+        
+        if (isset($data['Departure'])) 
+        {        
+
+            $Filtered=[];
+
+            if($data['Departure'] === '12AM6AM')
+            {
+                $departureDateTimeLow = "00:00";
+                $departureDateTimeHigh = "06:00";
+            }
+            else if($data['Departure'] === '6AM12PM')
+            {                        
+                $departureDateTimeLow = "06:00";
+                $departureDateTimeHigh = "12:00";
+            }
+            else if($data['Departure'] === '12PM6PM')
+            {   
+                $departureDateTimeLow = "12:00";
+                $departureDateTimeHigh = "18:00";
+            }
+            else if($data['Departure'] === '6PM12AM')
+            {
+                $departureDateTimeLow = "18:00";
+                $departureDateTimeHigh = "24:00";
+            }
+            else{
+                return response()->json('Invalid Arrival time or condition.', 400);
+            }
+            
+            foreach ($Flights2 as $filteration) {                
+                foreach($filteration['Segments'] as $Segment)
+                {
+                    if($data['tripInfo'][0]['origin'] === $Segment['Origin'])
+                    {
+                        $datetime = $Segment['Departure_DateTime'];
+                        $dateObj = new DateTime($datetime);
+                        $time = $dateObj->format('H:i');
+                        if($time >  $departureDateTimeLow && $time < $departureDateTimeHigh)
+                        {
+                            $Filtered[]=$filteration;
+                        }
+                    }
+                }
+             }
+              $Flights2=$Filtered;
+        }
+
+        if(isset($data['Refundable']))
+        {       
+            $refundable = $data['Refundable'];
+            $filtered = array_filter($Flights2, function($flight) use($refundable) {
+                return $flight['Fares'][0]['Refundable'] === $refundable ;
+            });
+            $Flights2=array_values($filtered);
+        }
+
+        if(isset($data['Price']))
+        {
+            $Filtered=[];
+            foreach($Flights2 as $Flight)
+            {
+                $amount=$Flight['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                if($amount <= $data['Price'])
+                {
+                    $Filtered[] = $Flight;
+                }
+            }
+            $Flights2=$Filtered;
+        }
+
+        if(isset($data['airlineCode']))
+        {         
+            $airlineCode = $data['airlineCode'];
+            $filtered = array_filter($Flights2, function($flight) use($airlineCode) {
+                return $flight['Airline_Code'] === $airlineCode;
+            });
+            $Flights2=array_values($filtered);
+        }
+        
+        // Extract distinct airline codes
+        $airlineCodes = array_map(function($flight) {
+            return $flight['Airline_Code'] ?? null; // Handle cases where 'Airline_Code' may not exist
+        }, $AC);
+
+        $distinctAirlineCodes = array_values(array_unique(array_filter($airlineCodes)));
+
+        // foreach($distinctAirlineCodes as $DAC)
+        // {
+        //     $airport = AirlineCode::where('carrier_code', $DAC)->get();
+
+        //     $ACName[]=
+        //     [
+        //         'AirlineCode' => $airport[0]['carrier_code'],
+        //         'AirlineName' => $airport[0]['airline_name'],
+        //         'AirlineLogo' => $airport[0]['logo']
+        //     ];
+        // }
+        
+        $airlines = AirlineCode::whereIn('carrier_code', $distinctAirlineCodes)
+        ->get(['carrier_code', 'airline_name', 'logo'])
+        ->keyBy('carrier_code'); 
+
+        $ACName = array_map(function($code) use ($airlines) {
+            if (isset($airlines[$code])) {
+                return [
+                    'AirlineCode' => $airlines[$code]->carrier_code,
+                    'AirlineName' => $airlines[$code]->airline_name,
+                    'AirlineLogo' => $airlines[$code]->logo
+                ];
+            }
+            return null; // Handle cases where airline code is not found
+        }, $distinctAirlineCodes);
+
+        $ACName = array_values(array_filter($ACName));
+
+        $count = count($Flights2);
+
+        if (isset($data['sortBy'])) {
+            if(($data['sortBy'] === 'highToLow')){
+                usort($Flights2, function($a, $b) {
+                    $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                    $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                    // Compare prices
+                    return $priceB <=> $priceA;
+                });
+            }else{
+                usort($Flights2, function($a, $b) {
+                    $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
+                    $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
+
+                    // Compare prices
+                    return $priceA <=> $priceB;
+                });
+            }
+            
+        }
+
+    }
+
+
+
+
+                $payloads = [
+                        'errors' => [],
+                        'data' => [
+                            'tripDetails' => [
+                                [
+                                    'Flights' => $Flights
+                                ],
+                                [
+                                    'Flights' => $Flights2
+                                ]
+                            ]
+                        ]
+                ];
+
+                if($count === 0)
+                {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "No Flights Found",
+                    ],$statusCode);
+                }
+                return response()->json([
+                    'status' => true,
+                    'message' => $message,
+                    'count' => $count,
+                    'minPrice' => $minTotalAmount,
+                    'maxPrice' => $maxTotalAmount,
+                    'status_code' => $result['status_code'],
+                    'request_id' => $result['request_id'],
+                    'SearchKey' => $result['payloads']['data']['searchKey'],
+                    'AirlineCodes' => $ACName,
+                    'payloads' => $payloads,
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'error' => $result
+                ],$statusCode);
+            }
+        }
+        } catch (\Exception $e) {
             // Handle exception (e.g. network issues)
             return response()->json([
                 'success' => false,
@@ -237,7 +944,7 @@ class DotMikController extends Controller
                 $BaseFare=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Basic_Amount'];     
                
                 // $TotalAmount=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
-
+                
                 $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
                              if ($TotalAmountBefore < 5000) {
@@ -267,7 +974,7 @@ class DotMikController extends Controller
                 $RescheduleCharges=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['RescheduleCharges'];
                
                 $Tax=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['AirportTax_Amount'] + $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Trade_Markup_Amount'] ;
-                
+
                 $CancelArray=[];
                 
                 foreach($Cancellation as $cancel)
@@ -324,7 +1031,7 @@ class DotMikController extends Controller
         
                 // // Format as "1h 05m"
                 // $Duration = $hours . 'h ' . $minutes . 'm';
-                
+                $BaseFare = $TotalAmountBefore - $Tax;
                 // Generate the PDF
                 $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                 // $first,$last,$Ticket,$gen,
