@@ -157,6 +157,8 @@ class DotMikController extends Controller
                     $transformedTripDetails[] = $trip;
                 }
 
+                $message = "";
+
                 $Flights=$transformedTripDetails[0]['Flights'];
                 $Flights2=$transformedTripDetails[1]['Flights'] ?? [];
                 // if(isset($transformedTripDetails[1]))
