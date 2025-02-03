@@ -94,6 +94,7 @@ class DotMikController extends Controller
             'Stops' => $request->Stops,
             'Price' => $request->Price,
             'sortBy' => $request->sortBy,
+            'TYPE' => $request->TYPE,
             
         ];
         // dd($payload);
