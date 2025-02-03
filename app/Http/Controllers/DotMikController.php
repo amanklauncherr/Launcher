@@ -86,6 +86,16 @@ class DotMikController extends Controller
             ]
         ];
 
+
+        $data = [
+            'Arrival' => $request->Arrival,
+            'Departure' => $request->Departure,
+            'Refundable' => $request->Refundable,
+            'Stops' => $request->Stops,
+            'Price' => $request->Price,
+            'sortBy' => $request->sortBy,
+            
+        ];
         // dd($payload);
 
         // return response()->json($payload);
