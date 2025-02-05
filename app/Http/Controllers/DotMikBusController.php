@@ -303,7 +303,7 @@ class DotMikBusController extends Controller
 
                     if (isset($data['sortBy'])) {
                         if(($data['sortBy'] === 'highToLow')){
-                            usort($avaliableTrip, function($a, $b) {
+                          $sorted = usort($avaliableTrip, function($a, $b) {
                                 $priceA = $a['fares'];
                                 $priceB = $b['fares'];
     
@@ -311,7 +311,7 @@ class DotMikBusController extends Controller
                                 return $priceB <=> $priceA;
                             });
                         }else{
-                            usort($avaliableTrip, function($a, $b) {
+                            $sorted = usort($avaliableTrip, function($a, $b) {
                                 $priceA = $a['fares'];
                                 $priceB = $b['fares'];
     
@@ -319,7 +319,7 @@ class DotMikBusController extends Controller
                                 return $priceA <=> $priceB;
                             });
                         }
-                        
+                        $avaliableTrip=array_values($sorted); 
                     }
 
 
