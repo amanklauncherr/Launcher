@@ -44,6 +44,12 @@ class DataInsert extends Controller
 
     }
 
+    public function getAirportName(Request $request){
+        $data = $request->iata_code;
+        $iata = DB::table('iatacodes')->where('iata_code',$data)->first();
+        return $iata;
+    }
+
 
     public function dbDetails(Request $request)
     {

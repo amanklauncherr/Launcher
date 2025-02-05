@@ -373,6 +373,8 @@ Route::post('getcity',[DataInsert::class,'getCity']);
 Route::post('addcity',[DataInsert::class,'addBusStation']);
 Route::get('storeExchange',[DataInsert::class,'storeExchange']);
 Route::get('getExchange',[DataInsert::class,'getExchange']);
+Route::get('getIATA',[DotMikController::class,'getIATA']);
+Route::get('getAirportName',[DataInsert::class,'getAirportName']);
 
 
 

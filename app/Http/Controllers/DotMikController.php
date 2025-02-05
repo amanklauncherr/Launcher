@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 use DateTime;
 use Illuminate\Support\Facades\Mail;
@@ -54,6 +55,36 @@ class DotMikController extends Controller
      *   "message": "The TYPE field is required."
      * }
     */
+
+
+    public function getIATA(Request $request){
+
+        // dd($request->all());
+        $data = $request->destination;
+        $iata = DB::table('iata_codes')->where('state', 'like', '%' . $data . '%' )->orWhere('airport_name', 'like', '%' . $data . '%' )->orWhere('iata_code', 'like', '%' . $data . '%' )->get();
+        dd($iata);
+
+        // getNearestAirports($iata->latitude,$iata->longitude);
+        return response()->json($iata);
+    }
+
+    function getNearestAirports($latitude,$longitude) {
+        
+        $nearestAirports = DB::select("
+            SELECT id, iata_code, airport_name, country, state, distance, longitude, latitudes,
+                   ( 6371 * ACOS( COS(RADIANS(?)) 
+                                 * COS(RADIANS(latitudes)) 
+                                 * COS(RADIANS(longitude) - RADIANS(?)) 
+                                 + SIN(RADIANS(?)) 
+                                 * SIN(RADIANS(latitudes)) ) ) AS calculated_distance_km
+            FROM airports
+            WHERE iata_code != 'LKO' 
+            ORDER BY calculated_distance_km ASC
+            LIMIT 2
+        ", [$latitude, $longitude, $latitude]);
+    
+        return response()->json($nearestAirports);
+    }
 
     public function SearchFlight2(Request $request){
 

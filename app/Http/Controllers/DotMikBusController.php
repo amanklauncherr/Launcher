@@ -301,6 +301,27 @@ class DotMikBusController extends Controller
                         $avaliableTrip=array_values($filteredBus);   
                     }
 
+                    if (isset($data['sortBy'])) {
+                        if(($data['sortBy'] === 'highToLow')){
+                            usort($avaliableTrip, function($a, $b) {
+                                $priceA = $a['fares'];
+                                $priceB = $b['fares'];
+    
+                                // Compare prices
+                                return $priceB <=> $priceA;
+                            });
+                        }else{
+                            usort($avaliableTrip, function($a, $b) {
+                                $priceA = $a['fares'];
+                                $priceB = $b['fares'];
+    
+                                // Compare prices
+                                return $priceA <=> $priceB;
+                            });
+                        }
+                        
+                    }
+
 
                     $data=$avaliableTrip;
 
