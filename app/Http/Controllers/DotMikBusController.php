@@ -73,7 +73,8 @@ class DotMikBusController extends Controller
             "Sleeper" => "nullable|string",
             "Arrival" => "nullable|string",
             "Departure" => "nullable|string",
-            "BusName" => "nullable|string"
+            "BusName" => "nullable|string",
+            "sortBy" => "nullable|string"
         ]);
         
         if($validator->fails())
@@ -307,13 +308,12 @@ class DotMikBusController extends Controller
                                 return floatval($a['fares'][0]) <=> floatval($b['fares'][0]); // Sort by lowest fare
                             });
                             $avaliableTrip=array_values($soerted); 
-                            dd($soerted);
+                            
                         } elseif ($data['sortBy'] === 'HightoLow') {
                            $soerted = usort($avaliableTrip, function ($a, $b) {
                                 return floatval($b['fares'][0]) <=> floatval($a['fares'][0]); // Sort by highest fare
                             });
                             $avaliableTrip=array_values($soerted); 
-                            dd($soerted);
 
                         }
                     }
