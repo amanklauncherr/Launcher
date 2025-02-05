@@ -304,11 +304,11 @@ class DotMikBusController extends Controller
                     if (isset($data['sortBy'])) {
                         if ($data['sortBy'] === 'lowToHigh') {
                             usort($avaliableTrip, function ($a, $b) {
-                                return min($a['fares'][0]) <=> min($b['fares']); // Sort by lowest fare
+                                return min($a['fares'][0]) <=> min($b['fares'][0]); // Sort by lowest fare
                             });
                         } elseif ($data['sortBy'] === 'HightoLow') {
                             usort($avaliableTrip, function ($a, $b) {
-                                return min($b['fares'][0]) <=> min($a['fares']); // Sort by highest fare
+                                return min($b['fares'][0]) <=> min($a['fares'][0]); // Sort by highest fare
                             });
                         }
                     }
