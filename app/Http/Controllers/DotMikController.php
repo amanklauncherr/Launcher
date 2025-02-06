@@ -2640,7 +2640,7 @@ public function TemporaryBooking(Request $request)
                         "ssrDetails" => $ssrkeynew // Empty SSR details
                     ],
                     [
-                        "searchKey" => $data['searchKey2'],
+                        "searchKey" => $data['searchKey'],
                         "flightKey" => $data['FlightKey2'],
                         "ssrDetails" => $ssrkeynew2 // Empty SSR details
                     ]
@@ -2658,7 +2658,7 @@ public function TemporaryBooking(Request $request)
                 "bookingAlertIds" => null
                 ];
          }else{
-            
+
             $payload = [
                 "deviceInfo" => [
                     "ip" => "122.161.52.233",
