@@ -2607,7 +2607,7 @@ public function TemporaryBooking(Request $request)
         // }
         
         // Payload creation
-         if($data['searchKey2'] != null && $data['FlightKey2'] != null){
+         if($data['FlightKey2'] != null){
             $ssrkeynew2 = array();
 
              $ssrkeys2 = $request->ssrSeatKey2;
