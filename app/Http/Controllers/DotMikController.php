@@ -2537,7 +2537,11 @@ public function TemporaryBooking(Request $request)
             'searchKey' => 'required|string',
             'FlightKey' => 'required|string',
             'headersToken' => 'required|string',
-            'headersKey' => 'required|string'
+            'headersKey' => 'required|string',
+            'FlightKey2' => 'nullable|string',
+            'searchKey2' => 'nullable|string',
+            'ssrSeatKey2' => 'nullable',
+
         ]);  
         
         if ($validator->fails()) {
@@ -2603,41 +2607,97 @@ public function TemporaryBooking(Request $request)
         // }
         
         // Payload creation
-        $payload = [
-        "deviceInfo" => [
-            "ip" => "122.161.52.233",
-            "imeiNumber" => "12384659878976879887"
-        ],
-        "passengers" => [
-            "mobile" => $data['mobile'],
-            "whatsApp" => $data['whatsApp'],
-            "email" => $data['email'],
-            "paxDetails" => $paxDetails
-        ],
-        "gst" => [
-            "isGst" => $data['gst']['isGst'],
-            "gstNumber" => $data['gst']['gstNumber'] ?? null,
-            "gstName" => $data['gst']['gstName'] ?? null,
-            "gstAddress" => $data['gst']['gstAddress'] ?? null
-        ],
-        "flightDetails" => [
-            [
-                "searchKey" => $data['searchKey'],
-                "flightKey" => $data['FlightKey'],
-                "ssrDetails" => $ssrkeynew // Empty SSR details
-            ]
-        ],
-        "costCenterId" => 0,
-        "projectId" => 0,
-        "bookingRemark" => "Test booking with PAX details",
-        "corporateStatus" => 0,
-        "corporatePaymentMode" => 0,
-        "missedSavingReason" => null,
-        "corpTripType" => null,
-        "corpTripSubType" => null,
-        "tripRequestId" => null,
-        "bookingAlertIds" => null
-        ];
+         if($data['searchKey2'] != null && $data['FlightKey2'] != null){
+            $ssrkeynew2 = array();
+
+             $ssrkeys2 = $request->ssrSeatKey2;
+
+            foreach($ssrkeys2 as $seats2){
+                $ssrkeynew2[] = $seats2;
+            }
+
+            $payload = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879887"
+                ],
+                "passengers" => [
+                    "mobile" => $data['mobile'],
+                    "whatsApp" => $data['whatsApp'],
+                    "email" => $data['email'],
+                    "paxDetails" => $paxDetails
+                ],
+                "gst" => [
+                    "isGst" => $data['gst']['isGst'],
+                    "gstNumber" => $data['gst']['gstNumber'] ?? null,
+                    "gstName" => $data['gst']['gstName'] ?? null,
+                    "gstAddress" => $data['gst']['gstAddress'] ?? null
+                ],
+                "flightDetails" => [
+                    [
+                        "searchKey" => $data['searchKey'],
+                        "flightKey" => $data['FlightKey'],
+                        "ssrDetails" => $ssrkeynew // Empty SSR details
+                    ],
+                    [
+                        "searchKey" => $data['searchKey2'],
+                        "flightKey" => $data['FlightKey2'],
+                        "ssrDetails" => $ssrkeynew2 // Empty SSR details
+                    ]
+
+                ],
+                "costCenterId" => 0,
+                "projectId" => 0,
+                "bookingRemark" => "Test booking with PAX details",
+                "corporateStatus" => 0,
+                "corporatePaymentMode" => 0,
+                "missedSavingReason" => null,
+                "corpTripType" => null,
+                "corpTripSubType" => null,
+                "tripRequestId" => null,
+                "bookingAlertIds" => null
+                ];
+         }else{
+            
+            $payload = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879887"
+                ],
+                "passengers" => [
+                    "mobile" => $data['mobile'],
+                    "whatsApp" => $data['whatsApp'],
+                    "email" => $data['email'],
+                    "paxDetails" => $paxDetails
+                ],
+                "gst" => [
+                    "isGst" => $data['gst']['isGst'],
+                    "gstNumber" => $data['gst']['gstNumber'] ?? null,
+                    "gstName" => $data['gst']['gstName'] ?? null,
+                    "gstAddress" => $data['gst']['gstAddress'] ?? null
+                ],
+                "flightDetails" => [
+                    [
+                        "searchKey" => $data['searchKey'],
+                        "flightKey" => $data['FlightKey'],
+                        "ssrDetails" => $ssrkeynew // Empty SSR details
+                    ]
+                ],
+                "costCenterId" => 0,
+                "projectId" => 0,
+                "bookingRemark" => "Test booking with PAX details",
+                "corporateStatus" => 0,
+                "corporatePaymentMode" => 0,
+                "missedSavingReason" => null,
+                "corpTripType" => null,
+                "corpTripSubType" => null,
+                "tripRequestId" => null,
+                "bookingAlertIds" => null
+                ];
+         }
+
+
+       
 
         // return response()->json($payload);
 
