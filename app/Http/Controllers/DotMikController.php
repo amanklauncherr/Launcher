@@ -2611,9 +2611,10 @@ public function TemporaryBooking(Request $request)
             $ssrkeynew2 = array();
 
              $ssrkeys2 = $request->ssrSeatKey2;
-
-            foreach($ssrkeys2 as $seats2){
+            if($ssrkeys2 != []){
+             foreach($ssrkeys2 as $seats2){
                 $ssrkeynew2[] = $seats2;
+             }
             }
 
             $payload = [
