@@ -2139,7 +2139,7 @@ class DotMikController extends Controller
         
         $data=$validator->validated();
 
-        if($data['FareID2'] != []){
+        if($data['FareID2'] !== null && $data['FareID2'] != []){
             $payload = [
                 "deviceInfo" => [
                     "ip" => "122.161.52.233",
