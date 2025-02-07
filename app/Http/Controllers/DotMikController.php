@@ -2151,8 +2151,8 @@ class DotMikController extends Controller
                 "Flight_Key" => $data['FlightKey'],    
                 ],
                 [
-                "Fare_Id" => $data['FareID2'],
-                "Flight_Key" => $data['FlightKey2'],  
+                "Fare_Id" => $data['FareID2'] ?? [],
+                "Flight_Key" => $data['FlightKey2'] ?? [],  
                 ]
             ],
             "customerMobile" => $data['CustomerContact'],
