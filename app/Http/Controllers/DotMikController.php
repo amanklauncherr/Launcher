@@ -2625,7 +2625,7 @@ public function TemporaryBooking(Request $request)
                 "passengers" => [
                     "mobile" => $data['mobile'],
                     "whatsApp" => $data['whatsApp'],
-                    "email" => $data['email'],
+                    "email" => "info@launcherr.co",
                     "paxDetails" => $paxDetails
                 ],
                 "gst" => [
@@ -2668,7 +2668,7 @@ public function TemporaryBooking(Request $request)
                 "passengers" => [
                     "mobile" => $data['mobile'],
                     "whatsApp" => $data['whatsApp'],
-                    "email" => $data['email'],
+                    "email" => "info@launcherr.co",
                     "paxDetails" => $paxDetails
                 ],
                 "gst" => [
@@ -2727,12 +2727,21 @@ public function TemporaryBooking(Request $request)
                 ],$statusCode);
             } else {
                 if ($response->successful()) {
+
                     TravelHistory::create([
                         'user_id' => Auth::guard('api')->id(),
                         'BookingType' => 'FLIGHT',
                         'BookingRef' => $result['payloads']['data']['bookingRef'],
                         'Status' => 'TEMPBOOKED'
                     ]);
+
+                    DB::table('user_ticket_email')->insert([
+                        'bookingRef' => $result['payloads']['data']['bookingRef'],
+                        'email' => $data['email'],
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+
                     return response()->json([
                         'success' => true,
                         'data' => $result,
@@ -3168,7 +3177,7 @@ public function Ticketing(Request $request)
 
             $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
             $History->update([
-                'PnrDetails' => $ticketingResult['payloads']['data']['pnrDetails'][0],
+                'PnrDetails' => $ticketingResult['payloads']['data']['pnrDetails'][0] ?? [],
                 'Status' => "BOOKED",
             ]);
 
@@ -3377,7 +3386,15 @@ public function Ticketing(Request $request)
 
             $BookingRef = $data['BookingRef'];
             
-            $Pnr = $result['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR'];
+            $Pnr = $result['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR'] ?? [];
+
+            $userEmail = DB::table('user_ticket_email')->where('bookingRef',$BookingRef)->first();
+
+            if($userEmail){
+               $user_mail = $userEmail->email; 
+            }else{
+                $user_mail = $user->email;
+            }
 
             Mail::to($user->email)->send(new UserFlightBooking($Pnr,$BookingRef,$pdf_url));
 
