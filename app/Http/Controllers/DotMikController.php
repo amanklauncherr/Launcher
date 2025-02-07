@@ -3674,7 +3674,7 @@ public function RePrintTicket(Request $request)
                         {
                             $History->update([
                                 'PAXTicketDetails' => $updatedData,
-                                'TravelDetails' => $result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
+                                'TravelDetails' => $result['payloads']['data']['rePrintTicket'],
                                 'Ticket_URL' => $pdf_url
                             ]);
                         }
@@ -3702,6 +3702,20 @@ public function RePrintTicket(Request $request)
                 'errorline' => $e->getLine() 
             ], 500);
         }   
+}
+
+public function printTicket (Request $request){
+
+    $bookingRef = $request->bookingRef;
+
+    $History=TravelHistory::where('BookingRef',$bookingRef)->first();
+
+    if($History){
+        return $History;
+    }else{
+        return response()->json('data not available for this Booking Reference');
+    }
+
 }
 
 public function Cancellation(Request $request)

@@ -375,6 +375,7 @@ Route::get('storeExchange',[DataInsert::class,'storeExchange']);
 Route::get('getExchange',[DataInsert::class,'getExchange']);
 Route::get('getIATA',[DotMikController::class,'getIATA']);
 Route::get('getAirportName',[DataInsert::class,'getAirportName']);
+Route::get('getTicket',[DotMikController::class,'printTicket']);
 
 
 
