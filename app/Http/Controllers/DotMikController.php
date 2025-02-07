@@ -1154,6 +1154,15 @@ class DotMikController extends Controller
             $BookingRef = $data['BookingRef'];
             
             $Pnr = $result['payloads']['data']['pnrDetails'][0]['AirlinePNRs'][0]['Airline_PNR'];
+            
+            $userEmail = DB::table('user_ticket_email')->where('bookingRef',$BookingRef)->first();
+
+            if($userEmail){
+               $user_mail = $userEmail->email; 
+            }else{
+                $user_mail = $user->email;
+            }
+
 
             Mail::to($user->email)->send(new UserFlightBooking($Pnr,$BookingRef,$pdf_url));
 
