@@ -2113,6 +2113,8 @@ class DotMikController extends Controller
             'SearchKey' => 'required|string',
             'FareID' => 'required|string',
             'FlightKey' => 'required|string',
+            'FareID2' => 'nullable|string',
+            'FlightKey2' => 'nullable|string',
             'CustomerContact' => "required|string|min:10|max:10",
             'headersToken' => 'required|string',
             'headersKey' => 'required|string',
@@ -2147,6 +2149,10 @@ class DotMikController extends Controller
                 [
                 "Fare_Id" => $data['FareID'],
                 "Flight_Key" => $data['FlightKey'],    
+                ],
+                [
+                "Fare_Id" => $data['FareID2'],
+                "Flight_Key" => $data['FlightKey2'],  
                 ]
             ],
             "customerMobile" => $data['CustomerContact'],
@@ -3369,7 +3375,7 @@ public function Ticketing(Request $request)
                 {
                     $History->update([
                         'PAXTicketDetails' => $updatedData,
-                        'TravelDetails' => $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'],
+                        'TravelDetails' => $resultRePrint['payloads']['data']['rePrintTicket'],
                         'Ticket_URL' => $pdf_url
                     ]);
                 }
