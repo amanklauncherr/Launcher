@@ -2139,25 +2139,45 @@ class DotMikController extends Controller
         
         $data=$validator->validated();
 
-        $payload = [
-            "deviceInfo" => [
-                "ip" => "122.161.52.233",
-                "imeiNumber" => "12384659878976879888"
-            ],
-            "searchKey" => $data['SearchKey'],
-            "reprice" => [
-                [
-                "Fare_Id" => $data['FareID'],
-                "Flight_Key" => $data['FlightKey'],    
+        if($data['FareID2'] != []){
+            $payload = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879888"
                 ],
-                [
-                "Fare_Id" => $data['FareID2'] ?? [],
-                "Flight_Key" => $data['FlightKey2'] ?? [],  
-                ]
-            ],
-            "customerMobile" => $data['CustomerContact'],
-            "GSTIN" => ""
-        ];
+                "searchKey" => $data['SearchKey'],
+                "reprice" => [
+                    [
+                    "Fare_Id" => $data['FareID'],
+                    "Flight_Key" => $data['FlightKey'],    
+                    ],
+                    [
+                    "Fare_Id" => $data['FareID2'] ?? [],
+                    "Flight_Key" => $data['FlightKey2'] ?? [],  
+                    ]
+                ],
+                "customerMobile" => $data['CustomerContact'],
+                "GSTIN" => ""
+            ];
+        }else{
+            $payload = [
+                "deviceInfo" => [
+                    "ip" => "122.161.52.233",
+                    "imeiNumber" => "12384659878976879888"
+                ],
+                "searchKey" => $data['SearchKey'],
+                "reprice" => [
+                    [
+                    "Fare_Id" => $data['FareID'],
+                    "Flight_Key" => $data['FlightKey'],    
+                    ]
+                ],
+                "customerMobile" => $data['CustomerContact'],
+                "GSTIN" => ""
+            ];
+        }
+
+        
 
         // Headers
         $headers = [
