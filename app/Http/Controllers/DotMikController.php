@@ -2763,9 +2763,7 @@ public function TemporaryBooking(Request $request)
 
                     DB::table('user_ticket_email')->insert([
                         'bookingRef' => $result['payloads']['data']['bookingRef'],
-                        'email' => $data['email'],
-                        'created_at' => now(),
-                        'updated_at' => now()
+                        'email' => $data['email']
                     ]);
 
                     return response()->json([
