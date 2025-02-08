@@ -3523,7 +3523,7 @@ public function saveTicket(Request $request){
     
                     $type=$resultRePrint['payloads']['data']['rePrintTicket']['Class_of_Travel'];
 
-                    $PNR= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
+                    $Pnr= $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Airline_PNR'];
     
                     $Cabin=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Free_Baggage']['Hand_Baggage'];
                    
@@ -3683,7 +3683,7 @@ public function saveTicket(Request $request){
                          }
              
              
-                         Mail::to($user_mail)->send(new UserFlightBooking($PNR,$Hs->BookingRef,$pdf_url));
+                         Mail::to($user_mail)->send(new UserFlightBooking($Pnr,$Hs->BookingRef,$pdf_url));
 
                     
             }else {
