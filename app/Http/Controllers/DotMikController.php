@@ -3659,7 +3659,7 @@ public function saveTicket(Request $request){
     
                                 $updatedData = json_encode($array);
                                 
-                         $History=TravelHistory::where('BookingRef',$data['BookingRef'])->first();
+                         $History=TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
 
                          if($History)
                          {
@@ -3670,7 +3670,7 @@ public function saveTicket(Request $request){
                              ]);
                          }
 
-                         $userEmail = DB::table('user_ticket_email')->where('bookingRef',$BookingRef)->first();
+                         $userEmail = DB::table('user_ticket_email')->where('bookingRef',$Hs->BookingRef)->first();
 
                          if($userEmail){
 
