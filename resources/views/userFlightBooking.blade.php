@@ -70,7 +70,7 @@
             <table>
                 <tr>
                     <th>PNR</th>
-                    <td>{{ $Pnr }}</td>
+                    <td>{{ $PNR }}</td>
                 </tr>
                 <tr>
                     <th>Booking Reference</th>
