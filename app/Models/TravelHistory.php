@@ -17,7 +17,9 @@ class TravelHistory extends Model
         'PAXTicketDetails',
         'TravelDetails',
         'Status',
-        'Ticket_URL'
+        'Ticket_URL',
+        'payment',
+        'reprint'
     ];
     
 }
