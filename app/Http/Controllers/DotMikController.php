@@ -3491,7 +3491,7 @@ public function saveTicket(Request $request){
 
     $RePrintTicketurl = 'https://api.dotmik.in/api/flightBooking/v1/rePrintTicket';
 
-    $History=TravelHistory::where('payment','Success')->where('reprint','Pending')->select('BookingRef')->get();
+    $History=TravelHistory::where('payment','Success')->where('reprint','Pending')->where('BookingType','FLIGHT')->select('BookingRef')->get();
     
     if($History){
         
@@ -3515,6 +3515,7 @@ public function saveTicket(Request $request){
                 $HistoryUpdate=TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
                 $HistoryUpdate->update([
                     'reprint' => "Success",
+                    'Status'  =>  "BOOKED"
                 ]);
 
                     $Segment=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'];
@@ -3612,7 +3613,9 @@ public function saveTicket(Request $request){
                     
                     $pdfFilePath = $this->generateTicketPdf($Cabin,$CheckIn,$Contact, $Email, $BaseFare, $TotalAmount, $CancelArray, $RescheduleChargesArray, $Tax, $paxDetails,$Segment,$flight_type);
                     
-                    $pdf_url = asset('storage/' . $pdfFilePath);
+                    $pdf_url_DB_store = asset('storage/' . $pdfFilePath);
+
+                    $pdf_url = "https://launcherr.co/flightTicketPdf?bookingRef=$Hs->BookingRef";
     
                     $array1 = $resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['PAXTicketDetails'];
     

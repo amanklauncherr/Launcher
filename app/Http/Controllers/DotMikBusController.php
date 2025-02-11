@@ -617,7 +617,11 @@ class DotMikBusController extends Controller
                             'BookingType' => 'BUS',
                             'BookingRef' => $result['payloads']['data']['referenceKey'],
                             'Status'=>'TEMPBOOKED'
-                        ]);                       
+                        ]);  
+                        DB::table('user_ticket_email')->insert([
+                            'bookingRef' => $result['payloads']['data']['referenceKey'],
+                            'email' => $data['inventoryItems'][0]['passenger']['email'] ?? null
+                        ]);                     
                         return response()->json([
                             'success' => true,
                             'data' => $result,
@@ -891,6 +895,14 @@ class DotMikBusController extends Controller
         'Content-Type' => 'application/json',
     ];
 
+
+            $payment=TravelHistory::where('BookingRef',$data['referenceKey'])->first();
+            $payment->update([
+                'payment' => "Success",
+                'reprint' => "Pending",
+            ]);
+    
+
     // API URL // dotmik
     $url="https://api.dotmik.in/api/busBooking/v1/bookTicket";
     $checkTicketurl="https://api.dotmik.in/api/busBooking/v1/checkTicket";
@@ -979,7 +991,9 @@ class DotMikBusController extends Controller
                         'dropDetails' => $resultCheckTicket['payloads']['data']['dropDetails'],
                         'pickupDetails' => $resultCheckTicket['payloads']['data']['pickupDetails'],
                     ],
-                    'Ticket_URL' =>  $pdf_url
+                    'Ticket_URL' =>  $pdf_url,
+                    'reprint' => "Success",
+                    'Status'  =>  "BOOKED"
                     ]);
                 } else {
                     DB::rollBack(); // Rollback transaction if checkTicket fails
@@ -1147,6 +1161,149 @@ class DotMikBusController extends Controller
             'errorLine' => $e->getLine()
         ], 500);
     }   
+   }
+
+
+   public function pendingBusTicket(Request $request)
+   {
+     
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://api.launcherr.co/api/AES/Encryption',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'GET',
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json',
+        'Accept: application/json'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+
+    $tokens = json_decode($response);
+    
+    curl_close($curl);
+
+    if(!$tokens){
+        return "No Token";
+    }
+   
+    $headers = [
+        'D-SECRET-TOKEN' => $tokens->encrypted_token,
+        'D-SECRET-KEY' => $tokens->encrypted_key,
+        'CROP-CODE' => 'DOTMIK160614',
+        'Content-Type' => 'application/json',
+    ];
+
+    $History=TravelHistory::where('payment','Success')->where('reprint','Pending')->where('BookingType','BUS')->select('BookingRef')->get();
+
+    
+    // API URL
+    $url="https://api.dotmik.in/api/busBooking/v1/checkTicket";
+
+
+    if($History){
+
+        foreach($History as $Hs){
+
+           $payload = [
+                "referenceId" => $Hs->BookingRef,
+             ];
+
+             try {
+                // Make the POST request using Laravel HTTP Client
+                $response = Http::withHeaders($headers)->post($url, $payload);
+                $result=$response->json();
+                $statusCode = $response->status();
+        
+                if($result['status'] === false)
+                {
+                    return response()->json($result,$statusCode);   
+                }
+                else
+                {
+                    if($response->successful())
+                    {
+                        $busName = $result['payloads']['data']['busType'];
+                       
+                        $dateOfJourney = new DateTime($result['payloads']['data']['dateOfJourney']);
+                        $dateOfJourneyFormatted = $dateOfJourney->format('Y-m-d'); // Format it as needed
+                        
+                        $pnr=$result['payloads']['data']['tin'];
+                       
+                        $destinationCity=$result['payloads']['data']['dropDetails']['destinationCity'];
+                        $dropLocation=$result['payloads']['data']['dropDetails']['dropLocation'];
+                        $dropLocationAddress=$result['payloads']['data']['dropDetails']['dropLocationAddress'];
+                        $dropLocationLandmark=$result['payloads']['data']['dropDetails']['dropLocationLandmark'];
+                        $dropTime=$result['payloads']['data']['dropDetails']['dropTime'];
+        
+                        $OriginCity=$result['payloads']['data']['pickupDetails']['sourceCity'];
+                        $pickupLocation=$result['payloads']['data']['pickupDetails']['pickupLocation'];                    
+                        $pickUpLocationAddress=$result['payloads']['data']['pickupDetails']['pickUpLocationAddress'];
+                        $pickupLocationLandmark=$result['payloads']['data']['pickupDetails']['pickupLocationLandmark'];
+                        $pickupTime=$result['payloads']['data']['pickupDetails']['pickupTime'];
+        
+                        $pax = null;
+        
+                        $type = $result['payloads']['data']['inventoryItems'];
+        
+                        if (is_object($type)) {
+                            $pax = [$type]; // Wrap the object in an array of arrays.
+                        } elseif (is_array($type) && count($type) > 0) {
+                            $pax = $type; // Wrap the array in another array.
+                        }
+        
+                        $History1 = TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
+                        //   return response()->json($History);
+        
+                        $pdfFilePath = $this->generateTicketPdf($busName,$dateOfJourneyFormatted,$pnr,$destinationCity,$dropLocationAddress,$dropLocation,$dropLocationLandmark,$dropTime,$pickUpLocationAddress,$pickupLocation,$pickupLocationLandmark,$pickupTime,$OriginCity,$pax);
+        
+                        $History1->update([
+                            'PnrDetails' => $History1['PnrDetails'],
+                            'PAXTicketDetails' => $pax,
+                            'TravelDetails' => [
+                                'dropDetails' => $result['payloads']['data']['dropDetails'],
+                                'pickupDetails' => $result['payloads']['data']['pickupDetails'],
+                            ],
+                            'Ticket_URL' => asset('storage/' . $pdfFilePath)
+                        ]);
+
+
+                        // Mail::to($user->email)->send(new UserBusBooking($pnr,$BookingRef, $pdf_url));
+        
+                        return response()->json([
+                            'success' => true,
+                            'data' => $result,
+                            'message' => "Ticket Data"
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Failed to fetch flight data',
+                            'error' => $response->json()
+                        ], $response->status());
+                    }
+                }
+                //code...
+            } catch  (\Exception $e) {
+                // Handle exception (e.g. network issues)
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred',
+                    'error' => $e->getMessage(),
+                    'errorLine' => $e->getLine()
+                ], 500);
+            } 
+    }
+}
+
+      
    }
 
    public function getCancelationData(Request $request)
