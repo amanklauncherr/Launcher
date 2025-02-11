@@ -307,9 +307,15 @@ class DotMikBusController extends Controller
                            usort($avaliableTrip, function ($a, $b) {
                                 return floatval($a['fares'][0]) <=> floatval($b['fares'][0]); // Sort by lowest fare
                             });
+                            usort($avaliableTrip, function ($c, $d) {
+                                return floatval($c['fares']) <=> floatval($d['fares']); // Sort by lowest fare
+                            });
                         } elseif ($data['sortBy'] === 'HightoLow') {
                            usort($avaliableTrip, function ($a, $b) {
                                 return floatval($b['fares'][0]) <=> floatval($a['fares'][0]); // Sort by highest fare
+                            });
+                            usort($avaliableTrip, function ($c, $d) {
+                                return floatval($d['fares']) <=> floatval($c['fares']); // Sort by highest fare
                             }); 
 
                         }
@@ -1271,7 +1277,9 @@ class DotMikBusController extends Controller
                                 'dropDetails' => $result['payloads']['data']['dropDetails'],
                                 'pickupDetails' => $result['payloads']['data']['pickupDetails'],
                             ],
-                            'Ticket_URL' => asset('storage/' . $pdfFilePath)
+                            'Ticket_URL' => asset('storage/' . $pdfFilePath),
+                            'reprint' => "Success",
+                            'Status'  =>  "BOOKED"
                         ]);
 
 
