@@ -62,7 +62,7 @@ class DotMikController extends Controller
         // dd($request->all());
         $data = $request->destination;
         $iata = DB::table('iata_codes')->where('state', 'like', '%' . $data . '%' )->orWhere('airport_name', 'like', '%' . $data . '%' )->orWhere('iata_code', 'like', '%' . $data . '%' )->get();
-        dd($iata);
+        // dd($iata);
 
         // getNearestAirports($iata->latitude,$iata->longitude);
         return response()->json($iata);
