@@ -706,7 +706,7 @@ class JobPostingController extends Controller
                     'gigs_Shortdescription' => $job['short_description'],
                     'gigs_duration' => $job['duration'],
                     'gigs_location' => $job['location'],
-                    'gigs_badge' => $job['badge'],
+                    'gigs_badge' => $job['badge'] ?? [],
                     'isActive' => $job['active'],
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
