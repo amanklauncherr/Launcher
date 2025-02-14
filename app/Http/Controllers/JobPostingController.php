@@ -616,14 +616,14 @@ class JobPostingController extends Controller
                     'gigs_Shortdescription' => $job['short_description'],
                     'gigs_duration' => $job['duration'],
                     'gigs_location' => $job['location'],
-                    'gigs_badge' => $job['badge'],
+                    'gigs_badge' => $job['badge'] ?? [],
                     'isActive' => $job['active'],
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
                     'company_image' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['image'] : 'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg',                    
                     'company_description' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['about'] : '',                    
                     'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
-                    'gigs_badge' => $job['badge'],
+                    
                 ];
             }, $jobsArray);
 
@@ -713,7 +713,7 @@ class JobPostingController extends Controller
                     'company_image' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['image'] : 'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg',                    
                     'company_description' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['about'] : '',                    
                     'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
-                    'gigs_badge' => $job['badge'],
+                    
                 ];
             }, $jobsArray);
 
