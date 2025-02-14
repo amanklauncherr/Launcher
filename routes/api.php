@@ -168,6 +168,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     // Search Gigs
     Route::get('/searchJob',[JobPostingController::class,'searchJob']);//
+    Route::get('/searchJob2',[JobPostingController::class,'searchJob2']);//
 
     // Single Gig Info
     Route::get('/showJob',[JobPostingController::class,'showJob']); //

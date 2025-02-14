@@ -616,7 +616,97 @@ class JobPostingController extends Controller
                     'gigs_Shortdescription' => $job['short_description'],
                     'gigs_duration' => $job['duration'],
                     'gigs_location' => $job['location'],
-                    'gigs_badge' => $job['badge'] ?? [],
+                    'gigs_badge' => $job['badge'],
+                    'isActive' => $job['active'],
+                    'isVerified' => $job['verified'],
+                    'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
+                    'company_image' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['image'] : 'https://res.cloudinary.com/douuxmaix/image/upload/v1720553096/jhnimqyeodio3jqgxbp0.jpg',                    
+                    'company_description' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['about'] : '',                    
+                    'isApplied' => $tokenType === 'user' ? ($isApplied ? true : false) : null,
+                    'gigs_badge' => $job['badge'],
+                ];
+            }, $jobsArray);
+
+            if(!$newJobsArray)
+            {
+                return response()->json(['success'=>0,'message'=>'No Job Found'], 404);                        
+            }    
+            return response()->json(['success'=>1,'job' => $newJobsArray], 200);        
+
+        }  catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'success'=>0,
+                'message' => 'An error occurred while Adding or Updating About info',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function searchJob2(Request $request)
+    {
+        try {
+            $params=$request->all();
+
+            $validator = Validator::make($params, [
+                'location' => 'nullable|string',
+                'duration' => 'nullable|integer',
+                'isVerified' => 'nullable|boolean',
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // $user=Auth::user();
+
+            $tokenType = $request->attributes->get('token_type');
+            $user = $request->attributes->get('user');
+            $gigList = [];
+    
+            if ($tokenType === 'user' && $user) {
+                // If user is authenticated, get their gig enquiries
+                $gigEnquiry = Enquiry::where('userID', $user->id)->get();
+                $gigList = $gigEnquiry->pluck('gigID')->toArray();
+            }
+    
+            $query = JobPosting::with(['user.employerProfile']);
+    
+            if (!empty($params['location'])) {
+                $query->where('location', 'like', '%' . $params['location'] . '%');
+            }
+    
+            if (!empty($params['duration'])) {
+                $duration = $params['duration'];
+                if ($duration == 1) {
+                    $query->where('duration', $duration);
+                } else {
+                    $query->where('duration', '<=', $duration);
+                }
+            }
+    
+            if (isset($params['isVerified'])) {
+                $query->where('verified', $params['isVerified']);
+            }
+    
+            $searchResults = $query->get();
+    
+            $jobsArray = $searchResults->toArray();
+    
+            $newJobsArray = array_map(function ($job) use ($gigList, $tokenType) {
+                $isApplied = in_array($job['id'], $gigList);
+    
+                return [
+                    'user_id' => $job['user_id'],
+                    'gig_id' => $job['id'],
+                    'gigs_title' => $job['title'],
+                    'gigs_description' => $job['description'],
+                    'gigs_Shortdescription' => $job['short_description'],
+                    'gigs_duration' => $job['duration'],
+                    'gigs_location' => $job['location'],
+                    'gigs_badge' => $job['badge'],
                     'isActive' => $job['active'],
                     'isVerified' => $job['verified'],
                     'company_name' => isset($job['user']['employer_profile']) ? $job['user']['employer_profile']['company_name'] : 'By Launcherr',
