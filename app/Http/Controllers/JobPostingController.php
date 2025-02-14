@@ -583,8 +583,6 @@ class JobPostingController extends Controller
             }
     
             $query = JobPosting::with(['user.employerProfile']);
-
-            return $query;
     
             if (!empty($params['location'])) {
                 $query->where('location', 'like', '%' . $params['location'] . '%');
