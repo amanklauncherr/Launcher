@@ -23,8 +23,8 @@ class AESEncryption extends Controller
     public function AESEncryption(Request $request)
     {
         $payload = [
-            'mobileNumber' => env('MOBILENUMBER'),
-            'password' => env('PASSWORD')
+            'mobileNumber' => '9871831224',
+            'password' => 'Launcherr2024@!'
         ];
 
         // Make the HTTP POST request
