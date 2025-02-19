@@ -12,7 +12,7 @@ class AESEncryption extends Controller
     //
     function encryptToken($token, $key)
     {
-        $iv = env('IV');
+        $iv = '22f632f1d31cc2de';
 
         $encryptedToken = openssl_encrypt($token, 'AES-256-CBC', $key, 0, $iv);
 
