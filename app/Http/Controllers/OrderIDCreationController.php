@@ -168,7 +168,7 @@ class OrderIDCreationController extends Controller
 
                 $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
 
-                Mail::to(env('ADMINMAIL','devmmr069@gmail.com'))->send(new AdminOrderMail($AdminText));
+                Mail::to(env('ADMINMAIL','info@launcherr.co'))->send(new AdminOrderMail($AdminText));
 
                 // Create WooCommerce order via cURL
                 $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';

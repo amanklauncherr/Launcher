@@ -41,6 +41,7 @@ use App\Http\Controllers\UserSubscriptionController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\TravelHistoryController;
 use App\Http\Controllers\WebHookRefundController;
+use App\Http\Controllers\CashFreeController;
 use App\Models\Destination;
 use App\Models\SubscriptionDetail;
 use App\Http\Middleware\CheckBearerToken;
@@ -378,6 +379,11 @@ Route::get('getIATA',[DotMikController::class,'getIATA']);
 Route::get('getAirportName',[DataInsert::class,'getAirportName']);
 Route::get('getTicket',[DotMikController::class,'printTicket']);
 Route::get('get/pending/Ticket',[DotMikController::class,'saveTicket']);
+
+Route::get('payCash',[CashFreeController::class,'Cashfree_Create_order']);
+Route::get('success/Cashfree/{orderId}', [CashFreeController::class, 'PaymentSuccessCashFree'])->name('payment.success');
+
+
 
 
 
