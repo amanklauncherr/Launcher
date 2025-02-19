@@ -39,9 +39,6 @@ class CashFreeController extends Controller
         Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         
-        
-        
-
         $x_api_version = "2023-08-01";
 
         $cashfree = new Cashfree();
