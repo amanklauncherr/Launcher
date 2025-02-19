@@ -11,6 +11,7 @@
 
     <script type="text/javascript">
         function payment(){
+            // var cashfree = Cashfree({ mode: 'sandbox' });
             var cashfree = Cashfree({ mode: 'sandbox' });
             let checkoutOptions = {
                 paymentSessionId: document.getElementById("paymentSessionId").value,

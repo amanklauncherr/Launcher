@@ -2575,7 +2575,7 @@ public function TemporaryBooking(Request $request)
             'headersKey' => 'required|string',
             'FlightKey2' => 'nullable|string',
             'searchKey2' => 'nullable|string',
-            'ssrSeatKey2' => 'nullable',
+            'ssrSeatKey2' => 'nullable|string',
 
         ]);  
         
