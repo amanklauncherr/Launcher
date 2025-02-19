@@ -38,9 +38,7 @@ class CashFreeController extends Controller
         Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
         Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         Cashfree::$XEnvironment = Cashfree:: env('CASH_FREE_CLIENT_Environment_TEST');
-        
-        $x_api_version = "2023-08-01";
-
+       
         $cashfree = new Cashfree();
         $order_id = 'launcherr_' . date('YmdHis');
         $order_amount = $amount;
@@ -64,7 +62,7 @@ class CashFreeController extends Controller
         $create_orders_request->setOrderMeta($order_meta);
 
         try {
-            $result = $cashfree->PGCreateOrder($x_api_version, $create_orders_request);
+            $result = $cashfree->PGCreateOrder("2023-08-01", $create_orders_request);
             
             DB::table('payments')->insert([
                 'user_id' => $user_id,
@@ -97,10 +95,8 @@ class CashFreeController extends Controller
         
         $cashfree = new Cashfree();
 
-        $x_api_version = "2022-09-01";
-
         try {
-            $response = $cashfree->PGFetchOrder($x_api_version, $orderId);
+            $response = $cashfree->PGFetchOrder("2022-09-01", $orderId);
             // dd($response);
             if($response[1] === 200){
                     DB::table('payments')->where('order_id', $orderId)
