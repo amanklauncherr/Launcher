@@ -35,8 +35,8 @@ class CashFreeController extends Controller
         $currency = 'INR';
 
 
-        Cashfree::$XClientId = "TEST104769025e9f028f19c44a0d4cd420967401";
-        Cashfree::$XClientSecret = "cfsk_ma_test_b8f30c218ee25226e45bf6fd144df32e_9edf05fc";
+        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
+        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         
         
@@ -94,14 +94,10 @@ class CashFreeController extends Controller
 
     public function PaymentSuccessCashFree($orderId)
     {
-        Cashfree::$XClientId = "TEST104769025e9f028f19c44a0d4cd420967401";
-        Cashfree::$XClientSecret = "cfsk_ma_test_b8f30c218ee25226e45bf6fd144df32e_9edf05fc";
+        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
+        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
-        // Cashfree::$XClientId = "910208f90987e9515cd961610a802019";
-        // Cashfree::$XClientSecret = "cfsk_ma_prod_0d53b1f9ecedf9e17d0bf92d454fb301_12a76ffa";
-        // Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
-
-
+        
         $cashfree = new Cashfree();
 
         $x_api_version = "2022-09-01";
