@@ -2650,7 +2650,9 @@ public function TemporaryBooking(Request $request)
              foreach($ssrkeys2 as $seats2){
                 $ssrkeynew2[] = $seats2;
              }
-            }
+            }else{
+                $ssrkeynew2 = [];
+             }
 
             $payload = [
                 "deviceInfo" => [

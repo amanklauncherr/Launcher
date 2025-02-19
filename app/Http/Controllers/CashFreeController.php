@@ -34,11 +34,11 @@ class CashFreeController extends Controller
         ];
         $currency = 'INR';
 
-
-        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
-        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
-        Cashfree::$XEnvironment = Cashfree:: env('CASH_FREE_CLIENT_Environment_TEST');
-       
+        // Cashfree::$XClientId = config('cashfree.client_id');
+        // Cashfree::$XClientSecret = config('cashfree.client_secret');
+        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
+        // $x_api_version = '2022-09-01';
+        
         $cashfree = new Cashfree();
         $order_id = 'launcherr_' . date('YmdHis');
         $order_amount = $amount;
@@ -62,7 +62,7 @@ class CashFreeController extends Controller
         $create_orders_request->setOrderMeta($order_meta);
 
         try {
-            $result = $cashfree->PGCreateOrder("2023-08-01", $create_orders_request);
+            $result = $cashfree->PGCreateOrder($x_api_version, $create_orders_request);
             
             DB::table('payments')->insert([
                 'user_id' => $user_id,
@@ -89,9 +89,9 @@ class CashFreeController extends Controller
 
     public function PaymentSuccessCashFree($orderId)
     {
-        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
-        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
-        Cashfree::$XEnvironment = Cashfree:: env('CASH_FREE_CLIENT_Environment_TEST');
+        // Cashfree::$XClientId = config('cashfree.client_id');
+        // Cashfree::$XClientSecret = config('cashfree.client_secret');
+        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         
         $cashfree = new Cashfree();
 
