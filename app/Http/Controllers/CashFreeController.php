@@ -38,9 +38,7 @@ class CashFreeController extends Controller
         Cashfree::$XClientId = "TEST104769025e9f028f19c44a0d4cd420967401";
         Cashfree::$XClientSecret = "cfsk_ma_test_b8f30c218ee25226e45bf6fd144df32e_9edf05fc";
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
-        // Cashfree::$XClientId = "910208f90987e9515cd961610a802019";
-        // Cashfree::$XClientSecret = "cfsk_ma_prod_0d53b1f9ecedf9e17d0bf92d454fb301_12a76ffa";
-        // Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
+        
         
         
 
