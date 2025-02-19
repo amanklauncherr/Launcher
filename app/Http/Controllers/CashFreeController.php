@@ -34,10 +34,7 @@ class CashFreeController extends Controller
         ];
         $currency = 'INR';
 
-        // Cashfree::$XClientId = config('cashfree.client_id');
-        // Cashfree::$XClientSecret = config('cashfree.client_secret');
-        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
-        // $x_api_version = '2022-09-01';
+       
         
         $cashfree = new Cashfree();
         $order_id = 'launcherr_' . date('YmdHis');
@@ -89,9 +86,7 @@ class CashFreeController extends Controller
 
     public function PaymentSuccessCashFree($orderId)
     {
-        // Cashfree::$XClientId = config('cashfree.client_id');
-        // Cashfree::$XClientSecret = config('cashfree.client_secret');
-        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
+       
         
         $cashfree = new Cashfree();
 
