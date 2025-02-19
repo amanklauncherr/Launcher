@@ -30,6 +30,7 @@ class AESEncryption extends Controller
         // Make the HTTP POST request
         $response = Http::post('https://api.dotmik.in/api/user/v1/generate/token', $payload);
 
+        return $payload;
         // dd($payload);
     
         // Check if the request was successful
