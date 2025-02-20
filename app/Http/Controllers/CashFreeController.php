@@ -34,18 +34,18 @@ class CashFreeController extends Controller
         ];
         $currency = 'INR';
         
-        Cashfree::$XClientId = 'TEST104769025e9f028f19c44a0d4cd420967401';
-        Cashfree::$XClientSecret = 'cfsk_ma_test_b8f30c218ee25226e45bf6fd144df32e_9edf05fc';
-        // Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
+        Cashfree::$XClientId = '910208f90987e9515cd961610a802019';
+        Cashfree::$XClientSecret = 'cfsk_ma_prod_0d53b1f9ecedf9e17d0bf92d454fb301_12a76ffa';
+        Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
 
-        Cashfree::$XEnvironment = Cashfree::$SANDBOX;
+        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         $x_api_version = '2022-09-01';
         
         $cashfree = new Cashfree();
         $order_id = 'launcherr_' . date('YmdHis');
         $order_amount = $amount;
         $customerID = "customer_" . rand(11111,99999);
-        $return_url = "https://api.launcherr.co/api/success/Cashfree".$order_id;
+        $return_url = "https://api.launcherr.co/api/success/Cashfree/".$order_id;
         
         $create_orders_request = new CreateOrderRequest();
         $create_orders_request->setOrderId($order_id);
@@ -91,9 +91,11 @@ class CashFreeController extends Controller
 
     public function PaymentSuccessCashFree($orderId)
     {
-        Cashfree::$XClientId = 'TEST104769025e9f028f19c44a0d4cd420967401';
-        Cashfree::$XClientSecret = 'cfsk_ma_test_b8f30c218ee25226e45bf6fd144df32e_9edf05fc';
-        Cashfree::$XEnvironment = Cashfree::$SANDBOX;
+        Cashfree::$XClientId = '910208f90987e9515cd961610a802019';
+        Cashfree::$XClientSecret = 'cfsk_ma_prod_0d53b1f9ecedf9e17d0bf92d454fb301_12a76ffa';
+        // Cashfree::$XEnvironment = Cashfree::$SANDBOX;
+        Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
+
         $x_api_version = '2022-09-01';
 
         $cashfree = new Cashfree();

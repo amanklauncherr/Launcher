@@ -12,7 +12,7 @@
     <script type="text/javascript">
         function payment(){
             // var cashfree = Cashfree({ mode: 'sandbox' });
-            var cashfree = Cashfree({ mode: 'sandbox' });
+            var cashfree = Cashfree({ mode: 'production' });
             let checkoutOptions = {
                 paymentSessionId: document.getElementById("paymentSessionId").value,
                 redirectTarget: "_self"
