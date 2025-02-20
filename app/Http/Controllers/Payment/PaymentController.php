@@ -142,7 +142,7 @@ class PaymentController extends Controller
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
 
-        $final = $price/env('USD');
+        $final = $price/84.06;
 
         // return response()->json(Round($final,2));
     
