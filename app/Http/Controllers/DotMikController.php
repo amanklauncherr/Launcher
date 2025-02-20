@@ -2761,7 +2761,7 @@ public function TemporaryBooking(Request $request)
             if ($result['status'] === false) {
                 return response()->json([
                     'success' => false,
-                    'message' => $result['payloads']['data'],
+                    'message' => $result['message'],
                     'error' => $result
                 ],$statusCode);
             } else {
