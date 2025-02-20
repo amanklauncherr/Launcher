@@ -2642,7 +2642,7 @@ public function TemporaryBooking(Request $request)
         // }
         
         // Payload creation
-         if($data['FlightKey2'] !== ""){
+         if($data['FlightKey2'] !== null){
 
             $ssrkeynew2 = array();
 
