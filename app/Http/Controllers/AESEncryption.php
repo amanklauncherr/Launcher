@@ -41,7 +41,7 @@ class AESEncryption extends Controller
             $token = $result['payloads']['data']['token'];
             $key = $result['payloads']['data']['key'];
 
-            $encryptionKey = env('ENCRYPTIONKEY');
+            $encryptionKey = '54c3ac7333fd510b2512a475d4d2bef2';
 
             $encryptedToken = $this->encryptToken($token, $encryptionKey);
 
