@@ -37,7 +37,7 @@ class CashFreeController extends Controller
         Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
         Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         // Cashfree::$XEnvironment = Cashfree::$PRODUCTION;
-        
+
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         $x_api_version = '2022-09-01';
         
@@ -91,8 +91,8 @@ class CashFreeController extends Controller
 
     public function PaymentSuccessCashFree($orderId)
     {
-        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_PROD');
-        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_PROD');
+        Cashfree::$XClientId = env('CASH_FREE_CLIENT_ID_TEST');
+        Cashfree::$XClientSecret = env('CASH_FREE_CLIENT_Secret_TEST');
         Cashfree::$XEnvironment = Cashfree::$SANDBOX;
         $x_api_version = '2022-09-01';
 
