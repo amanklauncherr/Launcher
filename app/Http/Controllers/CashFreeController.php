@@ -21,18 +21,18 @@ class CashFreeController extends Controller
    
     public function Cashfree_Create_order(Request $request){
 
-        $phone = "8853309666";
-        $amount = "1";
-        $email = "amankumar@launcherr.co";
-        $name = "Aman kumar";
-        $user_id = 1;
-        $refrence_number = "Test";
-        $order_type = "flight";
+        $phone = $request->mobile;
+        $amount = $request->amount;
+        $email = $request->email;
+        $name = $requrest->name;
+        $user_id = $request->user_id;
+        $refrence_number = $request->Booking_ref;
+        $order_type = $request->order_type;
         $extra = [
             'userRef' => $request->userRef,
             'baseAmount' => $request->baseAmount
         ];
-        $currency = 'INR';
+        $currency = $request->currency;
         
         Cashfree::$XClientId = '910208f90987e9515cd961610a802019';
         Cashfree::$XClientSecret = 'cfsk_ma_prod_0d53b1f9ecedf9e17d0bf92d454fb301_12a76ffa';
@@ -82,8 +82,10 @@ class CashFreeController extends Controller
 
 
             $payment_session_id = $result[0]['payment_session_id'];
-            // return $payment_session_id;
-            return view('pay_page', compact('payment_session_id'));
+            return ([
+                "session_key" => $payment_session_id
+            ]);
+            // return view('pay_page', compact('payment_session_id'));
         } catch (Exception $e) {
             echo "Exception: " . $e->getMessage();
         }
@@ -113,7 +115,7 @@ class CashFreeController extends Controller
                    $redirect =  DB::table('payments')->where('order_id', $orderId)->first();
 
                     if($redirect->order_type === 'flight'){
-                        return redirect()->away('https://launcherr.co/flights');
+                        return redirect()->away("https://launcherr.co/flightSuccess?BookingRef=$redirect->refrence_number");
                     }else if($redirect->order_type === 'bus'){
                         return redirect()->away('https://launcherr.co/bus');
                     } else if($redirect->order_type === 'products'){

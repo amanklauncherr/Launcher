@@ -380,7 +380,7 @@ Route::get('getAirportName',[DataInsert::class,'getAirportName']);
 Route::get('getTicket',[DotMikController::class,'printTicket']);
 Route::get('get/pending/Ticket',[DotMikController::class,'saveTicket']);
 
-Route::get('payCash',[CashFreeController::class,'Cashfree_Create_order']);
+Route::post('payCash',[CashFreeController::class,'Cashfree_Create_order']);
 Route::get('success/Cashfree/{orderId}', [CashFreeController::class, 'PaymentSuccessCashFree'])->name('payment.success');
 
 
