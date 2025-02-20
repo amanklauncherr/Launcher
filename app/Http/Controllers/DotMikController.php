@@ -2749,6 +2749,8 @@ public function TemporaryBooking(Request $request)
         
         // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/tempBooking';
+
+        return $payload;
         
         try {
             // Make POST request
