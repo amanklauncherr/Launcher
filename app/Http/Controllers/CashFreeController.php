@@ -103,7 +103,7 @@ class CashFreeController extends Controller
         try {
             $response = $cashfree->PGFetchOrder($x_api_version, $orderId);
             // dd($response);
-            if($response[1] === 200){
+            if($response[1] === 200 && $response[0]['order_status'] == 'PAID'){
                     DB::table('payments')->where('order_id', $orderId)
                                  ->update([
                                   'status' => $response[0]['order_status'],
@@ -123,6 +123,13 @@ class CashFreeController extends Controller
                     }            
                 
                     //  return view('payment-success', compact('response'));
+            }else{
+                DB::table('payments')->where('order_id', $orderId)
+                                 ->update([
+                                  'status' => $response[0]['order_status'],
+                                  'updated_at' => now()
+                                 ]);
+                return redirect()->away('https://launcherr.co/paymentFailure');
             }
         } catch (Exception $e) {
             echo 'Exception when calling PGFetchOrder: ', $e->getMessage(), PHP_EOL;
