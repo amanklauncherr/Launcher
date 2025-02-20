@@ -2756,14 +2756,12 @@ public function TemporaryBooking(Request $request)
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result = $response->json();
 
-            return ($result);
-
             $statusCode = $response->status();
             
             if ($result['status'] === false) {
                 return response()->json([
                     'success' => false,
-                    'message' => $result['payloads']['data']['tempBooking']['innerException'],
+                    'message' => $result['payloads']['data'],
                     'error' => $result
                 ],$statusCode);
             } else {
