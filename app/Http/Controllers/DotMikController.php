@@ -2643,16 +2643,16 @@ public function TemporaryBooking(Request $request)
         
         // Payload creation
          if($data['FlightKey2'] != ""){
+            
             $ssrkeynew2 = array();
 
              $ssrkeys2 = $request->ssrSeatKey2;
-            if($ssrkeys2 != []){
-             foreach($ssrkeys2 as $seats2){
-                $ssrkeynew2[] = $seats2;
-             }
-            }else{
-                $ssrkeynew2 = [];
-             }
+
+                if($ssrkeys2 != []){
+                    foreach($ssrkeys2 as $seats2){
+                       $ssrkeynew2[] = $seats2;
+                    }
+                }
 
             $payload = [
                 "deviceInfo" => [
