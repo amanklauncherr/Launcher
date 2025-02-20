@@ -2680,7 +2680,7 @@ public function TemporaryBooking(Request $request)
                     [
                         "searchKey" => $data['searchKey'],
                         "flightKey" => $data['FlightKey2'],
-                        "ssrDetails" => [] // Empty SSR details
+                        "ssrDetails" => $ssrkeynew2 // Empty SSR details
                     ]
 
                 ],
@@ -2750,7 +2750,6 @@ public function TemporaryBooking(Request $request)
         // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/tempBooking';
 
-        return $payload;
         
         try {
             // Make POST request
