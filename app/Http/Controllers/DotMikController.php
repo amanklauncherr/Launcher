@@ -2755,6 +2755,9 @@ public function TemporaryBooking(Request $request)
             // Make POST request
             $response = Http::withHeaders($headers)->post($url, $payload);
             $result = $response->json();
+
+            $return ($result);
+
             $statusCode = $response->status();
             
             if ($result['status'] === false) {
