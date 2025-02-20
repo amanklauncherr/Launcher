@@ -2680,7 +2680,7 @@ public function TemporaryBooking(Request $request)
                     [
                         "searchKey" => $data['searchKey'],
                         "flightKey" => $data['FlightKey2'],
-                        "ssrDetails" => $ssrkeynew2 // Empty SSR details
+                        "ssrDetails" => [] // Empty SSR details
                     ]
 
                 ],
