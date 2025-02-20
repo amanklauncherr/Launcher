@@ -24,7 +24,7 @@ class CashFreeController extends Controller
         $phone = $request->mobile;
         $amount = $request->amount;
         $email = $request->email;
-        $name = $requrest->name;
+        $name = $request->name;
         $user_id = $request->user_id;
         $refrence_number = $request->Booking_ref;
         $order_type = $request->order_type;
