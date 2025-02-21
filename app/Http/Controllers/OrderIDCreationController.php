@@ -271,7 +271,7 @@ class OrderIDCreationController extends Controller
   public function CancelOrder(Request $request)
   {
 
-    $orderID = $request->input('OrderID');
+    $orderID = $request->input('OrderID'); 
 
     if(!$orderID)
     {
