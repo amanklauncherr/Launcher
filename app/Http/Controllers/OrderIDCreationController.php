@@ -168,12 +168,13 @@ class OrderIDCreationController extends Controller
 
                 $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
 
-                Mail::to(env('ADMINMAIL','info@launcherr.co'))->send(new AdminOrderMail($AdminText));
+                // Mail::to('info@launcherr.co')->send(new AdminOrderMail($AdminText));
+                Mail::to('amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
 
                 // Create WooCommerce order via cURL
-                $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
-                $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
-                $store_url = 'https://ecom.launcherr.co';
+                $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
+                $consumer_secret = 'cs_b071355158fc13fba60d739ed9bb813e3b4f342d'; //'cs_your_consumer_secret';
+                $store_url = 'https://ecom2.launcherr.co';
 
                 // WooCommerce API endpoint
                 $url = $store_url . '/wp-json/wc/v3/orders';
@@ -297,9 +298,9 @@ class OrderIDCreationController extends Controller
 
         // WooCommerce REST API credentials
             // Create WooCommerce order via cURL
-            $consumer_key =  env('CONSUMERKEY'); //'ck_your_consumer_key';
-            $consumer_secret = env('CONSUMERSECRET'); //'cs_your_consumer_secret';
-            $store_url = 'https://ecom.launcherr.co';
+            $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
+            $consumer_secret = 'cs_b071355158fc13fba60d739ed9bb813e3b4f342d'; //'cs_your_consumer_secret';
+            $store_url = 'https://ecom2.launcherr.co';
 
             // WooCommerce API endpoint
             $url = $store_url . '/wp-json/wc/v3/orders';
@@ -355,7 +356,8 @@ class OrderIDCreationController extends Controller
 
                 Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
 
-                Mail::to(env('ADMINMAIL','devmmr069@gmail.com'))->send(new AdminCancelOrderMail($OrderCancel));
+                // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
+                Mail::to('amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
 
                 return response()->json([
                     'success' => 1,
