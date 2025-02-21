@@ -357,7 +357,8 @@ class OrderIDCreationController extends Controller
                 Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
 
                 // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
-                Mail::to('ADMINMAIL','amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
+                Mail::to('amankumar@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
+                // Mail::to('ADMINMAIL','amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
 
                 return response()->json([
                     'success' => 1,
