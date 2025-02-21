@@ -169,7 +169,7 @@ class OrderIDCreationController extends Controller
                 $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
 
                 // Mail::to('info@launcherr.co')->send(new AdminOrderMail($AdminText));
-                Mail::to('ADMINMAIL','amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
+                Mail::to('info@launcherr.co')->send(new AdminOrderMail($AdminText));
 
                 // Create WooCommerce order via cURL
                 $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
@@ -357,9 +357,8 @@ class OrderIDCreationController extends Controller
                 Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
 
                 // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
-                Mail::to('amankumar@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
-                // Mail::to('ADMINMAIL','amankumar@launcherr.co')->send(new AdminOrderMail($AdminText));
-
+                Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
+                
                 return response()->json([
                     'success' => 1,
                     'message' => 'Order Cancelled Successfully',
