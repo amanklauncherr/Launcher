@@ -311,12 +311,12 @@ class OrderIDCreationController extends Controller
             $url = $store_url . "/wp-json/wc/v3/orders/$order_id";
 
             // Data for cancelling the order
-            // $data = [
-            //     'status' => 'cancelled',
-            // ];
             $data = [
-                'status' => 'refund-request',
+                'status' => 'cancelled',
             ];
+            // $data = [
+            //     'status' => 'refund-request',
+            // ];
 
             // Define headers for the request
             $headers = [
