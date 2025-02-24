@@ -1400,7 +1400,8 @@ class DotMikController extends Controller
                             $Flights=$Filtered;
                         }
                         else if($data['TYPE'] === 'ROUNDTRIP')
-                        {
+                        {   
+                            $Filtered2 = [];
                             foreach ($Flights as $filteration) {              
                                 if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
                                 {
@@ -1410,10 +1411,11 @@ class DotMikController extends Controller
                             foreach ($Flights2 as $filteration) {              
                                 if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
                                 {
-                                    $Filtered[]=$filteration;
+                                    $Filtered2[]=$filteration;
                                 }
                             }
                             $Flights=$Filtered;
+                            $Flights2=$Filtered2;
                         }
                         else if($data['TYPE'] === 'MULTISTATE')
                         {
