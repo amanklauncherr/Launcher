@@ -77928,10 +77928,10 @@ class IataCodeController extends Controller
       $query = $request->query('query');
       
       $airport = iatacode::where('iata_code', $query )
-      ->orWhere('city', $query )
+      ->orWhere('city', 'LIKE', "%$query%" )
       ->orWhere('country', $query )
-      ->orWhere('state', $query )
-      ->orWhere('airport_name', $query )
+      ->orWhere('state', 'LIKE', "%$query%" )
+      ->orWhere('airport_name','LIKE', "%$query%" )
       ->get();
       
       if ($airport->isEmpty()) {

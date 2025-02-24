@@ -380,6 +380,119 @@ class OrderIDCreationController extends Controller
   }
 
 
+
+  public function ReturnOrder(Request $request)
+  {
+
+    $orderID = $request->input('OrderID'); 
+
+    if(!$orderID)
+    {
+        return response()->json([
+            'success' => 0,
+            'message' => 'Please Provide Order ID',
+        ], 400);
+    }
+
+    try {
+        // Fetch the order
+        $order = OrderIDCreation::where('OrderID', $orderID)->first();
+        $user = Auth()->guard('api')->user();
+
+        if (!$order) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'No Order Found',
+            ], 400);
+        }
+
+        // Update the order status
+        // $user = Auth()->guard('api')->user();
+
+        // WooCommerce REST API credentials
+            // Create WooCommerce order via cURL
+            $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
+            $consumer_secret = 'cs_b071355158fc13fba60d739ed9bb813e3b4f342d'; //'cs_your_consumer_secret';
+            $store_url = 'https://ecom2.launcherr.co';
+
+            // WooCommerce API endpoint
+            $url = $store_url . '/wp-json/wc/v3/orders';
+
+            $order_id = $order['WooCommerceID']; // Replace with your order ID
+
+            // API Endpoint
+            $url = $store_url . "/wp-json/wc/v3/orders/$order_id";
+
+            // Data for cancelling the order
+            // $data = [
+            //     'status' => 'cancelled',
+            // ];
+            $data = [
+                'status' => 'refund-request',
+            ];
+
+            // Define headers for the request
+            $headers = [
+                'Authorization' => 'Basic ' . base64_encode("$consumer_key:$consumer_secret"),
+                'Content-Type' => 'application/json',
+            ];
+
+            // Send the WooCommerce API request using Laravel's Http client
+            $response = Http::withHeaders($headers)->timeout(60)->post($url, $data);
+
+
+                // Check for API response errors
+                if ($response->failed()) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'WooCommerce API error: ' . $response->body(),
+                    ], 500);
+                }
+                // Get the response in JSON format
+                $result = $response->json();
+
+                $order->update(
+                    [
+                        'Status' => 'OrderRefund',
+                    ]
+                );
+
+                $OrderCancel = "Requesting for Return/Refund. Order ID -: {$orderID}";
+
+                // try {
+                //     Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+                // } catch (\Exception $e) {
+                //     \Log::error('Failed to send cancellation email to user: ' . $e->getMessage());
+                // }
+                // try {
+                //     Mail::to(env('ADMINMAIL'))->send(new AdminCancelOrderMail($OrderCancel));
+                // } catch (\Exception $e) {
+                //     \Log::error('Failed to send cancellation email to admin: ' . $e->getMessage());
+                // }
+
+                Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+
+                // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
+                Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
+                
+                return response()->json([
+                    'success' => 1,
+                    'message' => 'Return/Refund Application Submited Successfully',
+                    'result' => $result
+                ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'An error occurred while updating order status',
+                'error' => $e->getMessage(),
+                'errorLine' => $e->getLine()
+            ], 500);
+        }
+
+  }
+
+
     /**
      * @group Order
      * 

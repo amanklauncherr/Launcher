@@ -119,7 +119,7 @@ class CashFreeController extends Controller
                     }else if($redirect->order_type === 'bus'){
                         return redirect()->away('https://launcherr.co/bus');
                     } else if($redirect->order_type === 'products'){
-                        return redirect()->away('https://launcherr.co/products');
+                        return redirect()->away("https://launcherr.co/productSucess?orderId=$redirect->refrence_number");
                     } else{
                         return redirect()->away('https://launcherr.co');
                     }            
