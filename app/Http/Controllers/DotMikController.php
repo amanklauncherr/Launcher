@@ -1688,10 +1688,10 @@ class DotMikController extends Controller
                         }
                     }
 
-                    if(isset($data['return_Stops']))
+                    if(isset($data['Stops']))
                     {
                         $Filtered=[];
-                        if($data['return_Stops'] === "0")
+                        if($data['Stops'] === "0")
                         {
                             if($data['TYPE'] === 'ONEWAY')
                             {
@@ -1706,7 +1706,7 @@ class DotMikController extends Controller
                             else if($data['TYPE'] === 'ROUNDTRIP')
                             {
                                 foreach ($Flights2 as $filteration) {              
-                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
+                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][1]['destination'])
                                     {
                                         $Filtered[]=$filteration;
                                     }
