@@ -1401,21 +1401,13 @@ class DotMikController extends Controller
                         }
                         else if($data['TYPE'] === 'ROUNDTRIP')
                         {   
-                            $Filtered2 = [];
                             foreach ($Flights as $filteration) {              
                                 if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
                                 {
                                     $Filtered[]=$filteration;
                                 }
                             }
-                            foreach ($Flights2 as $filteration) {              
-                                if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
-                                {
-                                    $Filtered2[]=$filteration;
-                                }
-                            }
                             $Flights=$Filtered;
-                            $Flights2=$Filtered2;
                         }
                         else if($data['TYPE'] === 'MULTISTATE')
                         {
@@ -1695,11 +1687,11 @@ class DotMikController extends Controller
                             $maxTotalAmount = $amount;
                         }
                     }
-            
-                    if(isset($data['return_Stops']))
+
+                    if(isset($data['Stops']))
                     {
                         $Filtered=[];
-                        if($data['return_Stops'] === "0")
+                        if($data['Stops'] === "0")
                         {
                             if($data['TYPE'] === 'ONEWAY')
                             {
@@ -1714,7 +1706,7 @@ class DotMikController extends Controller
                             else if($data['TYPE'] === 'ROUNDTRIP')
                             {
                                 foreach ($Flights2 as $filteration) {              
-                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] && $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
+                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'])
                                     {
                                         $Filtered[]=$filteration;
                                     }
