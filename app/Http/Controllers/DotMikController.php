@@ -1407,7 +1407,7 @@ class DotMikController extends Controller
                                     $Filtered[]=$filteration;
                                 }
                             }
-                            $Flights=$Filtered;
+                            $Flights=$Filtered; 
                         }
                         else if($data['TYPE'] === 'MULTISTATE')
                         {
