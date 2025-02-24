@@ -1688,10 +1688,10 @@ class DotMikController extends Controller
                         }
                     }
 
-                    if(isset($data['Stops']))
+                    if(isset($data['return_Stops']))
                     {
                         $Filtered=[];
-                        if($data['Stops'] === "0")
+                        if($data['return_Stops'] === "0")
                         {
                             if($data['TYPE'] === 'ONEWAY')
                             {
