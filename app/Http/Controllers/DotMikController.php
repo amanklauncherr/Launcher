@@ -1724,7 +1724,7 @@ class DotMikController extends Controller
                                 $Flights2=$Filtered;
                             }
                         }
-                        else if($data['return_Stops'] === "1")
+                        else if($data['Stops'] === "1")
                         {
                             if($data['TYPE'] === 'ONEWAY')
                             {
@@ -1785,30 +1785,30 @@ class DotMikController extends Controller
                             }
                         }
                     }
-                    if (isset($data['return_Arrival'])) 
+                    if (isset($data['Arrival'])) 
                     {        
                         $Filtered=[];
             
-                        if($data['return_Arrival'] === '12AM6AM')
+                        if($data['Arrival'] === '12AM6AM')
                         {
                             $arrivalDateTimeLow = "00:00";
                             // return response()->json($arrivalDateTimeLow, 400);
                             $arrivalDateTimeHigh = "06:00";
                         }
-                        else if($data['return_Arrival'] === '6AM12PM')
+                        else if($data['Arrival'] === '6AM12PM')
                         {
                             
                             $arrivalDateTimeLow = "06:00";
                             // return response()->json($arrivalDateTimeLow, 400);
                             $arrivalDateTimeHigh = "12:00";
                         }
-                        else if($data['return_Arrival'] === '12PM6PM')
+                        else if($data['Arrival'] === '12PM6PM')
                         {   
                             $arrivalDateTimeLow = "12:00";
                             // return response()->json($arrivalDateTimeLow, 400);
                             $arrivalDateTimeHigh = "18:00";
                         }
-                        else if($data['return_Arrival'] === '6PM12AM')
+                        else if($data['Arrival'] === '6PM12AM')
                         {
                             $arrivalDateTimeLow = "18:00";
                             // return response()->json($arrivalDateTimeLow, 400);
@@ -1838,27 +1838,27 @@ class DotMikController extends Controller
                         $Flights2=$Filtered;                    
                     }
                     
-                    if (isset($data['return_Departure'])) 
+                    if (isset($data['Departure'])) 
                     {        
             
                         $Filtered=[];
             
-                        if($data['return_Departure'] === '12AM6AM')
+                        if($data['Departure'] === '12AM6AM')
                         {
                             $departureDateTimeLow = "00:00";
                             $departureDateTimeHigh = "06:00";
                         }
-                        else if($data['return_Departure'] === '6AM12PM')
+                        else if($data['Departure'] === '6AM12PM')
                         {                        
                             $departureDateTimeLow = "06:00";
                             $departureDateTimeHigh = "12:00";
                         }
-                        else if($data['return_Departure'] === '12PM6PM')
+                        else if($data['Departure'] === '12PM6PM')
                         {   
                             $departureDateTimeLow = "12:00";
                             $departureDateTimeHigh = "18:00";
                         }
-                        else if($data['return_Departure'] === '6PM12AM')
+                        else if($data['Departure'] === '6PM12AM')
                         {
                             $departureDateTimeLow = "18:00";
                             $departureDateTimeHigh = "24:00";
@@ -1885,16 +1885,16 @@ class DotMikController extends Controller
                           $Flights2=$Filtered;
                     }
             
-                    if(isset($data['return_Refundable']))
+                    if(isset($data['Refundable']))
                     {       
-                        $refundable = $data['return_Refundable'];
+                        $refundable = $data['Refundable'];
                         $filtered = array_filter($Flights2, function($flight) use($refundable) {
                             return $flight['Fares'][0]['Refundable'] === $refundable ;
                         });
                         $Flights2=array_values($filtered);
                     }
             
-                    if(isset($data['return_Price']))
+                    if(isset($data['Price']))
                     {
                         $Filtered=[];
                         foreach($Flights2 as $Flight)
@@ -1908,9 +1908,9 @@ class DotMikController extends Controller
                         $Flights2=$Filtered;
                     }
             
-                    if(isset($data['return_airlineCode']))
+                    if(isset($data['airlineCode']))
                     {         
-                        $airlineCode = $data['return_airlineCode'];
+                        $airlineCode = $data['airlineCode'];
                         $filtered = array_filter($Flights2, function($flight) use($airlineCode) {
                             return $flight['Airline_Code'] === $airlineCode;
                         });
@@ -1955,8 +1955,8 @@ class DotMikController extends Controller
             
                     $count = count($Flights2);
             
-                    if (isset($data['return_sortBy'])) {
-                        if(($data['return_sortBy'] === 'highToLow')){
+                    if (isset($data['sortBy'])) {
+                        if(($data['sortBy'] === 'highToLow')){
                             usort($Flights2, function($a, $b) {
                                 $priceA = $a['Fares'][0]['FareDetails'][0]['Total_Amount'];
                                 $priceB = $b['Fares'][0]['FareDetails'][0]['Total_Amount'];
