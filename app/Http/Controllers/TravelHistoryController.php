@@ -104,7 +104,7 @@ class TravelHistoryController extends Controller
     {
 
         $History=TravelHistory::where('user_id',Auth::guard('api')->id())
-        ->where('Status','BOOKED')
+        // ->where('Status','BOOKED')
         ->get()
         ->reverse();
 
