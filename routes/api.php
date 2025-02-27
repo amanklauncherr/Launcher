@@ -392,7 +392,7 @@ Route::get('success/Cashfree/{orderId}', [CashFreeController::class, 'PaymentSuc
 
 //amedus
 
-Route::get('get-token-amd',[AmedusHotelController::class,'Create_access_token']);
+Route::get('get/hotel',[AmedusHotelController::class,'getHotelsByCity']);
 
 
 

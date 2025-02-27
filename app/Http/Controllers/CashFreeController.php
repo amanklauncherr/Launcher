@@ -118,7 +118,7 @@ class CashFreeController extends Controller
                         return redirect()->away("https://launcherr.co/flightSuccess?BookingRef=$redirect->refrence_number");
                     }else if($redirect->order_type === 'bus'){
                         return redirect()->away('https://launcherr.co/bus');
-                    } else if($redirect->order_type === 'products'){
+                    } else if($redirect->order_type === 'product'){
                         return redirect()->away("https://launcherr.co/productSucess?orderId=$redirect->refrence_number");
                     } else{
                         return redirect()->away('https://launcherr.co');
