@@ -2550,7 +2550,7 @@ public function TemporaryBooking(Request $request)
             'totalCount' => 'required|string',
             'ssrSeatKey' => 'nullable',
             'mobile' => 'required|string|max:10|min:10',
-            'whatsApp' => 'required|string|max:10|min:10',
+            'whatsApp' => 'nullable|string|max:10|min:10',
             'email' => 'required|string|email',
             'passenger_details.*.paxType' => 'required|integer|in:0,1,2', // 0-ADT/1-CHD/2-INF
             'passenger_details.*.title' => 'required|string|in:Mr,Mrs,Ms,Mstr,Miss', // MR, MRS, MS; MSTR, MISS for child/infant
