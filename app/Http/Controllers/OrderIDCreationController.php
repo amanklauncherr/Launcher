@@ -148,6 +148,7 @@ class OrderIDCreationController extends Controller
             $data = $validator->validated();
 
             // Fetch the order
+            $order_id = $data['OrderID'];
             $order = OrderIDCreation::where('OrderID', $data['OrderID'])->first();
             if (!$order) {
                 return response()->json([
@@ -164,7 +165,7 @@ class OrderIDCreationController extends Controller
             // Send email for successful payment
             if ($data['OrderStatus'] === 'PaymentSuccess') {
 
-                Mail::to($user->email)->send(new OrderDetailMail($OrderDetails));
+                Mail::to($user->email)->send(new OrderDetailMail($OrderDetails,$order_id));
 
                 $AdminText="New Order Received. Order ID -: {$data['OrderID']}";
 

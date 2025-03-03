@@ -18,10 +18,11 @@ class OrderDetailMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($OrderDetails)
+    public function __construct($OrderDetails,$order_id)
     {
         //
         $this->OrderDetails = $OrderDetails;
+        $this->order_id = $order_id;
     }
 
     public function build()
@@ -30,6 +31,7 @@ class OrderDetailMail extends Mailable
                     ->view('userOrderDetails')
                     ->with([
                         'OrderDetails' => $this->OrderDetails,
+                        'order_id' => $this->order_id,
                     ]);
     }
     
