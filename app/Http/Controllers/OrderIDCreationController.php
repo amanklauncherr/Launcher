@@ -350,7 +350,7 @@ class OrderIDCreationController extends Controller
                 $OrderDetails = json_decode($order->OrderDetails, true);
                 $order_date = $order->created_at;
 
-                Mail::to($user->email)->send(new UserCancelOrderMail($OrderDetails,$order_id,$order_date));
+                Mail::to($user->email)->send(new UserCancelOrderMail($OrderDetails,$orderID,$order_date));
 
                 Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
                 
