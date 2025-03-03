@@ -31,7 +31,7 @@ class UserCancelOrderMail extends Mailable
         ->with([
             'OrderDetails' => $this->OrderDetails,
             'order_id' => $this->order_id,
-            'order_date' => $this->$order_date,
+            'order_date' => $this->order_date,
         ]);
     }
 
