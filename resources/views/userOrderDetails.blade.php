@@ -82,13 +82,14 @@
         </div>
 
         <div class="section">
-            <h3>Billing Details</h3>
+            <h3>Billing Details</h3> {{-- 
             <p>
                 <strong>Name:</strong> {{ $OrderDetails['billing']['firstName'] }} {{ $OrderDetails['billing']['lastName'] }}<br>
                 <strong>Address:</strong> {{ $OrderDetails['billing']['address1'] }}, {{ $OrderDetails['billing']['city'] }}, {{ $OrderDetails['billing']['state'] }} - {{ $OrderDetails['billing']['postcode'] }}<br>
                 <strong>Email:</strong> {{ $OrderDetails['billing']['email'] }}<br>
                 <strong>Phone:</strong> {{ $OrderDetails['billing']['phone'] }}
             </p>
+            --}}
         </div>
 
         <div class="section">
