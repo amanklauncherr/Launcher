@@ -462,7 +462,7 @@ class OrderIDCreationController extends Controller
                 //     \Log::error('Failed to send cancellation email to admin: ' . $e->getMessage());
                 // }
 
-                Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+                Mail::to($user->email)->send(new AdminCancelOrderMail($OrderCancel));
 
                 // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
                 Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
