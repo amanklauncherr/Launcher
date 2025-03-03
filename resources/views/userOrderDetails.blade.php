@@ -91,7 +91,7 @@
             </p>
             --}}
         </div>
-
+{{-- 
         <div class="section">
             <h3>Shipping Details</h3>
             <p>
@@ -100,6 +100,7 @@
                 <strong>Phone:</strong> {{ $OrderDetails['shipping']['phone'] }}
             </p>
         </div>
+        --}}
 
         <div class="section">
             <h3>Payment Summary</h3>
