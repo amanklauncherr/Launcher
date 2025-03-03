@@ -17,9 +17,11 @@ class UserCancelOrderMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($OrderCancel)
+    public function __construct($OrderDetails,$order_id,$order_date)
     {
-        $this->OrderCancel=$OrderCancel;
+        $this->OrderDetails = $OrderDetails;
+        $this->order_id = $order_id;
+        $this->order_date = $order_date;
     }
 
     public function build()
@@ -27,7 +29,9 @@ class UserCancelOrderMail extends Mailable
         return $this->subject('User Cancel Order Mail')
         ->view('UserCancelOrderMail')
         ->with([
-            'name' => $this->OrderCancel
+            'OrderDetails' => $this->OrderDetails,
+            'order_id' => $this->order_id,
+            'order_date' => $this->$order_date,
         ]);
     }
 

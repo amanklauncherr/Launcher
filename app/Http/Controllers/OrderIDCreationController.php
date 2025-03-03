@@ -347,20 +347,11 @@ class OrderIDCreationController extends Controller
 
                 $OrderCancel = "Order Cancelled. Order ID -: {$orderID}";
 
-                // try {
-                //     Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
-                // } catch (\Exception $e) {
-                //     \Log::error('Failed to send cancellation email to user: ' . $e->getMessage());
-                // }
-                // try {
-                //     Mail::to(env('ADMINMAIL'))->send(new AdminCancelOrderMail($OrderCancel));
-                // } catch (\Exception $e) {
-                //     \Log::error('Failed to send cancellation email to admin: ' . $e->getMessage());
-                // }
+                $OrderDetails = json_decode($order->OrderDetails, true);
+                $order_date = $order->created_at;
 
-                Mail::to($user->email)->send(new UserCancelOrderMail($OrderCancel));
+                Mail::to($user->email)->send(new UserCancelOrderMail($OrderDetails,$order_id,$order_date));
 
-                // Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
                 Mail::to('info@launcherr.co')->send(new AdminCancelOrderMail($OrderCancel));
                 
                 return response()->json([
