@@ -1583,7 +1583,9 @@ class DotMikController extends Controller
 
                 if(isset($data['Refundable']))
                 {       
-                    $refundable = $data['Refundable'];
+                    // $refundable = $data['Refundable'];
+                    $refundable = filter_var($data['Refundable'], FILTER_VALIDATE_BOOLEAN);
+
                     $filtered = array_filter($Flights, function($flight) use($refundable) {
                         return $flight['Fares'][0]['Refundable'] === $refundable ;
                     });
@@ -1887,7 +1889,8 @@ class DotMikController extends Controller
             
                     if(isset($data['Refundable']))
                     {       
-                        $refundable = $data['Refundable'];
+                        // $refundable = $data['Refundable'];
+                        $refundable = filter_var($data['Refundable'], FILTER_VALIDATE_BOOLEAN);
                         $filtered = array_filter($Flights2, function($flight) use($refundable) {
                             return $flight['Fares'][0]['Refundable'] === $refundable ;
                         });
