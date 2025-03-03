@@ -1200,7 +1200,7 @@ class DotMikController extends Controller
             "airlineCode" => "nullable|string",
             "Arrival" => "nullable|string",
             "Departure" => "nullable|string",
-            "Refundable" => "nullable|boolean",    
+            "Refundable" => "nullable|string",    
             "Stops" => "nullable|string|in:0,1,2",
             "Price" => "nullable|integer",
             "headersToken" => "required|string", 
