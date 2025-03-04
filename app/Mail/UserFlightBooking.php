@@ -13,16 +13,20 @@ class UserFlightBooking extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $Pnr, $BookingRef, $pdf_url;
+    public $Pnr, $BookingRef, $pdf_url, $user_mail;
     
     /**
      * Create a new message instance.
     */
-    public function __construct($Pnr,$BookingRef,$pdf_url)
+    public function __construct($Pnr,$BookingRef,$pdf_url,$user_mail,$BaseFare,$Tax,$TotalAmount)
     {
         $this->Pnr = $Pnr;
         $this->BookingRef = $BookingRef; 
         $this->pdf_url = $pdf_url;
+        $this->user_mail = $user_mail;
+        $this->BaseFare = $BaseFare;
+        $this->Tax = $Tax;
+        $this->TotalAmount = $TotalAmount;
     }
 
     public function build()
@@ -32,7 +36,11 @@ class UserFlightBooking extends Mailable
                     ->with([
                         'Pnr'=>$this->Pnr,
                         'BookingRef'=>$this->BookingRef, 
-                        'pdf_url'=>$this->pdf_url
+                        'pdf_url'=>$this->pdf_url,
+                        'user_mail' =>$this->$user_mail,
+                        'BaseFare'=>$this->$BaseFare,
+                        'Tax'=>$this->$Tax,
+                        'TotalAmount'=>$this->$TotalAmount,
                     ]);
     }
 

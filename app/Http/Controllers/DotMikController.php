@@ -3693,7 +3693,7 @@ public function saveTicket(Request $request){
                          }
              
              
-                         Mail::to($user_mail)->send(new UserFlightBooking($Pnr,$Hs->BookingRef,$pdf_url));
+                         Mail::to($user_mail)->send(new UserFlightBooking($Pnr,$Hs->BookingRef,$pdf_url,$user_mail,$BaseFare,$Tax,$TotalAmount));
 
                     
             }else {
