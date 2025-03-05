@@ -1428,7 +1428,8 @@ class DotMikController extends Controller
                             {        
                                 if(count($filteration['Segments']) > 1)
                                 {
-                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination'])
+                                    if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] &&
+                                     $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination'])
                                     // if($filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] && $filteration['Segments'][0]['Destination'] === $data['tripInfo'][0]['destination'] || $filteration['Segments'][1]['Origin'] === $data['tripInfo'][1]['origin'] || $filteration['Segments'][1]['Destination'] === $data['tripInfo'][1]['destination'])
                                     {
                                         $Filtered[]=$filteration;
@@ -1439,7 +1440,9 @@ class DotMikController extends Controller
                         }
                         else if($data['TYPE'] === 'ROUNDTRIP')
                         {
-                            foreach ($Flights as $filteration) {              
+                            foreach ($Flights as $filteration) { 
+                              if(count($filteration['Segments']) > 1)
+                                {             
                                 if(
                                     (
                                         $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] &&
@@ -1454,6 +1457,7 @@ class DotMikController extends Controller
                                 {
                                     $Filtered[]=$filteration;
                                 }
+                            }
                             }
                             $Flights=$Filtered;
                         }
