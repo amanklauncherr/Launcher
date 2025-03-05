@@ -1448,10 +1448,6 @@ class DotMikController extends Controller
                                         $filteration['Segments'][0]['Origin'] === $data['tripInfo'][0]['origin'] &&
                                         $filteration['Segments'][1]['Destination'] === $data['tripInfo'][0]['destination']
                                     ) 
-                                    || 
-                                    (
-                                        $filteration['Segments'][1]['Origin'] === $data['tripInfo'][2]['origin'] &&
-                                        $filteration['Segments'][2]['Destination'] === $data['tripInfo'][1]['destination'])
                                     )
 
                                 {
