@@ -13,6 +13,7 @@ class CartDetails extends Model
         'product_id',
         'product_name',
         'quantity',
-        'price'
+        'price',
+        'image'
     ];
 }
