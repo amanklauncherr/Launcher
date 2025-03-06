@@ -214,6 +214,8 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
 
     Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
+    
+    Route::post('/Reschedule',[DotMikController::class,'ReScheduleRequest']);
 
     // Bus
     Route::post('/Partial/Booking',[DotMikBusController::class,'PartialBooking']);

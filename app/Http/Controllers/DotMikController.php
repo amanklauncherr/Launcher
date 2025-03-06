@@ -4186,6 +4186,20 @@ public function Cancellation(Request $request)
         }   
 }
 
+
+public function ReScheduleRequest(Request $request)
+    {
+       
+       
+                 $user_mail = 'info@launcherr.co';
+
+                 $message = 'User has requested for Flight Reschedule for booking reference '.$request->bookingRef;
+             
+             Mail::to($user_mail)->send(new FlightRescheduleRequest($message));
+        
+        
+}
+
 public function LowFare(Request $request)
     {
         $validator = Validator::make($request->all(),[
