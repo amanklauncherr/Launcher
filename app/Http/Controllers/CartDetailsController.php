@@ -64,7 +64,7 @@ class CartDetailsController extends Controller
                     'product_name' => $productExist ? 'nullable|string':'required|string',   
                     'quantity' => 'required|integer|min:0',
                     'price' => 'required|integer|min:1',
-                    'image' => 'nullable|string',
+                    'image' => 'nullable',
                 ]);
             
                 if ($validator->fails()) {
