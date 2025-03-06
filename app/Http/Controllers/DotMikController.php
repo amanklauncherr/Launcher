@@ -2567,7 +2567,7 @@ public function TemporaryBooking(Request $request)
       $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
             'ssrSeatKey' => 'nullable',
-            'mobile' => 'required|string|max:10|min:10',
+            'mobile' => 'required|string|max:12|min:9',
             'whatsApp' => 'nullable|string|max:10|min:10',
             'email' => 'required|string|email',
             'passenger_details.*.paxType' => 'required|integer|in:0,1,2', // 0-ADT/1-CHD/2-INF
