@@ -4061,7 +4061,16 @@ public function Cancellation(Request $request)
             "cancelType" => "required|string", //0-Normal Cancel, 1-Full Refund, 2-No Show
             "cancelCode" => "required|string",
             "remark" => "required|string"
-        ]);     
+        ]);  
+        
+        $userEmail = DB::table('user_ticket_email')->where('bookingRef',$request->bookingRef)->first();
+
+             if($userEmail){
+                $user_mail = $userEmail->email; 
+             }else{
+                 $user_mail = 'info@launcherr.co';
+             }
+             Mail::to($user_mail)->send(new UserFlightTicketCancelTouch($request->pnr,$request->bookingRef));
         
         if ($validator->fails()) {
             $errors = $validator->errors()->all(); // Get all error messages
@@ -4106,6 +4115,8 @@ public function Cancellation(Request $request)
         // API URL
         $url = 'https://api.dotmik.in/api/flightBooking/v1/cancellation';
 
+
+
         try {
             // Make the POST request using Laravel HTTP Client
             $response = Http::withHeaders($headers)->timeout(60)->post($url, $payload);
@@ -4135,7 +4146,19 @@ public function Cancellation(Request $request)
 
                     $pnr=$data["pnr"];
 
-                    Mail::to($user->email)->send(new UserFlightTicketCancel($pnr,$BookingRef));
+                    $userEmail = DB::table('user_ticket_email')->where('bookingRef',$BookingRef)->first();
+
+                    if($userEmail){
+
+                       $user_mail = $userEmail->email; 
+
+                    }else{
+
+                        $user_mail = $user->email;
+
+                    }
+
+                    Mail::to($user_mail)->send(new UserFlightTicketCancel($pnr,$BookingRef));
 
                     return response()->json([
                         'success' => true,
