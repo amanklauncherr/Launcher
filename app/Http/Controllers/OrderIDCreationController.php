@@ -682,4 +682,47 @@ class OrderIDCreationController extends Controller
             ],200);
     }
 
+    public function shippingChareges(Request $request){
+
+        $pincode = $request->input('pincode');
+        
+        $payload = json_encode([
+            "data" => [
+                "pincode" => $pincode,
+                "access_token" => "928d2cac511e5c5f138d883907a47516",
+                "secret_key" => "39db01eb2f7915b4b7ecca28065403ce"
+            ]
+        ]);
+// dd($payload);
+        $curl = curl_init();
+          curl_setopt_array($curl, array(
+              CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/pincode/check.json",
+              CURLOPT_RETURNTRANSFER  => true,
+              CURLOPT_ENCODING        => "",
+              CURLOPT_MAXREDIRS       => 10,
+              CURLOPT_TIMEOUT         => 30,
+              CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST   => "POST",
+              CURLOPT_POSTFIELDS      => $payload,
+              CURLOPT_HTTPHEADER      => array(
+                  "cache-control: no-cache",
+                  "content-type: application/json"
+              )
+          ));
+      
+          $response = curl_exec($curl);
+          $err      = curl_error($curl);
+          curl_close($curl);
+          if ($err) 
+          {
+              echo "cURL Error #:" . $err;
+          }
+          else
+          {
+              echo $response;
+          }
+    }
+
 }
+
+

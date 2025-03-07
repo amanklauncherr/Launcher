@@ -2567,6 +2567,7 @@ public function TemporaryBooking(Request $request)
       $validator = Validator::make($request->all(),[
             'totalCount' => 'required|string',
             'ssrSeatKey' => 'nullable',
+            'dialCode' => 'nullable',
             'mobile' => 'required|string|max:12|min:9',
             'whatsApp' => 'nullable|string|max:10|min:10',
             'email' => 'required|string|email',
@@ -2794,7 +2795,10 @@ public function TemporaryBooking(Request $request)
 
                     DB::table('user_ticket_email')->insert([
                         'bookingRef' => $result['payloads']['data']['bookingRef'],
-                        'email' => $data['email']
+                        'email' => $data['email'],
+                        'mobile' => $data['mobile'],
+                        'whatsApp' => $data['whatsApp'],
+                        'dialCode' => $data['dialCode']
                     ]);
 
                     return response()->json([
@@ -3724,7 +3728,7 @@ public function saveTicket(Request $request){
 
 
     }
- }
+}
 
    
  
@@ -4191,7 +4195,7 @@ public function ReScheduleRequest(Request $request)
     {
        
        
-                 $user_mail = 'info@launcherr.co';
+                 $user_mail = 'amankumar@launcherr.co';
 
                  $message = 'User has requested for Flight Reschedule for booking reference '.$request->bookingRef;
              

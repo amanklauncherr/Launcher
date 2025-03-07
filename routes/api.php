@@ -214,7 +214,7 @@ Route::middleware(['publictokenOrauth'])->group(function () {
     Route::post('/Re/Print/Ticket',[DotMikController::class,'RePrintTicket']);
 
     Route::post('/Cancellation',[DotMikController::class,'Cancellation']);
-    
+
     Route::post('/Reschedule',[DotMikController::class,'ReScheduleRequest']);
 
     // Bus
@@ -395,6 +395,8 @@ Route::get('success/Cashfree/{orderId}', [CashFreeController::class, 'PaymentSuc
 //amedus
 
 Route::get('get/hotel',[AmedusHotelController::class,'getHotelsByCity']);
+
+Route::post('get/shipping',[OrderIDCreationController::class,'shippingChareges']);
 
 
 
