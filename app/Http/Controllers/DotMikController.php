@@ -2798,7 +2798,9 @@ public function TemporaryBooking(Request $request)
                         'email' => $data['email'],
                         'mobile' => $data['mobile'],
                         'whatsApp' => $data['whatsApp'],
-                        'dialCode' => $data['dialCode']
+                        'dialCode' => $data['dialCode'],
+                        'created_at' => now(),
+                        'updated_at' => now()
                     ]);
 
                     return response()->json([
