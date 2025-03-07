@@ -2680,7 +2680,7 @@ public function TemporaryBooking(Request $request)
                 ],
                 "passengers" => [
                     "mobile" => $data['mobile'],
-                    "whatsApp" => $data['whatsApp'],
+                    "whatsApp" => $data['whatsApp'] ?? null,
                     "email" => "info@launcherr.co",
                     "paxDetails" => $paxDetails
                 ],
@@ -2723,7 +2723,7 @@ public function TemporaryBooking(Request $request)
                 ],
                 "passengers" => [
                     "mobile" => $data['mobile'],
-                    "whatsApp" => $data['whatsApp'],
+                    "whatsApp" => $data['whatsApp'] ?? null,
                     "email" => "info@launcherr.co",
                     "paxDetails" => $paxDetails
                 ],
