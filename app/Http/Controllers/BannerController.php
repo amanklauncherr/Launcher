@@ -7,6 +7,7 @@ use App\Models\BannerNew;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class BannerController extends Controller
@@ -59,53 +60,113 @@ class BannerController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
+    // public function Upload(Request $request)
+    // {
+    //     $banner = BannerNew::where('Banner_No', $request->Banner_No)->first();
+
+    //     $validator = Validator::make($request->all(), [
+    //         'Banner_No' => 'required|string',
+    //         // 'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
+    //         'Banner_image' => $banner 
+    //                             ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' 
+    //                             : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+    //     ]);
+        
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+        
+    //     try {
+    //         $data = $validator->validated();
+
+    //         if (!$banner && BannerNew::count() >= 3) {
+    //             return response()->json([
+    //                 'message' => 'Cannot create more than 3 banners'
+    //             ], 400);
+    //         }
+
+    //         if ($request->hasFile('Banner_image')) {
+    //             $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
+    //             $data['Banner_image'] = $uploadedFileUrl;
+    //         }
+
+    //         if($banner)
+    //         {
+    //             $banner->update($data);
+    //             return response()->json(['message' => 'Banner updated'], 200);
+    //         }else {
+    //             BannerNew::create($data);
+    //             return response()->json(['message' => 'Banner created'], 201);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => 'An error occurred while Adding or Updating Section',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+
     public function Upload(Request $request)
-    {
-        $banner = BannerNew::where('Banner_No', $request->Banner_No)->first();
+{
+    $banner = BannerNew::where('Banner_No', $request->Banner_No)->first();
 
-        $validator = Validator::make($request->all(), [
-            'Banner_No' => 'required|string',
-            // 'Banner_button_text' => $banner ? 'nullable|string|max:20' : 'required|string|max:20',
-            'Banner_image' => $banner 
-                                ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' 
-                                : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
-        ]);
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        
-        try {
-            $data = $validator->validated();
+    $validator = Validator::make($request->all(), [
+        'Banner_No' => 'required|string',
+        'Banner_image' => $banner 
+                            ? 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120' 
+                            : 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+    ]);
 
-            if (!$banner && BannerNew::count() >= 3) {
-                return response()->json([
-                    'message' => 'Cannot create more than 3 banners'
-                ], 400);
-            }
-
-            if ($request->hasFile('Banner_image')) {
-                $uploadedFileUrl = Cloudinary::upload($request->file('Banner_image')->getRealPath())->getSecurePath();
-                $data['Banner_image'] = $uploadedFileUrl;
-            }
-
-            if($banner)
-            {
-                $banner->update($data);
-                return response()->json(['message' => 'Banner updated'], 200);
-            }else {
-                BannerNew::create($data);
-                return response()->json(['message' => 'Banner created'], 201);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while Adding or Updating Section',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    try {
+        $data = $validator->validated();
+
+        // Limit banners to a maximum of 3
+        if (!$banner && BannerNew::count() >= 3) {
+            return response()->json([
+                'message' => 'Cannot create more than 3 banners'
+            ], 400);
+        }
+
+        // Store file on server
+        if ($request->hasFile('Banner_image')) {
+            $file = $request->file('Banner_image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('banners', $fileName, 'public'); // Stores in storage/app/public/banners
+            $data['Banner_image'] = 'storage/' . $filePath; // Save relative path
+        }
+
+        if ($banner) {
+            // Delete old image if new one is uploaded
+            if (isset($data['Banner_image']) && $banner->Banner_image) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $banner->Banner_image));
+            }
+
+            $banner->update($data);
+            return response()->json(['message' => 'Banner updated'], 200);
+        } else {
+            BannerNew::create($data);
+            return response()->json(['message' => 'Banner created'], 201);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'An error occurred while Adding or Updating Section',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+
 
     /**
      * @group Banner Management
