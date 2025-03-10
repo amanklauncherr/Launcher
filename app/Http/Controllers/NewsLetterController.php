@@ -43,7 +43,7 @@ class NewsLetterController extends Controller
     public function AddEmail(Request $request)
     {
         $validator=Validator::make($request->all(),[
-            'email'=> 'required|email|max:35|unique:news_letters'
+            'email'=> 'required|email|max:35|unique:news_letters',
             'firstName' => 'nullable|string|max:35',
             'howDidYouHear' => 'nullable|string|max:35'
         ]);
