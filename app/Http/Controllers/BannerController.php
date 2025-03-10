@@ -141,7 +141,7 @@ class BannerController extends Controller
             $file = $request->file('Banner_image');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('banners', $fileName, 'public'); // Stores in storage/app/public/banners
-            $data['Banner_image'] = 'storage/' . $filePath; // Save relative path
+            $data['Banner_image'] = 'https://api.launcherr.co/storage/' . $filePath; // Save relative path
         }
 
         if ($banner) {
