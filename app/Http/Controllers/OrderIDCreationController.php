@@ -748,7 +748,6 @@ public function checkRate(Request $request)
         ]
     ]);
 
-    // Return API response
     return response()->json($response->json());
  }
 
