@@ -398,6 +398,9 @@ Route::get('get/hotel',[AmedusHotelController::class,'getHotelsByCity']);
 
 Route::post('get/shipping',[OrderIDCreationController::class,'shippingChareges']);
 
+Route::get('/check-rate', [OrderIDCreationController::class, 'checkRate']);
+
+
 
 
 

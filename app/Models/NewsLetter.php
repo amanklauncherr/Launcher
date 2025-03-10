@@ -9,6 +9,8 @@ class NewsLetter extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'email'
+        'email',
+        'firstName',
+        'howDidYouHear'
     ];
 }

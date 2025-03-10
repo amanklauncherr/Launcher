@@ -696,7 +696,7 @@ class OrderIDCreationController extends Controller
 // dd($payload);
         $curl = curl_init();
           curl_setopt_array($curl, array(
-              CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/pincode/check.json",
+              CURLOPT_URL             => "https://my.ithinklogistics.com/api_v3/pincode/check.json",
               CURLOPT_RETURNTRANSFER  => true,
               CURLOPT_ENCODING        => "",
               CURLOPT_MAXREDIRS       => 10,
@@ -719,9 +719,39 @@ class OrderIDCreationController extends Controller
           }
           else
           {
-              echo $response;
+              return json_decode( $response);
           }
     }
+
+public function checkRate(Request $request)
+ {
+    $pincode = $request->input('pincode');
+    $shipping_weight_kg = $request->input('shipping_weight_kg');
+    $product_mrp = $request->input('product_mrp');
+
+    $response = Http::withHeaders([
+        'cache-control' => 'no-cache',
+        'content-type'  => 'application/json',
+    ])->post('https://my.ithinklogistics.com/api_v3/rate/check.json', [
+        'data' => [
+            'from_pincode'         => '110016 ',
+            "to_pincode"           => $pincode,
+            'shipping_length_cms'  => '',
+            'shipping_width_cms'   => '',
+            'shipping_height_cms'  => '',
+            'shipping_weight_kg'   => $shipping_weight_kg,
+            'order_type'           => 'forward',
+            'payment_method'       => 'Prepaid',
+            'product_mrp'          => $product_mrp,
+            'access_token'         => '928d2cac511e5c5f138d883907a47516',
+            'secret_key'           => '39db01eb2f7915b4b7ecca28065403ce',
+        ]
+    ]);
+
+    // Return API response
+    return response()->json($response->json());
+ }
+
 
 }
 
