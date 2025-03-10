@@ -44,6 +44,8 @@ class NewsLetterController extends Controller
     {
         $validator=Validator::make($request->all(),[
             'email'=> 'required|email|max:35|unique:news_letters'
+            'firstName' => 'nullable|string|max:35',
+            'howDidYouHear' => 'nullable|string|max:35'
         ]);
         if($validator->fails())
         {
