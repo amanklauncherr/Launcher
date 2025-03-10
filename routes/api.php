@@ -203,6 +203,12 @@ Route::middleware(['publictokenOrauth'])->group(function () {
 
     Route::post('/refund/OrderID',[OrderIDCreationController::class,'ReturnOrder']);
 
+    Route::post('/reviews', [OrderIDCreationController::class, 'addProductReview']);
+
+    Route::get('/reviews/{product_id}', [OrderIDCreationController::class, 'getProductReviews']);
+
+
+
     // Flight 
 
     Route::post('/Ticketing',[DotMikController::class,'Ticketing']);

@@ -751,6 +751,52 @@ public function checkRate(Request $request)
     return response()->json($response->json());
  }
 
+ public function addProductReview(Request $request)
+ {
+    $validator = Validator::make($request->all(), [
+        'product_id' => 'required|integer',
+        'review' => 'required|string',
+        'rating' => 'required|integer|between:1,5',
+        'reviewer' => 'required|string',
+        'reviewer_email' => 'required|email',
+    ]);
+
+    if ($validator->fails()) {
+        $error = $validator->errors()->first();
+        return response()->json([
+            'success' => 0,
+            'error' => $error
+        ], 422);
+    }
+
+    $data=$validator->validated();
+
+    $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
+    $consumer_secret = 'cs_b071355158fc13fba60d739ed9bb813e3b4f342d'; //'cs_your_consumer_secret';
+
+     $response = Http::withBasicAuth($consumer_key, $consumer_secret)
+                     ->post("https://ecom2.launcherr.co/wp-json/wc/v3/products/reviews", [
+                         'product_id' => $data['product_id'],
+                         'review' => $data['review'],
+                         'rating' => $data['rating'],
+                         'reviewer' => $data['reviewer'],
+                         'reviewer_email' => $data['reviewer_email'],
+                     ]);
+ 
+     return response()->json($response->json(), $response->status());
+ }
+
+ public function getProductReviews($product_id)
+{
+    $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
+    $consumer_secret = 'cs_b071355158fc13fba60d739ed9bb813e3b4f342d'; //'cs_your_consumer_secret';
+
+    $response = Http::withBasicAuth($consumer_key, $consumer_secret)
+                    ->get("https://ecom2.launcherr.co/wp-json/wc/v3/products/reviews?product=$product_id");
+
+    return response()->json($response->json(), $response->status());
+}
+ 
 
 }
 
