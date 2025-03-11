@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -193,7 +194,7 @@ class CouponController extends Controller
 
             $isApplicable1 = DB::table('applied_coupons')->where('coupon_1', $request->coupon_code)->where('user_id', $request->user_id)->exists();
             $isApplicable2 = DB::table('applied_coupons')->where('coupon_2', $request->coupon_code)->where('user_id', $request->user_id)->exists();
-            
+
             if($isApplicable2 && $isApplicable1){
                 return response()->json(['error' => 'Coupon already applied'], 400);
             }else{
