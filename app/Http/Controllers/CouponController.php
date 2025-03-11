@@ -195,9 +195,12 @@ class CouponController extends Controller
             $isApplicable1 = DB::table('applied_coupons')->where('coupon_1', $request->coupon_code)->where('user_id', $request->user_id)->exists();
             $isApplicable2 = DB::table('applied_coupons')->where('coupon_2', $request->coupon_code)->where('user_id', $request->user_id)->exists();
 
-            if($isApplicable2 && $isApplicable1){
+            if($isApplicable1){
                 return response()->json(['error' => 'Coupon already applied'], 400);
-            }else{
+            }else if($isApplicable2){
+                return response()->json(['error' => 'Coupon already applied'], 400);
+            }
+            else{
                 if($isApplicable1){
                     DB::table('applied_coupons')->where('user_id', $request->user_id)->update(['coupon_2' => $request->coupon_code]);
                 }else{
