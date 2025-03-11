@@ -192,37 +192,43 @@ class CouponController extends Controller
             // $coupon = Coupon::all();
 
             if($request->coupon_code === 'LAUNCHERRSVX10' || $request->coupon_code === 'LAUNCHERRSVX15') {  
-            
+
                 $isApplicable1 = DB::table('applied_coupons')
                 ->where('coupon_1', $request->coupon_code)
                 ->where('user_id', $request->user_id)
                 ->exists();
-                
+
                 $isApplicable2 = DB::table('applied_coupons')
                     ->where('coupon_2', $request->coupon_code)
                     ->where('user_id', $request->user_id)
                     ->exists();
-                
+
                 // If the coupon has already been applied in either field, return an error
                 if ($isApplicable1 || $isApplicable2) {
                     return response()->json(['error' => 'Coupon already applied'], 400);
                 }
-            
+
                 // Check if the user already has a record in `applied_coupons`
                 $userCoupons = DB::table('applied_coupons')->where('user_id', $request->user_id)->first();
-            
+
                 if ($userCoupons) {
                     // If coupon_1 is empty, save the coupon there
                     if (!$userCoupons->coupon_1) {
                         DB::table('applied_coupons')
                             ->where('user_id', $request->user_id)
-                            ->update(['coupon_1' => $request->coupon_code]);
+                            ->update([
+                                'coupon_1' => $request->coupon_code,
+                                'updated_at' => Carbon::now()
+                            ]);
                     }
                     // If coupon_1 is already used, save it in coupon_2
                     else if (!$userCoupons->coupon_2) {
                         DB::table('applied_coupons')
                             ->where('user_id', $request->user_id)
-                            ->update(['coupon_2' => $request->coupon_code]);
+                            ->update([
+                                'coupon_2' => $request->coupon_code,
+                                'updated_at' => Carbon::now()
+                            ]);
                     }
                     // If both coupons are already used, prevent further applications
                     else {
@@ -232,7 +238,9 @@ class CouponController extends Controller
                     // If no record exists for the user, create a new entry
                     DB::table('applied_coupons')->insert([
                         'user_id' => $request->user_id,
-                        'coupon_1' => $request->coupon_code
+                        'coupon_1' => $request->coupon_code,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     ]);
                 }
             }
