@@ -144,6 +144,36 @@ class CouponController extends Controller
 
     public function applyCoupon(Request $request)
     {
+        // $validator = Validator::make($request->all(), [
+        //     'coupon_code' => 'required|string|exists:coupons,coupon_code',
+        //     'place' => 'required|string',
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 422);
+        // }
+
+        // try {
+        //     //code...
+        //     $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
+        //     // $coupon = Coupon::all();
+
+        //     if(!in_array($request->place,json_decode($coupon->coupon_places))){
+        //         return response()->json(['error' => 'Coupon not applicable for this place'], 400);
+        //     }
+    
+        //     return response()->json(['message' => 'Coupon applied successfully', 'discount' => $coupon->discount], 200);
+        // } catch (ModelNotFoundException $e) {
+        //     // Return a response if the record was not found
+        //     return response()->json(['message' => 'Coupon not found'], 404);
+        // }catch (\Exception $e) {
+        //     // Return a custom error response in case of an exception
+        //     return response()->json([
+        //         'message' => 'An error occurred while Adding Coupon',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
+
         $validator = Validator::make($request->all(), [
             'coupon_code' => 'required|string|exists:coupons,coupon_code',
             'place' => 'required|string',
@@ -157,6 +187,60 @@ class CouponController extends Controller
             //code...
             $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
             // $coupon = Coupon::all();
+
+            if($request->coupon_code === 'LAUNCHERRSVX10' && $request->user_id || $request->coupon_code === 'LAUNCHERRSVX15' && $request->user_id) {  
+
+                $isApplicable1 = DB::table('applied_coupons')
+                ->where('coupon_1', $request->coupon_code)
+                ->where('user_id', $request->user_id)
+                ->exists();
+
+                $isApplicable2 = DB::table('applied_coupons')
+                    ->where('coupon_2', $request->coupon_code)
+                    ->where('user_id', $request->user_id)
+                    ->exists();
+
+                // If the coupon has already been applied in either field, return an error
+                if ($isApplicable1 || $isApplicable2) {
+                    return response()->json(['error' => 'Coupon already applied'], 400);
+                }
+
+                // Check if the user already has a record in `applied_coupons`
+                $userCoupons = DB::table('applied_coupons')->where('user_id', $request->user_id)->first();
+
+                if ($userCoupons) {
+                    // If coupon_1 is empty, save the coupon there
+                    if (!$userCoupons->coupon_1) {
+                        DB::table('applied_coupons')
+                            ->where('user_id', $request->user_id)
+                            ->update([
+                                'coupon_1' => $request->coupon_code,
+                                'updated_at' => Carbon::now()
+                            ]);
+                    }
+                    // If coupon_1 is already used, save it in coupon_2
+                    else if (!$userCoupons->coupon_2) {
+                        DB::table('applied_coupons')
+                            ->where('user_id', $request->user_id)
+                            ->update([
+                                'coupon_2' => $request->coupon_code,
+                                'updated_at' => Carbon::now()
+                            ]);
+                    }
+                    // If both coupons are already used, prevent further applications
+                    else {
+                        return response()->json(['error' => 'You have already used both coupons'], 400);
+                    }
+                } else {
+                    // If no record exists for the user, create a new entry
+                    DB::table('applied_coupons')->insert([
+                        'user_id' => $request->user_id,
+                        'coupon_1' => $request->coupon_code,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ]);
+                }
+            }
 
             if(!in_array($request->place,json_decode($coupon->coupon_places))){
                 return response()->json(['error' => 'Coupon not applicable for this place'], 400);
@@ -192,7 +276,7 @@ class CouponController extends Controller
             $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
             // $coupon = Coupon::all();
 
-            if($request->coupon_code === 'LAUNCHERRSVX10' || $request->coupon_code === 'LAUNCHERRSVX15') {  
+            if($request->coupon_code === 'LAUNCHERRSVX10' && $request->user_id || $request->coupon_code === 'LAUNCHERRSVX15' && $request->user_id) {  
 
                 $isApplicable1 = DB::table('applied_coupons')
                 ->where('coupon_1', $request->coupon_code)
