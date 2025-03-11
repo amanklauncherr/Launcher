@@ -14,6 +14,7 @@ class CartDetails extends Model
         'product_name',
         'quantity',
         'price',
-        'image'
+        'image',
+        'short_description'
     ];
 }
