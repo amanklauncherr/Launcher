@@ -173,6 +173,54 @@ class CouponController extends Controller
         }
     }
 
+
+    public function applyCoupon2(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'coupon_code' => 'required|string|exists:coupons,coupon_code',
+            'place' => 'required|string',
+            'user_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            //code...
+            $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
+            // $coupon = Coupon::all();
+
+            $isApplicable1 = DB::table('applied_coupons')->where('coupon_1', $request->coupon_code)->where('user_id', $request->user_id)->exists();
+            $isApplicable2 = DB::table('applied_coupons')->where('coupon_2', $request->coupon_code)->where('user_id', $request->user_id)->exists();
+            
+            if($isApplicable2 && $isApplicable1){
+                return response()->json(['error' => 'Coupon already applied'], 400);
+            }else{
+                if($isApplicable1){
+                    DB::table('applied_coupons')->where('user_id', $request->user_id)->update(['coupon_2' => $request->coupon_code]);
+                }else{
+                    DB::table('applied_coupons')->insert(['user_id' => $request->user_id, 'coupon_1' => $request->coupon_code]);
+                }
+            }
+
+            if(!in_array($request->place,json_decode($coupon->coupon_places))){
+                return response()->json(['error' => 'Coupon not applicable for this place'], 400);
+            }
+    
+            return response()->json(['message' => 'Coupon applied successfully', 'discount' => $coupon->discount], 200);
+        } catch (ModelNotFoundException $e) {
+            // Return a response if the record was not found
+            return response()->json(['message' => 'Coupon not found'], 404);
+        }catch (\Exception $e) {
+            // Return a custom error response in case of an exception
+            return response()->json([
+                'message' => 'An error occurred while Adding Coupon',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * @group Coupon Management
      *

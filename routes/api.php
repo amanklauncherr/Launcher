@@ -280,6 +280,8 @@ Route::get('/Show-Coupon',[CouponController::class,'showCoupon']);  //
 
 Route::get('/Apply-Coupon',[CouponController::class,'applyCoupon']);
 
+Route::get('/Apply-Coupon2',[CouponController::class,'applyCoupon2']);
+
 Route::get('/term-conditions',[TermsConditionsController::class,'show']);
 
 
