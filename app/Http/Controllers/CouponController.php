@@ -191,22 +191,48 @@ class CouponController extends Controller
             //code...
             $coupon = Coupon::where('coupon_code',$request->coupon_code)->first();
             // $coupon = Coupon::all();
-
-            $isApplicable1 = DB::table('applied_coupons')->where('coupon_1', $request->coupon_code)->where('user_id', $request->user_id)->exists();
-            $isApplicable2 = DB::table('applied_coupons')->where('coupon_2', $request->coupon_code)->where('user_id', $request->user_id)->exists();
-
-            if($isApplicable1){
-                return response()->json(['error' => 'Coupon already applied'], 400);
-            }else if($isApplicable2){
-                return response()->json(['error' => 'Coupon already applied'], 400);
+            $isApplicable1 = DB::table('applied_coupons')
+            ->where('coupon_1', $request->coupon_code)
+            ->where('user_id', $request->user_id)
+            ->exists();
+        
+        $isApplicable2 = DB::table('applied_coupons')
+            ->where('coupon_2', $request->coupon_code)
+            ->where('user_id', $request->user_id)
+            ->exists();
+        
+        // If the coupon has already been applied in either field, return an error
+        if ($isApplicable1 || $isApplicable2) {
+            return response()->json(['error' => 'Coupon already applied'], 400);
+        }
+        
+        // Check if the user already has a record in `applied_coupons`
+        $userCoupons = DB::table('applied_coupons')->where('user_id', $request->user_id)->first();
+        
+        if ($userCoupons) {
+            // If coupon_1 is empty, save the coupon there
+            if (!$userCoupons->coupon_1) {
+                DB::table('applied_coupons')
+                    ->where('user_id', $request->user_id)
+                    ->update(['coupon_1' => $request->coupon_code]);
             }
-            else{
-                if($isApplicable1){
-                    DB::table('applied_coupons')->where('user_id', $request->user_id)->update(['coupon_2' => $request->coupon_code]);
-                }else{
-                    DB::table('applied_coupons')->insert(['user_id' => $request->user_id, 'coupon_1' => $request->coupon_code]);
-                }
+            // If coupon_1 is already used, save it in coupon_2
+            else if (!$userCoupons->coupon_2) {
+                DB::table('applied_coupons')
+                    ->where('user_id', $request->user_id)
+                    ->update(['coupon_2' => $request->coupon_code]);
             }
+            // If both coupons are already used, prevent further applications
+            else {
+                return response()->json(['error' => 'You have already used both coupons'], 400);
+            }
+        } else {
+            // If no record exists for the user, create a new entry
+            DB::table('applied_coupons')->insert([
+                'user_id' => $request->user_id,
+                'coupon_1' => $request->coupon_code
+            ]);
+        }
 
             if(!in_array($request->place,json_decode($coupon->coupon_places))){
                 return response()->json(['error' => 'Coupon not applicable for this place'], 400);
