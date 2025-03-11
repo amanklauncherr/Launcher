@@ -65,6 +65,7 @@ class CartDetailsController extends Controller
                     'quantity' => 'required|integer|min:0',
                     'price' => 'required|integer|min:1',
                     'image' => 'nullable',
+                    'short_description' => 'nullable',
                 ]);
             
                 if ($validator->fails()) {
