@@ -734,7 +734,7 @@ public function checkRate(Request $request)
         'content-type'  => 'application/json',
     ])->post('https://my.ithinklogistics.com/api_v3/rate/check.json', [
         'data' => [
-            'from_pincode'         => '110016 ',
+            'from_pincode'         => '201301 ',
             "to_pincode"           => $pincode,
             'shipping_length_cms'  => '',
             'shipping_width_cms'   => '',
