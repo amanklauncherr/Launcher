@@ -32,7 +32,7 @@
     <div class="container">
         <div class="header">User Flight Reschedule Request</div>
         <p class="message">
-        {{ $emailVariable->toHtml() ?? '' }}
+        {!! $name !!}
         </p>
     </div>
 </body>
