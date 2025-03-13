@@ -4406,8 +4406,8 @@ public function Cancellation(Request $request)
 public function ReScheduleRequest(Request $request)
     {
        
-    //    $request->user_mail;
-                 $user_mail = 'amankumar@launcherr.co';
+    
+                 $user_mail = 'info@launcherr.co';
 
                 //  $message = "'User has requested for Flight Reschedule for booking reference '.$request->bookingRef";
                 $message = "User has requested a Flight Reschedule for booking reference " . $request->bookingRef;
