@@ -223,7 +223,9 @@ class OrderIDCreationController extends Controller
                         [
                             "method_id" => "flat_rate",
                             "method_title" => "Shipping Charge",
-                            "total" => $OrderDetails['shippingCharge'] ?? 0
+                            // "total" => $OrderDetails['shippingCharge'] ?? 0
+                            "total" => strval($OrderDetails['shippingCharge'] ?? "0")
+
                         ]
                     ]
                 ];
