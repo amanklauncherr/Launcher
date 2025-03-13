@@ -171,6 +171,7 @@ class OrderIDCreationController extends Controller
 
                 // Mail::to('info@launcherr.co')->send(new AdminOrderMail($AdminText));
                 Mail::to('info@launcherr.co')->send(new AdminOrderMail($AdminText));
+                Mail::to('productsupport@launcherr.co')->send(new AdminOrderMail($AdminText));
 
                 // Create WooCommerce order via cURL
                 $consumer_key =  'ck_8898974d9ec697fc5f72ff4e818d42e74a1b82cd'; //'ck_your_consumer_key';
@@ -550,6 +551,8 @@ class OrderIDCreationController extends Controller
                     'OrderID' => $Order->OrderID,
                     'OrderDetails' => json_decode($Order->OrderDetails,true),
                     'OrderStatus' => $Order->Status,
+                    'created_at' => $Order->created_at,
+                    'updated_at' => $Order->updated_at
                 ];
                 array_push($data,$final);
             }
@@ -796,6 +799,28 @@ public function checkRate(Request $request)
 
     return response()->json($response->json(), $response->status());
 }
+
+public function getshippingpdates(Request $request){
+
+   
+    //    $data =[{
+    //     "awb_number" : "AWB001",
+    //     "latest_scan_time" : "2022-04-04 15:20:25",
+    //     "current_tracking_status" : "2",
+    //     "status" : "picked up",
+    //     "remark" : "picked",
+    //     "location" : "mumbai",
+    //     "edd_date" : "2022-04-10 15:20:25",
+    //     "status_code" : "UD",
+    //     "customer_name" : "XYZ",
+    //     "customer_number" : "+91 XXXXX99999",
+    //     "order_id" : "AB000",
+    //     "order_type" : "forward",
+    //     "logistics_name" : "ABCD",
+    //     "shipment_type" : "FWD",
+    //     "tracking_url" : "www.abc.xyz"
+    //     }];
+ }
  
 
 }
