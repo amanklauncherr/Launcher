@@ -240,7 +240,19 @@
                                  <td align="left" class="esdev-adapt-off" style="Margin:0;padding-right:20px;padding-left:20px;padding-top:10px;padding-bottom:10px">
                                     <table cellpadding="0" cellspacing="0" class="esdev-mso-table" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
                                        <tr>
-                                          <td style="padding:0;Margin:0;width:20px"></td>
+                                       <td valign="top" class="esdev-mso-td" style="padding:0;Margin:0">
+                                             <table cellpadding="0" cellspacing="0" align="left" class="k" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+                                                <tr>
+                                                   <td align="center" class="be" style="padding:0;Margin:0;width:70px">
+                                                      <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                                                         <tr>
+                                                            <td align="center" style="padding:0;Margin:0;font-size:0px"><img src="{{ $product['image'] }}" alt="" width="70" class="adapt-img" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" height="70"></td>
+                                                         </tr>
+                                                      </table>
+                                                   </td>
+                                                </tr>
+                                             </table>
+                                          </td>
                                           <td valign="top" class="esdev-mso-td" style="padding:0;Margin:0">
                                              <table cellpadding="0" cellspacing="0" align="left" class="k" role="none" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
                                                 <tr>
@@ -303,6 +315,9 @@
                                                 <tr>
                                                    <td align="right" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px">
                                                       <p class="t" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Subtotal: <strong>{{ number_format($OrderDetails['subTotal'], 2) }}</strong></p>
+                                                   </td>
+                                                   <td align="right" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px">
+                                                      <p class="t" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Subtotal: <strong>{{ number_format($OrderDetails['shippingCharge'], 2) }}</strong></p>
                                                    </td>
                                                 </tr>
                                              </table>
@@ -465,3 +480,6 @@
       </div>
    </body>
 </html>
+
+
+
