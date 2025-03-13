@@ -3640,12 +3640,7 @@ public function saveTicket(Request $request){
 
             if($responseRePrint->successful())
             {
-                $HistoryUpdate=TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
-                $HistoryUpdate->update([
-                    'reprint' => "Success",
-                    'Status'  =>  "BOOKED",
-                    'ismailsend' => 1
-                ]);
+                
 
                     $Segment=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'];
     
@@ -3870,7 +3865,13 @@ public function saveTicket(Request $request){
              
              
                          Mail::to($user_mail)->send(new UserFlightBooking($Pnr,$Hs->BookingRef,$pdf_url,$user_mail,$BaseFare,$Tax,$TotalAmount));
-
+                         
+                         $HistoryUpdate=TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
+                         $HistoryUpdate->update([
+                             'reprint' => "Success",
+                             'Status'  =>  "BOOKED",
+                             'ismailsend' => 1
+                         ]);
                     
             }else {
               return response()->json([
