@@ -4409,7 +4409,7 @@ public function ReScheduleRequest(Request $request)
     //    $request->user_mail;
                  $user_mail = 'amankumar@launcherr.co';
 
-                 $message = 'User has requested for Flight Reschedule for booking reference '.$request->bookingRef;
+                 $message = "'User has requested for Flight Reschedule for booking reference '.$request->bookingRef";
              
              Mail::to($user_mail)->send(new FlightRescheduleRequest($message));
         
