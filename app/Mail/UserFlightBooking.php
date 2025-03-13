@@ -37,7 +37,7 @@ class UserFlightBooking extends Mailable
                         'Pnr'=>$this->Pnr,
                         'BookingRef'=>$this->BookingRef, 
                         'pdf_url'=>$this->pdf_url,
-                        'user_mail' =>$this->$user_mail,
+                        'user_mail' =>$this->user_mail,
                         'BaseFare'=>$this->$BaseFare,
                         'Tax'=>$this->$Tax,
                         'TotalAmount'=>$this->$TotalAmount,
