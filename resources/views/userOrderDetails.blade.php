@@ -316,8 +316,11 @@
                                                    <td align="right" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px">
                                                       <p class="t" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Subtotal: <strong>{{ number_format($OrderDetails['subTotal'], 2) }}</strong></p>
                                                    </td>
-                                                   <td align="right" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px">
-                                                      <p class="t" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Subtotal: <strong>{{ number_format($OrderDetails['shippingCharge'], 2) }}</strong></p>
+                                                   
+                                                </tr>
+                                                <tr>
+                                                <td align="right" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px">
+                                                      <p class="t" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Shipping: <strong>{{ number_format($OrderDetails['shippingCharge'], 2) }}</strong></p>
                                                    </td>
                                                 </tr>
                                              </table>
