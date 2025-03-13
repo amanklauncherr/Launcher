@@ -222,8 +222,8 @@ class OrderIDCreationController extends Controller
                     "shipping_lines" => [
                         [
                             "method_id" => "flat_rate",
-                            "method_title" => "Flat Rate",
-                            "total" => "10.00"
+                            "method_title" => "Shipping Charge",
+                            "total" => $OrderDetails['shippingCharge'] ?? 0
                         ]
                     ]
                 ];
