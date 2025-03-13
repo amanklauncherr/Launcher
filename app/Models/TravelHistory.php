@@ -19,7 +19,8 @@ class TravelHistory extends Model
         'Status',
         'Ticket_URL',
         'payment',
-        'reprint'
+        'reprint',
+        'ismailsend'
     ];
     
 }

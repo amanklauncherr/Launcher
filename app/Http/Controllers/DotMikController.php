@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Mail\UserFlightBooking;
 use App\Mail\UserFlightTicketCancel;
+use App\Mail\FlightRescheduleRequest;
 use App\Models\AirlineCode;
 use App\Models\iatacode;
 use App\Models\TravelHistory;
@@ -991,27 +992,54 @@ class DotMikController extends Controller
                 
                 $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
-                             if ($TotalAmountBefore < 5000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
-                                 $discount = $TotalAmountBefore * (5.50 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
-                                 $discount = $TotalAmountBefore * (5 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
-                                 $discount = $TotalAmountBefore * (4 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 100000) {
-                                 $discount = $TotalAmountBefore * (3.50 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } else {
-                                 $TotalAmount = $TotalAmountBefore;
-                             }
+                            //  if ($TotalAmountBefore < 5000) {
+                            //      $discount = $TotalAmountBefore * (6 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                            //      $discount = $TotalAmountBefore * (6 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                            //      $discount = $TotalAmountBefore * (5.50 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                            //      $discount = $TotalAmountBefore * (5 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                            //      $discount = $TotalAmountBefore * (4 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 100000) {
+                            //      $discount = $TotalAmountBefore * (3.50 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } else {
+                            //      $TotalAmount = $TotalAmountBefore;
+                            //  }
+                            if ($TotalAmountBefore < 5000) {
+                                $discount = $TotalAmountBefore * (3.50 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 10000) {
+                                $discount = $TotalAmountBefore * (3.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 10000 && $TotalAmountBefore < 15000) {
+                                $discount = $TotalAmountBefore * (3 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 20000) {
+                                $discount = $TotalAmountBefore * (4.75 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 20000 && $TotalAmountBefore < 25000) {
+                                $discount = $TotalAmountBefore * (4.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                                $discount = $TotalAmountBefore * (4 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 75000) {
+                                $discount = $TotalAmountBefore * (3.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 75000) {
+                                $discount = $TotalAmountBefore * (3 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } else {
+                                $TotalAmount = $TotalAmountBefore;
+                            } 
                
                 $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
                
@@ -1099,28 +1127,43 @@ class DotMikController extends Controller
                                         foreach ($fare['FareDetails'] as &$fareDetail) {
                                             if (isset($fareDetail['Total_Amount'])) {
                                                 // Apply discount logic
+                                                // 0-5000	3.50%
+                                                // 5000-10000	3.25%
+                                                // 10000-15000	3.00%
+                                                // 15000-20000	4.75%
+                                                // 20000-25000	4.25%
+                                                // 25000-50000	4.00%
+                                                // 50000-75000	3.25%
+                                                // 75000+	3.00%
+
                                                 $totalAmount = $fareDetail['Total_Amount'];
                                                 if ($totalAmount < 5000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                    $discount = $totalAmount * (3.50 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 10000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
-                                                    $discount = $totalAmount * (5.50 / 100);
+                                                } elseif ($totalAmount >= 10000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (3 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 20000) {
+                                                    $discount = $totalAmount * (4.75 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 20000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (4.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
-                                                    $discount = $totalAmount * (5 / 100);
-                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
                                                     $discount = $totalAmount * (4 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 100000) {
-                                                    $discount = $totalAmount * (3.50 / 100);
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 75000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 75000) {
+                                                    $discount = $totalAmount * (3 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } else {
                                                     $fareDetail['Total_Amount'] = $totalAmount;
-                                                }
+                                                } 
                                             }
                                         }
                                     }
@@ -2275,23 +2318,38 @@ class DotMikController extends Controller
 
                         $amount = $pax['Total_Amount'];
 
+                        // 0-5000	    3.50%
+                        // 5000-10000	3.25%
+                        // 10000-15000	3.00%
+                        // 15000-20000	4.75%
+                        // 20000-25000	4.25%
+                        // 25000-50000	4.00%
+                        // 50000-75000	3.25%
+                        // 75000+	    3.00%
+
                         if($amount < 5000){
-                            $discount = $amount * (6/100);
+                            $discount = $amount * (3.50/100);
                             $total = $amount + $discount;
-                        }else if($amount >= 5000 && $amount < 15000){
-                            $discount = $amount * (6/100);
+                        }else if($amount >= 5000 && $amount < 10000){
+                            $discount = $amount * (3.25/100);
                             $total = $amount + $discount;
-                        }else if($amount >= 15000 && $amount < 25000){
-                            $discount = $amount * (5.50/100);
+                        }else if($amount >= 10000 && $amount < 15000){
+                            $discount = $amount * (3/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 15000 && $amount < 20000){
+                            $discount = $amount * (4.75/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 20000 && $amount < 25000){
+                            $discount = $amount * (4.25/100);
                             $total = $amount + $discount;
                         }else if($amount >= 25000 && $amount < 50000){
-                            $discount = $amount * (5/100);
-                            $total = $amount + $discount;
-                        }else if($amount >= 50000 && $amount < 100000){
                             $discount = $amount * (4/100);
                             $total = $amount + $discount;
-                        }else if($amount >= 100000){
-                            $discount = $amount * (3.50/100);
+                        }else if($amount >= 50000 && $amount < 75000){
+                            $discount = $amount * (3.25/100);
+                            $total = $amount + $discount;
+                        }else if($amount >= 75000){
+                            $discount = $amount * (3/100);
                             $total = $amount + $discount;
                         }else{
                             $total = $pax['Total_Amount'] + $pax['Trade_Markup_Amount'];
@@ -3289,27 +3347,42 @@ public function Ticketing(Request $request)
 
                 $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
+
+                        // 0-5000	    3.50%
+                        // 5000-10000	3.25%
+                        // 10000-15000	3.00%
+                        // 15000-20000	4.75%
+                        // 20000-25000	4.25%
+                        // 25000-50000	4.00%
+                        // 50000-75000	3.25%
+                        // 75000+	    3.00%
                              if ($TotalAmountBefore < 5000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
+                                 $discount = $TotalAmountBefore * (3.50 / 100);
                                  $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
+                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 10000) {
+                                 $discount = $TotalAmountBefore * (3.25 / 100);
                                  $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
-                                 $discount = $TotalAmountBefore * (5.50 / 100);
+                             } elseif ($TotalAmountBefore >= 10000 && $TotalAmountBefore < 15000) {
+                                 $discount = $TotalAmountBefore * (3 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 20000) {
+                                 $discount = $TotalAmountBefore * (4.75 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 20000 && $TotalAmountBefore < 25000) {
+                                 $discount = $TotalAmountBefore * (4.25 / 100);
                                  $TotalAmount = $TotalAmountBefore + $discount;
                              } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
-                                 $discount = $TotalAmountBefore * (5 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
                                  $discount = $TotalAmountBefore * (4 / 100);
                                  $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 100000) {
-                                 $discount = $TotalAmountBefore * (3.50 / 100);
+                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 75000) {
+                                 $discount = $TotalAmountBefore * (3.25 / 100);
+                                 $TotalAmount = $TotalAmountBefore + $discount;
+                             } elseif ($TotalAmountBefore >= 75000) {
+                                 $discount = $TotalAmountBefore * (3 / 100);
                                  $TotalAmount = $TotalAmountBefore + $discount;
                              } else {
                                  $TotalAmount = $TotalAmountBefore;
-                             }
+                             } 
                
                 $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
                
@@ -3400,27 +3473,54 @@ public function Ticketing(Request $request)
                                             if (isset($fareDetail['Total_Amount'])) {
                                                 // Apply discount logic
                                                 $totalAmount = $fareDetail['Total_Amount'];
+                                                // if ($totalAmount < 5000) {
+                                                //     $discount = $totalAmount * (6 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                //     $discount = $totalAmount * (6 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                //     $discount = $totalAmount * (5.50 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                //     $discount = $totalAmount * (5 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                //     $discount = $totalAmount * (4 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 100000) {
+                                                //     $discount = $totalAmount * (3.50 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } else {
+                                                //     $fareDetail['Total_Amount'] = $totalAmount;
+                                                // }
                                                 if ($totalAmount < 5000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                    $discount = $totalAmount * (3.50 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 10000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
-                                                    $discount = $totalAmount * (5.50 / 100);
+                                                } elseif ($totalAmount >= 10000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (3 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 20000) {
+                                                    $discount = $totalAmount * (4.75 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 20000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (4.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
-                                                    $discount = $totalAmount * (5 / 100);
-                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
                                                     $discount = $totalAmount * (4 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 100000) {
-                                                    $discount = $totalAmount * (3.50 / 100);
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 75000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 75000) {
+                                                    $discount = $totalAmount * (3 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } else {
                                                     $fareDetail['Total_Amount'] = $totalAmount;
-                                                }
+                                                } 
                                             }
                                         }
                                     }
@@ -3543,7 +3643,8 @@ public function saveTicket(Request $request){
                 $HistoryUpdate=TravelHistory::where('BookingRef',$Hs->BookingRef)->first();
                 $HistoryUpdate->update([
                     'reprint' => "Success",
-                    'Status'  =>  "BOOKED"
+                    'Status'  =>  "BOOKED",
+                    'ismailsend' => 1
                 ]);
 
                     $Segment=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Segments'];
@@ -3566,27 +3667,54 @@ public function saveTicket(Request $request){
                    
                     $TotalAmountBefore=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
     
+                        // if ($TotalAmountBefore < 5000) {
+                        //     $discount = $TotalAmountBefore * (6 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                        //     $discount = $TotalAmountBefore * (6 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                        //     $discount = $TotalAmountBefore * (5.50 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                        //     $discount = $TotalAmountBefore * (5 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                        //     $discount = $TotalAmountBefore * (4 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } elseif ($TotalAmountBefore >= 100000) {
+                        //     $discount = $TotalAmountBefore * (3.50 / 100);
+                        //     $TotalAmount = $TotalAmountBefore + $discount;
+                        // } else {
+                        //     $TotalAmount = $TotalAmountBefore;
+                        // }
                         if ($TotalAmountBefore < 5000) {
-                            $discount = $TotalAmountBefore * (6 / 100);
+                            $discount = $TotalAmountBefore * (3.50 / 100);
                             $TotalAmount = $TotalAmountBefore + $discount;
-                        } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
-                            $discount = $TotalAmountBefore * (6 / 100);
+                        } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 10000) {
+                            $discount = $TotalAmountBefore * (3.25 / 100);
                             $TotalAmount = $TotalAmountBefore + $discount;
-                        } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
-                            $discount = $TotalAmountBefore * (5.50 / 100);
+                        } elseif ($TotalAmountBefore >= 10000 && $TotalAmountBefore < 15000) {
+                            $discount = $TotalAmountBefore * (3 / 100);
+                            $TotalAmount = $TotalAmountBefore + $discount;
+                        } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 20000) {
+                            $discount = $TotalAmountBefore * (4.75 / 100);
+                            $TotalAmount = $TotalAmountBefore + $discount;
+                        } elseif ($TotalAmountBefore >= 20000 && $TotalAmountBefore < 25000) {
+                            $discount = $TotalAmountBefore * (4.25 / 100);
                             $TotalAmount = $TotalAmountBefore + $discount;
                         } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
-                            $discount = $TotalAmountBefore * (5 / 100);
-                            $TotalAmount = $TotalAmountBefore + $discount;
-                        } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
                             $discount = $TotalAmountBefore * (4 / 100);
                             $TotalAmount = $TotalAmountBefore + $discount;
-                        } elseif ($TotalAmountBefore >= 100000) {
-                            $discount = $TotalAmountBefore * (3.50 / 100);
+                        } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 75000) {
+                            $discount = $TotalAmountBefore * (3.25 / 100);
+                            $TotalAmount = $TotalAmountBefore + $discount;
+                        } elseif ($TotalAmountBefore >= 75000) {
+                            $discount = $TotalAmountBefore * (3 / 100);
                             $TotalAmount = $TotalAmountBefore + $discount;
                         } else {
                             $TotalAmount = $TotalAmountBefore;
-                        }
+                        } 
                    
                     $Cancellation=$resultRePrint['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
                    
@@ -3661,27 +3789,54 @@ public function saveTicket(Request $request){
                                             foreach ($fare['FareDetails'] as &$fareDetail) {
                                                 if (isset($fareDetail['Total_Amount'])) {
                                                     $totalAmount = $fareDetail['Total_Amount'];
+                                                    // if ($totalAmount < 5000) {
+                                                    //     $discount = $totalAmount * (6 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                    //     $discount = $totalAmount * (6 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                    //     $discount = $totalAmount * (5.50 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                    //     $discount = $totalAmount * (5 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                    //     $discount = $totalAmount * (4 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } elseif ($totalAmount >= 100000) {
+                                                    //     $discount = $totalAmount * (3.50 / 100);
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    // } else {
+                                                    //     $fareDetail['Total_Amount'] = $totalAmount;
+                                                    // }
                                                     if ($totalAmount < 5000) {
-                                                        $discount = $totalAmount * (6 / 100);
+                                                        $discount = $totalAmount * (3.50 / 100);
                                                         $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                    } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
-                                                        $discount = $totalAmount * (6 / 100);
+                                                    } elseif ($totalAmount >= 5000 && $totalAmount < 10000) {
+                                                        $discount = $totalAmount * (3.25 / 100);
                                                         $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                    } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
-                                                        $discount = $totalAmount * (5.50 / 100);
+                                                    } elseif ($totalAmount >= 10000 && $totalAmount < 15000) {
+                                                        $discount = $totalAmount * (3 / 100);
+                                                        $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    } elseif ($totalAmount >= 15000 && $totalAmount < 20000) {
+                                                        $discount = $totalAmount * (4.75 / 100);
+                                                        $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    } elseif ($totalAmount >= 20000 && $totalAmount < 25000) {
+                                                        $discount = $totalAmount * (4.25 / 100);
                                                         $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                     } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
-                                                        $discount = $totalAmount * (5 / 100);
-                                                        $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                    } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
                                                         $discount = $totalAmount * (4 / 100);
                                                         $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                    } elseif ($totalAmount >= 100000) {
-                                                        $discount = $totalAmount * (3.50 / 100);
+                                                    } elseif ($totalAmount >= 50000 && $totalAmount < 75000) {
+                                                        $discount = $totalAmount * (3.25 / 100);
+                                                        $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                    } elseif ($totalAmount >= 75000) {
+                                                        $discount = $totalAmount * (3 / 100);
                                                         $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                     } else {
                                                         $fareDetail['Total_Amount'] = $totalAmount;
-                                                    }
+                                                    } 
                                                 }
                                             }
                                         }
@@ -3848,27 +4003,55 @@ public function RePrintTicket(Request $request)
                         // $TotalAmount=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
                         $TotalAmountBefore=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['Total_Amount'];
 
-                             if ($TotalAmountBefore < 5000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
-                                 $discount = $TotalAmountBefore * (6 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
-                                 $discount = $TotalAmountBefore * (5.50 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
-                                 $discount = $TotalAmountBefore * (5 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
-                                 $discount = $TotalAmountBefore * (4 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } elseif ($TotalAmountBefore >= 100000) {
-                                 $discount = $TotalAmountBefore * (3.50 / 100);
-                                 $TotalAmount = $TotalAmountBefore + $discount;
-                             } else {
-                                 $TotalAmount = $TotalAmountBefore;
-                             }
+                            //  if ($TotalAmountBefore < 5000) {
+                            //      $discount = $TotalAmountBefore * (6 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 15000) {
+                            //      $discount = $TotalAmountBefore * (6 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 25000) {
+                            //      $discount = $TotalAmountBefore * (5.50 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                            //      $discount = $TotalAmountBefore * (5 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 100000) {
+                            //      $discount = $TotalAmountBefore * (4 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } elseif ($TotalAmountBefore >= 100000) {
+                            //      $discount = $TotalAmountBefore * (3.50 / 100);
+                            //      $TotalAmount = $TotalAmountBefore + $discount;
+                            //  } else {
+                            //      $TotalAmount = $TotalAmountBefore;
+                            //  }
+
+                            if ($TotalAmountBefore < 5000) {
+                                $discount = $TotalAmountBefore * (3.50 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 5000 && $TotalAmountBefore < 10000) {
+                                $discount = $TotalAmountBefore * (3.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 10000 && $TotalAmountBefore < 15000) {
+                                $discount = $TotalAmountBefore * (3 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 15000 && $TotalAmountBefore < 20000) {
+                                $discount = $TotalAmountBefore * (4.75 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 20000 && $TotalAmountBefore < 25000) {
+                                $discount = $TotalAmountBefore * (4.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 25000 && $TotalAmountBefore < 50000) {
+                                $discount = $TotalAmountBefore * (4 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 50000 && $TotalAmountBefore < 75000) {
+                                $discount = $TotalAmountBefore * (3.25 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } elseif ($TotalAmountBefore >= 75000) {
+                                $discount = $TotalAmountBefore * (3 / 100);
+                                $TotalAmount = $TotalAmountBefore + $discount;
+                            } else {
+                                $TotalAmount = $TotalAmountBefore;
+                            } 
                          
                         $Cancellation=$result['payloads']['data']['rePrintTicket']['pnrDetails'][0]['Flights'][0]['Fares'][0]['FareDetails']['0']['CancellationCharges'];
 
@@ -3973,27 +4156,54 @@ public function RePrintTicket(Request $request)
                                             if (isset($fareDetail['Total_Amount'])) {
                                                 // Apply discount logic
                                                 $totalAmount = $fareDetail['Total_Amount'];
+                                                // if ($totalAmount < 5000) {
+                                                //     $discount = $totalAmount * (6 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
+                                                //     $discount = $totalAmount * (6 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
+                                                //     $discount = $totalAmount * (5.50 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
+                                                //     $discount = $totalAmount * (5 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
+                                                //     $discount = $totalAmount * (4 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } elseif ($totalAmount >= 100000) {
+                                                //     $discount = $totalAmount * (3.50 / 100);
+                                                //     $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                // } else {
+                                                //     $fareDetail['Total_Amount'] = $totalAmount;
+                                                // }
                                                 if ($totalAmount < 5000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                    $discount = $totalAmount * (3.50 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 5000 && $totalAmount < 15000) {
-                                                    $discount = $totalAmount * (6 / 100);
+                                                } elseif ($totalAmount >= 5000 && $totalAmount < 10000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 15000 && $totalAmount < 25000) {
-                                                    $discount = $totalAmount * (5.50 / 100);
+                                                } elseif ($totalAmount >= 10000 && $totalAmount < 15000) {
+                                                    $discount = $totalAmount * (3 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 15000 && $totalAmount < 20000) {
+                                                    $discount = $totalAmount * (4.75 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 20000 && $totalAmount < 25000) {
+                                                    $discount = $totalAmount * (4.25 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } elseif ($totalAmount >= 25000 && $totalAmount < 50000) {
-                                                    $discount = $totalAmount * (5 / 100);
-                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 50000 && $totalAmount < 100000) {
                                                     $discount = $totalAmount * (4 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
-                                                } elseif ($totalAmount >= 100000) {
-                                                    $discount = $totalAmount * (3.50 / 100);
+                                                } elseif ($totalAmount >= 50000 && $totalAmount < 75000) {
+                                                    $discount = $totalAmount * (3.25 / 100);
+                                                    $fareDetail['Total_Amount'] = $totalAmount + $discount;
+                                                } elseif ($totalAmount >= 75000) {
+                                                    $discount = $totalAmount * (3 / 100);
                                                     $fareDetail['Total_Amount'] = $totalAmount + $discount;
                                                 } else {
                                                     $fareDetail['Total_Amount'] = $totalAmount;
-                                                }
+                                                } 
                                             }
                                         }
                                     }
@@ -4196,7 +4406,7 @@ public function Cancellation(Request $request)
 public function ReScheduleRequest(Request $request)
     {
        
-       
+    //    $request->user_mail;
                  $user_mail = 'amankumar@launcherr.co';
 
                  $message = 'User has requested for Flight Reschedule for booking reference '.$request->bookingRef;
